@@ -11,12 +11,12 @@
     <h3>Sample Code</h3>
     <code>
         // Subscribe<br />
-        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.local.hyprsoft.com/") });<br />
-        var webhookUri = new Uri("http://myapi.local.hyprsoft.com/webhooks/samplecreated");<br />
+        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });<br />
+        var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/samplecreated");<br />
         await client.SubscribeAsync&lt;SampleCreatedWebhookEvent&gt;(webhookUri, x => x.SampleType == 2);<br /><br />
 
         // Publish<br />
-        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.local.hyprsoft.com/") });<br />
+        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });<br />
         await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });<br />
     </code>
     <hr />

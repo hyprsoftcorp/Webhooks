@@ -1,7 +1,19 @@
-# Hyprsoft Webhooks
-This is an implementation of a stand-alone generic publish/subscribe notification system using webhooks and Hangfire.
+# Webhooks
+This is an implementation of a standalone generic publish/subscribe notification system using webhooks and Hangfire.
 
-Documentation: [https://hyprsoftwebhooks.azurewebsites.net/](https://hyprsoftwebhooks.azurewebsites.net/)
+Documentation: [https://webhooks.hyprsoft.com/](https://webhooks.hyprsoft.com/)
+
+## Sample Code
+``` csharp
+// Subscribe
+var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.hyprsoft.com/") });
+var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/samplecreated");
+await client.SubscribeAsync<SampleCreatedWebhookEvent>(webhookUri, x => x.SampleType == 2);
+
+// Publish
+var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.hyprsoft.com/") });
+await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });
+```
 
 ## Install as Windows Service
 ```
