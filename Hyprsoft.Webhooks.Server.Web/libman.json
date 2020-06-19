@@ -26,6 +26,10 @@
         "languages/csharp.min.js",
         "styles/vs.min.css"
       ]
+    },
+    {
+      "library": "animate.css@4.1.0",
+      "destination": "wwwroot/lib/animate.css/"
     }
   ]
 }

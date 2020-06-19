@@ -3,11 +3,19 @@
     ViewBag.Title = "Webhooks Server";
 }
 
+@section head
+{
+    <link rel="stylesheet" href="~/lib//animate.css/animate.min.css" />
+}
+
 <div class="d-flex h-100 align-items-center justify-content-center landing">
     <div class="text-center">
-        <i class="fas fa-globe text-info"></i>
-        <h1 class="display-4">Webhooks Server</h1>
-        <div class="lead">Version: @Model.Version</div>
-        <div class="small text-muted">Built: @Model.BuildDateTimeUtc.ToLocalTime()</div>
+        <i class="fas fa-globe text-info animate__animated animate__fadeInDown"></i>
+        <div class="animate__animated animate__fadeInUp">
+            <h1 class="display-4">Webhooks Server</h1>
+            <p>A generic publish/subscribe notification system based on webhooks and Hangfire as an event dispatcher.</p>
+            <div class="lead">Version: @Model.Version</div>
+            <div class="small text-muted">Built: @Model.BuildDateTimeUtc.ToLocalTime()</div>
+        </div>
     </div>
 </div>
