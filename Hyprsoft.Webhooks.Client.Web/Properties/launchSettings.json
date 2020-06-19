@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Hyprsoft.Webhooks.Client.Web": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

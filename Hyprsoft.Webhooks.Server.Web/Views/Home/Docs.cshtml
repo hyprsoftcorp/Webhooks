@@ -1,0 +1,184 @@
+﻿@model (string Version, DateTime BuildDateTimeUtc)
+@{
+    ViewBag.Title = "Webhooks Documentation";
+}
+
+<div class="container page pb-5">
+    <h2>@ViewBag.Title</h2>
+    <p class="small text-muted">This documentation was last updated on @Model.BuildDateTimeUtc.ToLocalTime().ToLongDateString() @Model.BuildDateTimeUtc.ToLocalTime().ToLongTimeString().</p>
+
+    <hr />
+    <h3>Sample Code</h3>
+    <code>
+        // Subscribe<br />
+        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.local.hyprsoft.com/") });<br />
+        var webhookUri = new Uri("http://myapi.local.hyprsoft.com/webhooks/samplecreated");<br />
+        await client.SubscribeAsync&lt;SampleCreatedWebhookEvent&gt;(webhookUri, x => x.SampleType == 2);<br /><br />
+
+        // Publish<br />
+        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.local.hyprsoft.com/") });<br />
+        await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });<br />
+    </code>
+    <hr />
+    <h3>Components</h3>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Webhooks Server Web App</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">.NET Core App 3.1</h6>
+                    <p class="card-text">
+                        Standalone web app (or Windows service) that exposes REST endpoints and services to manage subscriptions and publish events.
+                        <h4><span class="badge badge-primary">REST API</span></h4>
+                        <ul>
+                            <li>Subscribe(subscriptionRequest).</li>
+                            <li>Unsubscribe(subscriptionRequest).</li>
+                            <li>Publish(event).</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Webhooks Manager</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">.NET Standard 2.0</h6>
+                    <p class="card-text">
+                        Service to manage subscriptions and publish events that's part of the Webhooks Server Web App.
+                        <h4><span class="badge badge-info">API</span></h4>
+                        <ul>
+                            <li>Subscribe(typename, webhookUri, filter).</li>
+                            <li>Unsubscribe(typename, webhookUri).</li>
+                            <li>Publish&lt;TEvent&gt;(event).</li>
+                            <li>GetSubscriptions().</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Hangfire Webhooks Manager</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">.NET Standard 2.0</h6>
+                    <p class="card-text">
+                        Service to dispatch events using Hangfire's scalable queues and automatic retry logic with exponential backoff.  Part of the Webhooks Server Web App.
+                        <h4><span class="badge badge-info">API</span></h4>
+                        <ul>
+                            <li>OnPublish&lt;TEvent&gt;(event).</li>
+                            <li>Dispatch&lt;TEvent&gt;(webhookUri, event).</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Webhooks Database</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">SQL Server </h6>
+                    <p class="card-text">
+                        Standalone database to manage subscriptions and dispatch events.
+                        <h4><span class="badge badge-secondary">Database Tables</span></h4>
+                        <ul>
+                            <li>Event subscriptions.</li>
+                            <li>Hangfire related.</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Webhooks Client</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">.NET Standard 2.0</h6>
+                    <p class="card-text">
+                        Lightweight Nuget package to call Webhooks Server Web App REST API.  Part of a subscriber's web app or REST API.
+                        <br />
+                        <h4><span class="badge badge-info">API</span></h4>
+                        <ul>
+                            <li>Subscribe&lt;TEvent&gt;(webhookUri, filter).</li>
+                            <li>Unsubscribe&lt;TEvent&gt;(webhookUri).</li>
+                            <li>Publish&lt;TEvent&gt;(event).</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Webhooks Client Web App</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">NET Core App 3.1</h6>
+                    <p class="card-text">
+                        Standalone web app to publish test events and consume webhooks.
+                        <h4><span class="badge badge-success">Components</span></h4>
+                        <ul>
+                            <li>Webhook receivers (REST API).</li>
+                            <li>Event publishing background worker (publishes a random number of events every (n) seconds).</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <h3>Screenshots</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Webhooks Server Web App</h4>
+            <a href="~/images//webhooks-dashboard-screenshot.jpg" title="Webhooks Server Web App Dashboard Screenshot" target="_blank"><img class="img-fluid img-thumbnail" src="~/images//webhooks-dashboard-screenshot.jpg" alt="Webhooks Server Web App Dashboard Screenshot" asp-append-version="true" /></a>
+        </div>
+        <div class="col-md-6">
+            <h4>Webhooks Client Web App (for testing only)</h4>
+            <a href="~/images//webhooks-client-console-screenshot.jpg" title="Webhooks Client Web App Console Screenshot" target="_blank"><img class="img-fluid img-thumbnail" src="~/images//webhooks-client-console-screenshot.jpg" alt="Webhooks Client Web App Console Screenshot" asp-append-version="true" /></a>
+        </div>
+    </div>
+
+    <hr />
+    <h3>Workflows</h3>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Event Subscription</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Using the Webhooks Client Nuget Package</h6>
+                    <p class="card-text">
+                        <ol>
+                            <li>Subscriber subscribes to an event by sending the webhook uri, and optionally a filter (lambda expression).  This operation is idempotent.</li>
+                            <li>Subscriber optionally unsubscribes from an event by sending the webhook uri.  This operation is idempotent.</li>
+                            <li>Event subscriptions can be viewed <a asp-area="" asp-controller="Home" asp-action="Subscriptions">here</a>.</li>
+                        </ol>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card border-0">
+                <div class="card-body">
+                    <h5 class="card-title">Publishing Events</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Using the Webhooks Client Nuget Package</h6>
+                    <p class="card-text">
+                        <ol>
+                            <li>Publisher simply publishes the event.</li>
+                        </ol>
+                        Backend logic:
+                        <ol>
+                            <li>The Webhooks Manager queries the event subscription repository for all webhooks associated with the event and optionally publishes the event based on any event filters.</li>
+                            <li>The Hangfire Webhooks Manager then enqeues each webhook request as an individual background job.</li>
+                            <li>Periodically Hangfire will dequeue events and invoke the callback supplied when the event was enqueued (in this case the Dispatch&lt;TEvent&gt;(webhookUri, event) API).  Failures are automatically requeued and retried using exponential backoff.  Failures can also be manually requeued if needed.</li>
+                            <li>Background jobs can be viewed <a href="/hangfire/jobs/succeeded" title="Hangfire Dashboard">here</a>.</li>
+                        </ol>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

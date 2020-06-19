@@ -1,0 +1,13 @@
+﻿@model (string Version, DateTime BuildDateTimeUtc)
+@{
+    ViewBag.Title = "Webhooks Server";
+}
+
+<div class="d-flex h-100 align-items-center justify-content-center landing">
+    <div class="text-center">
+        <i class="fas fa-globe text-info"></i>
+        <h1 class="display-4">Webhooks Server</h1>
+        <div class="lead">Version: @Model.Version</div>
+        <div class="small text-muted">Built: @Model.BuildDateTimeUtc.ToLocalTime()</div>
+    </div>
+</div>
