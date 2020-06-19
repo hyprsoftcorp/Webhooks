@@ -28,7 +28,7 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
     <hr />
     <h3>Components</h3>
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Webhooks Server Web App</h5>
@@ -45,7 +45,7 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Webhooks Manager</h5>
@@ -54,16 +54,18 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
                         Service to manage subscriptions and publish events that's part of the Webhooks Server Web App.
                         <h4><span class="badge badge-info">API</span></h4>
                         <ul>
-                            <li>Subscribe(typename, webhookUri, filter).</li>
-                            <li>Unsubscribe(typename, webhookUri).</li>
-                            <li>Publish&lt;TEvent&gt;(event).</li>
-                            <li>GetSubscriptions().</li>
+                            <li>SubscribeAsync(typename, webhookUri, filter).</li>
+                            <li>UnsubscribeAsync(typename, webhookUri).</li>
+                            <li>PublishAsync&lt;TEvent&gt;(event).</li>
+                            <li>GetSubscriptionsAsync().</li>
                         </ul>
                     </p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+    </div>
+    <div class="row">
+        <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Hangfire Webhooks Manager</h5>
@@ -72,16 +74,17 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
                         Service to dispatch events using Hangfire's scalable queues and automatic retry logic with exponential backoff.  Part of the Webhooks Server Web App.
                         <h4><span class="badge badge-info">API</span></h4>
                         <ul>
-                            <li>OnPublish&lt;TEvent&gt;(event).</li>
-                            <li>Dispatch&lt;TEvent&gt;(webhookUri, event).</li>
+                            <li>SubscribeAsync(typename, webhookUri, filter).</li>
+                            <li>UnsubscribeAsync(typename, webhookUri).</li>
+                            <li>PublishAsync&lt;TEvent&gt;(event).</li>
+                            <li>GetSubscriptionsAsync().</li>
+                            <li>DispatchAsync&lt;TEvent&gt;(webhookUri, event).</li>
                         </ul>
                     </p>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Webhooks Database</h5>
@@ -97,7 +100,9 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        </div>
+    <div class="row">
+        <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Webhooks Client</h5>
@@ -107,21 +112,21 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
                         <br />
                         <h4><span class="badge badge-info">API</span></h4>
                         <ul>
-                            <li>Subscribe&lt;TEvent&gt;(webhookUri, filter).</li>
-                            <li>Unsubscribe&lt;TEvent&gt;(webhookUri).</li>
-                            <li>Publish&lt;TEvent&gt;(event).</li>
+                            <li>SubscribeAsync&lt;TEvent&gt;(webhookUri, filter).</li>
+                            <li>UnsubscribeAsync&lt;TEvent&gt;(webhookUri).</li>
+                            <li>PublishAsync&lt;TEvent&gt;(event).</li>
                         </ul>
                     </p>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-6">
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Webhooks Client Web App</h5>
                     <h6 class="card-subtitle mb-2 text-muted">NET Core App 3.1</h6>
                     <p class="card-text">
-                        Standalone web app to publish test events and consume webhooks.
+                        Standalone web app to publish random test events and consume webhooks.
                         <h4><span class="badge badge-success">Components</span></h4>
                         <ul>
                             <li>Webhook receivers (REST API).</li>
