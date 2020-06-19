@@ -17,6 +17,15 @@
     {
       "library": "font-awesome@5.12.0-2",
       "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "library": "highlight.js@10.1.1",
+      "destination": "wwwroot/lib/highlight.js/",
+      "files": [
+        "highlight.min.js",
+        "languages/csharp.min.js",
+        "styles/vs.min.css"
+      ]
     }
   ]
 }

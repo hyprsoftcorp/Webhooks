@@ -1,6 +1,11 @@
 ﻿@model (string Version, DateTime BuildDateTimeUtc)
 @{
-    ViewBag.Title = "Webhooks Documentation";
+    ViewBag.Title = "Documentation";
+}
+
+@section head
+{
+    <link rel="stylesheet" href="~/lib/highlight.js/styles/vs.min.css" />
 }
 
 <div class="container page pb-5">
@@ -9,16 +14,17 @@
 
     <hr />
     <h3>Sample Code</h3>
-    <code>
-        // Subscribe<br />
-        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });<br />
-        var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/samplecreated");<br />
-        await client.SubscribeAsync&lt;SampleCreatedWebhookEvent&gt;(webhookUri, x => x.SampleType == 2);<br /><br />
+    <p>Full source code: <a href="https://github.com/hyprsoftcorp/Webhooks" title="Webhooks Source Code" target="_blank">https://github.com/hyprsoftcorp/Webhooks</a> (MIT licensed).</p>
+    <pre><code class="lang-csharp">
+// Subscribe
+var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });
+var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/samplecreated");
+await client.SubscribeAsync&lt;SampleCreatedWebhookEvent&gt;(webhookUri, x => x.SampleType == 2);
 
-        // Publish<br />
-        var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });<br />
-        await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });<br />
-    </code>
+// Publish
+var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });
+await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });
+    </code></pre>
     <hr />
     <h3>Components</h3>
     <div class="row">
@@ -182,3 +188,8 @@
         </div>
     </div>
 </div>
+@section scripts
+{
+    <script src="~/lib/highlight.js/highlight.min.js"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+}

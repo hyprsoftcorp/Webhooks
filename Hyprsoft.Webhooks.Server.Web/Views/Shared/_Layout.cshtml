@@ -13,6 +13,7 @@
     <environment exclude="Development">
         <link rel="stylesheet" href="~/css/main.min.css" asp-append-version="true">
     </environment>
+    @RenderSection("head", required: false)
 </head>
 <body>
     <nav class="navbar navbar-expand-lg fixed-top navbar-light bg-light">

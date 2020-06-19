@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<Hyprsoft.Webhooks.Core.Management.Subscription>
 @{
-    ViewBag.Title = "Webhook Subscriptions";
+    ViewBag.Title = "Subscriptions";
 }
 
 <div class="container page">
@@ -32,5 +32,9 @@
                 }
             </tbody>
         </table>
+        @if (Model.Count() <= 0)
+        { 
+            <div class="alert alert-warning">No subscriptions available.  Check the <a asp-controller="Home" asp-action="Docs" title="Documentation">docs</a> on how to create a subscription.</div>
+        }
     </div>
 </div>
