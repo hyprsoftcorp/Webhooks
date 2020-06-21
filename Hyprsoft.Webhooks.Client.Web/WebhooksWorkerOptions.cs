@@ -13,7 +13,7 @@ namespace Hyprsoft.Webhooks.Client.Web
     {
         public Uri ServerBaseUri { get; set; } = new Uri("http://localhost:5000/");
 
-        public Uri WebhookBaseUri { get; set; } = new Uri($"http://localhost:5001/");
+        public Uri WebhooksBaseUri { get; set; } = new Uri($"http://localhost:5001/");
 
         public WebhooksWorkerRole Role { get; set; } = WebhooksWorkerRole.PubSub;
 

@@ -7,7 +7,7 @@ Documentation: [https://webhooks.hyprsoft.com/](https://webhooks.hyprsoft.com/)
 ``` csharp
 // Subscribe
 var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.hyprsoft.com/") });
-var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/samplecreated");
+var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/v1/samplecreated");
 await client.SubscribeAsync<SampleCreatedWebhookEvent>(webhookUri, x => x.SampleType == 2);
 
 // Publish
@@ -28,5 +28,5 @@ sc delete HyprsoftWebhooksServer
 
 ## Sample Client Web Command Line
 ```
-Hyprsoft.Webhooks.Client.Web.exe ServerBaseUri="https://webhooks.hyprsoft.com/" WebhookBaseUri="http://office.hyprsoft.com/" Role=PubSub AutoUnsubscribe=true
+Hyprsoft.Webhooks.Client.Web.exe ServerBaseUri="https://webhooks.hyprsoft.com/" WebhooksBaseUri="http://office.hyprsoft.com/" Role=PubSub AutoUnsubscribe=true
 ```

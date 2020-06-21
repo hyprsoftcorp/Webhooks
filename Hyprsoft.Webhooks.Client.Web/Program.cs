@@ -24,7 +24,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                 {
                     var workerOptions = new WebhooksWorkerOptions();
                     config.Bind(workerOptions);
-                    webBuilder.UseUrls(workerOptions.WebhookBaseUri.ToString());
+                    webBuilder.UseUrls(workerOptions.WebhooksBaseUri.ToString());
                     webBuilder.UseStartup<Startup>();
                 });
         }

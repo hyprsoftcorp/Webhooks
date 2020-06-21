@@ -5,18 +5,29 @@ using Hyprsoft.Webhooks.Core.Events;
 using Newtonsoft.Json;
 using System;
 
-namespace Hyprsoft.Webhooks.Client.Web.Controllers
+namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [ApiVersion("1.0")]
+    [Route("[controller]/v{version:apiVersion}/[action]")]
     public class WebhooksController : WebhooksControllerBase
     {
+        #region Fields
+
         private readonly ILogger<WebhooksController> _logger;
+
+        #endregion
+
+        #region Constructors
 
         public WebhooksController(ILogger<WebhooksController> logger)
         {
-            _logger = logger;        
+            _logger = logger;
         }
+
+        #endregion
+
+        #region Methods
 
         [HttpPost]
         public IActionResult SampleCreated(SampleCreatedWebhookEvent @event)
@@ -60,5 +71,7 @@ namespace Hyprsoft.Webhooks.Client.Web.Controllers
             }
             return WebhookOk();
         }
+
+        #endregion
     }
 }
