@@ -4,6 +4,8 @@ using System;
 
 namespace Hyprsoft.Webhooks.AspNetCore
 {
+    [ApiController]
+    [Route("[controller]/v{version:apiVersion}/[action]")]
     public class WebhooksControllerBase : ControllerBase
     {
         public OkObjectResult WebhookOk() => new OkObjectResult(new WebhookResponse { IsSuccess = true });

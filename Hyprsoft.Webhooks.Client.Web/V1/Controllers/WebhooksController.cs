@@ -7,9 +7,7 @@ using System;
 
 namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
 {
-    [ApiController]
     [ApiVersion("1.0")]
-    [Route("[controller]/v{version:apiVersion}/[action]")]
     public class WebhooksController : WebhooksControllerBase
     {
         #region Fields
