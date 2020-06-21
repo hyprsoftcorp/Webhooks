@@ -55,7 +55,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
                 WebhookUri = webhookUri,
                 Filter = filterExpression.ToExpressionNode()
             };
-            var response = await _client.PutAsync("webhooks/subscribe", new WebhookContent(requestPayload)).ConfigureAwait(false);
+            var response = await _client.PutAsync($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/subscribe", new WebhookContent(requestPayload)).ConfigureAwait(false);
             await _client.ValidateResponseAsync(response, "Subscribe failed.");
         }
 
@@ -69,7 +69,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
-                RequestUri = new Uri($"{_client.BaseAddress}webhooks/unsubscribe"),
+                RequestUri = new Uri($"{Options.ServerBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/unsubscribe"),
                 Content = new WebhookContent(requestPayload)
             };
             var response = await _client.SendAsync(request).ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
 
         public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent
         {
-            var response = await _client.PostAsync($"webhooks/publish", new WebhookContent(@event)).ConfigureAwait(false);
+            var response = await _client.PostAsync($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/publish", new WebhookContent(@event)).ConfigureAwait(false);
             await _client.ValidateResponseAsync(response, "Publish failed.");
         }
 

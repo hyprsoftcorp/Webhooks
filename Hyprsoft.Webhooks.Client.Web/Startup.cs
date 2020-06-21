@@ -1,6 +1,7 @@
 using Hyprsoft.Webhooks.AspNetCore;
 using Hyprsoft.Webhooks.Core.Rest;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,6 +22,11 @@ namespace Hyprsoft.Webhooks.Client.Web
             services.AddWebhooksClient(options => options.ServerBaseUri = Configuration.GetValue<System.Uri>(nameof(WebhooksHttpClientOptions.ServerBaseUri)));
             services.AddWebhooksAuthorization();
             services.AddControllers();
+            services.AddApiVersioning(options =>
+            {
+                options.ReportApiVersions = true;
+                options.Conventions.Add(new VersionByNamespaceConvention());
+            });
             services.AddHostedService<WebhooksWorker>();
         }
 

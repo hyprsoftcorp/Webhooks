@@ -18,7 +18,7 @@
     <pre><code class="lang-csharp">
 // Subscribe
 var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });
-var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/samplecreated");
+var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/v1/samplecreated");
 await client.SubscribeAsync&lt;SampleCreatedWebhookEvent&gt;(webhookUri, x => x.SampleType == 2);
 
 // Publish

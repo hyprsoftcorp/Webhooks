@@ -7,7 +7,8 @@ using Newtonsoft.Json;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Hyprsoft.Webhooks.Client.Web.Controllers;
+using Hyprsoft.Webhooks.Client.Web.V1.Controllers;
+using Hyprsoft.Webhooks.Core;
 
 namespace Hyprsoft.Webhooks.Client.Web
 {
@@ -44,21 +45,22 @@ namespace Hyprsoft.Webhooks.Client.Web
         {
             try
             {
-                _logger.LogInformation($"Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhookBaseUri} | Role: {Options.Role} | Interval: {Options.PublishInterval} | EventCount: {Options.MaxEventsToPublishPerInterval} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
+                await Task.Delay(TimeSpan.FromSeconds(3));
+                _logger.LogInformation($"Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | Interval: {Options.PublishInterval} | EventCount: {Options.MaxEventsToPublishPerInterval} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
 
                 if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
                 {
-                    var webhookUri = new Uri($"{Options.WebhookBaseUri}webhooks/{nameof(WebhooksController.SampleCreated).ToLower()}");
-                    _logger.LogInformation($"Subscribing to event '{typeof(SampleCreatedWebhookEvent).FullName}' with webhook '{webhookUri}'.");
-                    await _webhooksClient.SubscribeAsync<SampleCreatedWebhookEvent>(webhookUri, (System.Linq.Expressions.Expression<Func<SampleCreatedWebhookEvent, bool>>)(x => x.SampleType > 2));
+                    var subscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleCreated).ToLower()}");
+                    _logger.LogInformation($"Subscribing to event '{typeof(SampleCreatedWebhookEvent).FullName}' with webhook '{subscribeUri}'.");
+                    await _webhooksClient.SubscribeAsync<SampleCreatedWebhookEvent>(subscribeUri, x => x.SampleType > 2);
 
-                    webhookUri = new Uri($"{Options.WebhookBaseUri}webhooks/{nameof(WebhooksController.SampleIsActiveChanged).ToLower()}");
-                    _logger.LogInformation($"Subscribing to event '{typeof(SampleIsActiveChangedWebhookEvent).FullName}' with webhook '{webhookUri}'.");
-                    await _webhooksClient.SubscribeAsync<SampleIsActiveChangedWebhookEvent>(webhookUri);
+                    subscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleIsActiveChanged).ToLower()}");
+                    _logger.LogInformation($"Subscribing to event '{typeof(SampleIsActiveChangedWebhookEvent).FullName}' with webhook '{subscribeUri}'.");
+                    await _webhooksClient.SubscribeAsync<SampleIsActiveChangedWebhookEvent>(subscribeUri);
 
-                    webhookUri = new Uri($"{Options.WebhookBaseUri}webhooks/{nameof(WebhooksController.SampleDeleted).ToLower()}");
-                    _logger.LogInformation($"Subscribing to event '{typeof(SampleDeletedWebhookEvent).FullName}' with webhook '{webhookUri}'.");
-                    await _webhooksClient.SubscribeAsync<SampleDeletedWebhookEvent>(webhookUri, (System.Linq.Expressions.Expression<Func<SampleDeletedWebhookEvent, bool>>)(x => x.SampleType > 2));
+                    subscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleDeleted).ToLower()}");
+                    _logger.LogInformation($"Subscribing to event '{typeof(SampleDeletedWebhookEvent).FullName}' with webhook '{subscribeUri}'.");
+                    await _webhooksClient.SubscribeAsync<SampleDeletedWebhookEvent>(subscribeUri, x => x.SampleType > 2);
                 }
 
                 while (!stoppingToken.IsCancellationRequested)
@@ -108,17 +110,17 @@ namespace Hyprsoft.Webhooks.Client.Web
             {
                 if (Options.AutoUnsubscribe && (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub))
                 {
-                    var webhookUri = new Uri($"{Options.WebhookBaseUri}webhooks/{nameof(WebhooksController.SampleCreated).ToLower()}");
-                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleCreatedWebhookEvent).FullName}' with webhook '{webhookUri}'.");
-                    await _webhooksClient.UnsubscribeAsync<SampleCreatedWebhookEvent>(webhookUri);
+                    var unsubscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleCreated).ToLower()}");
+                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleCreatedWebhookEvent).FullName}' with webhook '{unsubscribeUri}'.");
+                    await _webhooksClient.UnsubscribeAsync<SampleCreatedWebhookEvent>(unsubscribeUri);
 
-                    webhookUri = new Uri($"{Options.WebhookBaseUri}webhooks/{nameof(WebhooksController.SampleIsActiveChanged).ToLower()}");
-                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleIsActiveChangedWebhookEvent)}' with webhook '{webhookUri}'.");
-                    await _webhooksClient.UnsubscribeAsync<SampleIsActiveChangedWebhookEvent>(webhookUri);
+                    unsubscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleIsActiveChanged).ToLower()}");
+                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleIsActiveChangedWebhookEvent)}' with webhook '{unsubscribeUri}'.");
+                    await _webhooksClient.UnsubscribeAsync<SampleIsActiveChangedWebhookEvent>(unsubscribeUri);
 
-                    webhookUri = new Uri($"{Options.WebhookBaseUri}webhooks/{nameof(WebhooksController.SampleDeleted).ToLower()}");
-                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleDeletedWebhookEvent).FullName}' with webhook '{webhookUri}'.");
-                    await _webhooksClient.UnsubscribeAsync<SampleDeletedWebhookEvent>(webhookUri);
+                    unsubscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleDeleted).ToLower()}");
+                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleDeletedWebhookEvent).FullName}' with webhook '{unsubscribeUri}'.");
+                    await _webhooksClient.UnsubscribeAsync<SampleDeletedWebhookEvent>(unsubscribeUri);
                 }
             }
         }

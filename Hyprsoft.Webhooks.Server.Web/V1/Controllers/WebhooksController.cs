@@ -8,10 +8,11 @@ using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
-namespace Hyprsoft.Webhooks.Server.Web.Controllers
+namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [ApiVersion("1.0")]
+    [Route("[controller]/v{version:apiVersion}/[action]")]
     public class WebhooksController : WebhooksControllerBase
     {
         #region Fields

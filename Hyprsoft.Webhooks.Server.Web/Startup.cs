@@ -1,12 +1,13 @@
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Hyprsoft.Webhooks.AspNetCore;
 using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Core.Hangfire;
+using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using System;
 
 namespace Hyprsoft.Webhooks.Server.Web.Hangfire
@@ -26,6 +27,11 @@ namespace Hyprsoft.Webhooks.Server.Web.Hangfire
             //services.AddWebhooksServer();
             services.AddHangfireWebhooksServer(options => options.DatabaseConnectionString = Configuration.GetConnectionString("WebhooksDb"));
             services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
+            services.AddApiVersioning(options =>
+            {
+                options.ReportApiVersions = true;
+                options.Conventions.Add(new VersionByNamespaceConvention());
+            });
             services.AddApplicationInsightsTelemetry();
         }
 
