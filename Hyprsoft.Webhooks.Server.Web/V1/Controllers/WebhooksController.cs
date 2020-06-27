@@ -37,8 +37,8 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         {
             try
             {
-                _logger.LogDebug($"Creating subscription for '{request.TypeName}' with webhook '{request.WebhookUri}'.");
-                await _webhooksManager.SubscribeAsync(request.TypeName, request.WebhookUri, request.Filter);
+                _logger.LogDebug($"Creating subscription for '{request.EventName}' with webhook '{request.WebhookUri}'.");
+                await _webhooksManager.SubscribeAsync(request.EventName, request.WebhookUri, request.Filter);
                 return WebhookOk();
             }
             catch (Exception ex)
@@ -53,8 +53,8 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         {
             try
             {
-                _logger.LogDebug($"Removing subscription for '{request.TypeName}' with webhook '{request.WebhookUri}'.");
-                await _webhooksManager.UnsubscribeAsync(request.TypeName, request.WebhookUri);
+                _logger.LogDebug($"Removing subscription for '{request.EventName}' with webhook '{request.WebhookUri}'.");
+                await _webhooksManager.UnsubscribeAsync(request.EventName, request.WebhookUri);
                 return WebhookOk();
             }
             catch (Exception ex)

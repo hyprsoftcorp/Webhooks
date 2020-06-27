@@ -23,9 +23,15 @@ namespace Hyprsoft.Webhooks.Server.Web.Hangfire
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddWebhooksAuthorization();
-            //services.AddWebhooksServer();
-            services.AddHangfireWebhooksServer(options => options.DatabaseConnectionString = Configuration.GetConnectionString("WebhooksDb"));
+            var payloadSigningSecret = Configuration.GetValue(nameof(WebhooksAuthorizationOptions.PayloadSigningSecret), WebhooksGlobalConfiguration.DefaultPayloadSigningSecret);
+            services.AddWebhooksAuthorization(options => options.PayloadSigningSecret = payloadSigningSecret);
+            // services.AddWebhooksServer(options => options.PayloadSigningSecret = payloadSigningSecret);
+            services.AddHangfireWebhooksServer(options =>
+            {
+                options.DatabaseConnectionString = Configuration.GetConnectionString(WebhooksDbContext.WebhooksDbName);
+                options.UseInMemoryDatastore = Configuration.GetValue(nameof(HangfireWebhooksManagerOptions.UseInMemoryDatastore), true);
+                options.HttpClientOptions.PayloadSigningSecret = payloadSigningSecret;
+            });
             services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
             services.AddApiVersioning(options =>
             {

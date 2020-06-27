@@ -14,6 +14,7 @@ namespace Hyprsoft.Webhooks.Core.Management
                 throw new InvalidOperationException("The webhooks HTTP client options are missing.  Please check your configuration.");
 
             services.AddSingleton(options);
+            services.AddSingleton<IWebhooksStorageProvider, InMemoryWebhooksStorageProvider>();
             services.AddSingleton<IWebhooksManager, InMemoryWebhooksManager>();
 
             return services;

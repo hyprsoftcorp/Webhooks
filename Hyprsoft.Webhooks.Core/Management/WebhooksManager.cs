@@ -1,21 +1,23 @@
 ﻿using Hyprsoft.Webhooks.Core.Events;
 using Hyprsoft.Webhooks.Core.Rest;
+using Newtonsoft.Json;
 using Serialize.Linq.Nodes;
 using System;
-using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Core.Management
 {
     public interface IWebhooksManager : IDisposable
     {
-        Task SubscribeAsync(string typeName, Uri webhookUri, ExpressionNode filter = null);
+        IQueryable<Subscription> Subscriptions { get; }
 
-        Task UnsubscribeAsync(string typeName, Uri webhookUri);
+        Task SubscribeAsync(string eventName, Uri webhookUri, ExpressionNode filter = null);
+
+        Task UnsubscribeAsync(string eventName, Uri webhookUri);
 
         Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent;
-
-        Task<IEnumerable<Subscription>> GetSubscriptionsAsync();
     }
 
     public abstract class WebhooksManager : IDisposable
@@ -23,13 +25,15 @@ namespace Hyprsoft.Webhooks.Core.Management
         #region Fields
 
         private bool _isDisposed;
+        private readonly IWebhooksStorageProvider _storageProvider;
 
         #endregion
 
         #region Constructors
 
-        public WebhooksManager(WebhooksHttpClientOptions options)
+        public WebhooksManager(IWebhooksStorageProvider storageProvider, WebhooksHttpClientOptions options)
         {
+            _storageProvider = storageProvider;
             Options = options;
             HttpClient = new WebhooksHttpClient(Options.PayloadSigningSecret)
             {
@@ -44,7 +48,89 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         public WebhooksHttpClientOptions Options { get; }
 
+        public IQueryable<Subscription> Subscriptions => _storageProvider.Subscriptions.OrderBy(x => x.CreatedUtc);
+
         protected WebhooksHttpClient HttpClient { get; }
+
+        #endregion
+
+        #region Methods
+
+        public async Task SubscribeAsync(string eventName, Uri webhookUri, ExpressionNode filter = null)
+        {
+            var node = filter == null ? null : JsonConvert.SerializeObject(filter, WebhooksGlobalConfiguration.JsonSerializerSettings);
+            var subscription = _storageProvider.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
+            if (subscription == null)
+            {
+                subscription = new Subscription
+                {
+                    EventName = eventName,
+                    WebhookUri = webhookUri,
+                    FilterExpression = node,
+                    Filter = filter?.ToString()
+                };
+            }
+            else
+            {
+                subscription.IsActive = true;
+                subscription.CreatedUtc = DateTime.UtcNow;
+                subscription.FilterExpression = node;
+                subscription.Filter = filter?.ToString();
+            }
+            await _storageProvider.UpsertSubscriptionAsync(subscription);
+        }
+
+        public async Task UnsubscribeAsync(string eventName, Uri webhookUri)
+        {
+            var subscription = _storageProvider.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
+            if (subscription != null)
+                await _storageProvider.RemoveSubscriptionAsync(subscription);
+        }
+
+        public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent
+        {
+            foreach (var subscription in _storageProvider.Subscriptions.Where(s => s.EventName == @event.GetType().FullName && s.IsActive).ToList())
+            {
+                var shouldPublish = true;
+                if (!String.IsNullOrWhiteSpace(subscription.FilterExpression))
+                {
+                    var node = JsonConvert.DeserializeObject<ExpressionNode>(subscription.FilterExpression, WebhooksGlobalConfiguration.JsonSerializerSettings);
+                    if (!(node.ToExpression() is LambdaExpression expression))
+                        throw new WebhookException($"Invalid webhook predicate expression for event '{@event.GetType().FullName}'.");
+
+                    shouldPublish = (bool)expression.Compile().DynamicInvoke(@event);
+                }
+                if (shouldPublish)
+                {
+                    var audit = new Audit
+                    {
+                        EventName = subscription.EventName,
+                        Filter = subscription.Filter,
+                        Payload = JsonConvert.SerializeObject(@event),
+                        WebhookUri = subscription.WebhookUri
+                    };
+                    try
+                    {
+                        await OnPublishAsync<TEvent>(subscription, @event);
+                        await _storageProvider.AddAuditAsync(audit);
+                    }
+                    catch (Exception ex)
+                    {
+                        audit.Error = ex.ToString();
+                        await _storageProvider.AddAuditAsync(audit);
+                        throw;
+                    }
+                }
+            }   // should publish?
+        }
+
+        public async Task DispatchAsync<TEvent>(Uri webhookUri, TEvent @event) where TEvent : WebhookEvent
+        {
+            var response = await HttpClient.PostAsync(webhookUri, new WebhookContent(@event)).ConfigureAwait(false);
+            await HttpClient.ValidateResponseAsync(response, "Dispatch failed.");
+        }
+
+        protected virtual Task OnPublishAsync<TEvent>(Subscription subscription, TEvent @event) where TEvent : WebhookEvent => DispatchAsync(subscription.WebhookUri, @event);
 
         #endregion
 

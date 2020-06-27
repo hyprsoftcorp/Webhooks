@@ -51,7 +51,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
         {
             var requestPayload = new SubscriptionRequest
             {
-                TypeName = typeof(TEvent).FullName,
+                EventName = typeof(TEvent).FullName,
                 WebhookUri = webhookUri,
                 Filter = filterExpression.ToExpressionNode()
             };
@@ -63,7 +63,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
         {
             var requestPayload = new SubscriptionRequest
             {
-                TypeName = typeof(TEvent).FullName,
+                EventName = typeof(TEvent).FullName,
                 WebhookUri = webhookUri
             };
             var request = new HttpRequestMessage
