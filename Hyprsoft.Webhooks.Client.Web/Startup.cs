@@ -1,4 +1,5 @@
 using Hyprsoft.Webhooks.AspNetCore;
+using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Core.Rest;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
@@ -18,9 +19,14 @@ namespace Hyprsoft.Webhooks.Client.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var payloadSigningSecret = Configuration.GetValue(nameof(WebhooksAuthorizationOptions.PayloadSigningSecret), WebhooksGlobalConfiguration.DefaultPayloadSigningSecret);
             services.Configure<WebhooksWorkerOptions>(Configuration);
-            services.AddWebhooksClient(options => options.ServerBaseUri = Configuration.GetValue<System.Uri>(nameof(WebhooksHttpClientOptions.ServerBaseUri)));
-            services.AddWebhooksAuthorization();
+            services.AddWebhooksClient(options =>
+            {
+                options.ServerBaseUri = Configuration.GetValue(nameof(WebhooksHttpClientOptions.ServerBaseUri), WebhooksHttpClientOptions.DefaultServerBaseUri);
+                options.PayloadSigningSecret = payloadSigningSecret;
+            });
+            services.AddWebhooksAuthorization(options => options.PayloadSigningSecret = payloadSigningSecret);
             services.AddControllers();
             services.AddApiVersioning(options =>
             {

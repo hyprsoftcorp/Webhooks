@@ -1,8 +1,9 @@
 ﻿using Hangfire;
+using Hangfire.MemoryStorage;
+using Hyprsoft.Webhooks.Core.Management;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Hyprsoft.Webhooks.Core.Management;
 using System;
 
 namespace Hyprsoft.Webhooks.Core.Hangfire
@@ -17,18 +18,34 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
                 throw new InvalidOperationException("The Hangfire webhooks manager options are missing.  Please check your configuration.");
 
             services.AddSingleton(options.HttpClientOptions);
-            services.AddDbContext<WebhooksDbContext>(provider => provider.UseSqlServer(options.DatabaseConnectionString));
+            services.AddDbContext<WebhooksDbContext>(provider =>
+            {
+                if (options.UseInMemoryDatastore)
+                    provider.UseInMemoryDatabase(WebhooksDbContext.WebhooksDbName);
+                else
+                    provider.UseSqlServer(options.DatabaseConnectionString);
+            });
+            services.AddScoped<IWebhooksStorageProvider, HangfireWebhooksStorageProvider>();
             services.AddScoped<IHangfireWebhooksManager, HangfireWebhooksManager>();
             services.AddScoped<IWebhooksManager>(provider => provider.GetRequiredService<IHangfireWebhooksManager>());
 
-            // TODO: Fix this hack!  Since Hangfire expects the DB to be created and EF won't create it's entities, etc. if the DBs created we force EF to create the DB below before Hangfire takes over.
+            // TODO: Fix this hack!  
+            // 1. Hangfire expects the DB to be created.
+            // 2. EF won't create it's entities, etc. if the DB is created.
+            // So we force EF to create the DB below before Hangfire takes over.
             var builder = new DbContextOptionsBuilder<WebhooksDbContext>();
-            builder.UseSqlServer(options.DatabaseConnectionString);
+            if (options.UseInMemoryDatastore)
+                builder.UseInMemoryDatabase(WebhooksDbContext.WebhooksDbName);
+            else
+                builder.UseSqlServer(options.DatabaseConnectionString);
             using (var db = new WebhooksDbContext(builder.Options)) { }
 
             services.AddHangfire(configuration =>
             {
-                configuration.UseSqlServerStorage(options.DatabaseConnectionString);
+                if (options.UseInMemoryDatastore)
+                    configuration.UseMemoryStorage();
+                else
+                    configuration.UseSqlServerStorage(options.DatabaseConnectionString);
                 configuration.UseSerializerSettings(WebhooksGlobalConfiguration.JsonSerializerSettings);
             });
             services.AddHangfireServer();

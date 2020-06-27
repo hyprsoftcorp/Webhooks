@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Hyprsoft.Webhooks.Core.Management
 {
-    public class Subscription
+    public class Audit
     {
         [Key, Required]
-        public int SubscriptionId { get; set; }
+        public int AuditId { get; set; }
 
         [Required, MaxLength(100)]
         public string EventName { get; set; }
@@ -16,11 +16,11 @@ namespace Hyprsoft.Webhooks.Core.Management
         [Required, MaxLength(1024)]
         public Uri WebhookUri { get; set; }
 
-        public string FilterExpression { get; set; }
-        
         [MaxLength(255)]
         public string Filter { get; set; }
-        
-        public bool IsActive { get; set; } = true;
+
+        public string Payload { get; set; }
+
+        public string Error { get; set; }
     }
 }

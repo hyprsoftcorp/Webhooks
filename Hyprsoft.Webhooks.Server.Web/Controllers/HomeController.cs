@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Hyprsoft.Webhooks.Core;
+﻿using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Core.Management;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Hyprsoft.Webhooks.Server.Web.Controllers
 {
@@ -26,7 +25,7 @@ namespace Hyprsoft.Webhooks.Server.Web.Controllers
         public IActionResult Index() => View(WebhooksGlobalConfiguration.GetBuildAndVersionInfo(GetType().Assembly));
 
         [HttpGet("subscriptions")]
-        public async Task<IActionResult> Subscriptions() => View(await _webhooksManager.GetSubscriptionsAsync());
+        public IActionResult Subscriptions() => View(_webhooksManager.Subscriptions);
 
         [HttpGet("docs")]
         public IActionResult Docs() => View(WebhooksGlobalConfiguration.GetBuildAndVersionInfo(GetType().Assembly));
