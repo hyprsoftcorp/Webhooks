@@ -13,7 +13,6 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[HangFire].[
 DROP TABLE [HangFire].[Hash]
 GO
 
-
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[HangFire].[JobParameter]') AND type in (N'U'))
 DROP TABLE [HangFire].[JobParameter]
 GO
@@ -45,7 +44,6 @@ GO
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[HangFire].[Job]') AND type in (N'U'))
 DROP TABLE [HangFire].[Job]
 GO
-
 
 IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Audits]') AND type in (N'U'))
 DROP TABLE [dbo].[Audits]
