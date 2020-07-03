@@ -23,21 +23,29 @@ namespace Hyprsoft.Webhooks.Core.Rest
 
         public async Task ValidateResponseAsync(HttpResponseMessage message, string error)
         {
-            var responsePayload = JsonConvert.DeserializeObject<WebhookResponse>(await message.Content.ReadAsStringAsync().ConfigureAwait(false));
+            var content = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
+            WebhookResponse responsePayload = null;
+            try
+            {
+                // responsePayload can be null if content is an empty string.
+                responsePayload = JsonConvert.DeserializeObject<WebhookResponse>(content);
+            }
+            catch (Exception)
+            {
+            }
+            if (responsePayload == null)
+            {
+                responsePayload = new WebhookResponse
+                {
+                    IsSuccess = false,
+                    ErrorMessage = String.IsNullOrWhiteSpace(content) ? "Unknown." : content
+                };
+            }
 
-            if (message.IsSuccessStatusCode || (responsePayload != null && responsePayload.IsSuccess))
+            if (message.IsSuccessStatusCode || responsePayload.IsSuccess)
                 return;
 
-            var reason = "n/a";
-            if (!String.IsNullOrWhiteSpace(responsePayload?.ErrorMessage))
-                reason = responsePayload.ErrorMessage;
-            else
-            {
-                var content = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
-                if (!String.IsNullOrWhiteSpace(content))
-                    reason = content;
-            }
-            throw new WebhookException($"{error} | Status: {(int)message.StatusCode} {message.ReasonPhrase} | Reason: {reason}");
+            throw new WebhookException($"{error} | Status: {(int)message.StatusCode} {message.ReasonPhrase} | Reason: {responsePayload.ErrorMessage}");
         }
     }
 }

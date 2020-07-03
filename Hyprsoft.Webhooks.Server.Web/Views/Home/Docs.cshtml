@@ -88,12 +88,12 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
             <div class="card mb-4">
                 <div class="card-body">
                     <h5 class="card-title">Webhooks Database</h5>
-                    <h6 class="card-subtitle mb-2 text-muted">SQL Server </h6>
+                    <h6 class="card-subtitle mb-2 text-muted">SQL Server or InMemory</h6>
                     <p class="card-text">
                         Standalone database to manage subscriptions and dispatch events.
                         <h4><span class="badge badge-secondary">Database Tables</span></h4>
                         <ul>
-                            <li>Event subscriptions.</li>
+                            <li>Event subscriptions and audits.</li>
                             <li>Hangfire related.</li>
                         </ul>
                     </p>

@@ -8,7 +8,7 @@ namespace Hyprsoft.Webhooks.Core.Management
     {
         #region Fields
 
-        private readonly Dictionary<int, Audit> _audit = new Dictionary<int, Audit>();
+        private readonly Dictionary<int, Audit> _audits = new Dictionary<int, Audit>();
         private readonly Dictionary<int, Subscription> _subscriptions = new Dictionary<int, Subscription>();
 
         #endregion
@@ -24,8 +24,8 @@ namespace Hyprsoft.Webhooks.Core.Management
         public Task AddAuditAsync(Audit audit)
         {
             if (audit.AuditId <= 0)
-                audit.AuditId = _audit.Count > 0 ? _audit.Values.Max(x => x.AuditId) + 1 : 1;
-            _audit[audit.AuditId] = audit;
+                audit.AuditId = _audits.Count > 0 ? _audits.Values.Max(x => x.AuditId) + 1 : 1;
+            _audits[audit.AuditId] = audit;
 
             return Task.CompletedTask;
         }

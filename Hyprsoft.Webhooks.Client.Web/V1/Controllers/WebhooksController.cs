@@ -33,7 +33,6 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
             try
             {
                 _logger.LogInformation($"Received event '{nameof(SampleCreatedWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
-                //throw new InvalidOperationException("This webhook is misbehaving.");
             }
             catch (Exception ex)
             {
@@ -68,6 +67,20 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
                 return WebhookException(ex);
             }
             return WebhookOk();
+        }
+
+        [HttpPost]
+        public IActionResult SampleException(SampleExceptionWebhookEvent @event)
+        {
+            try
+            {
+                _logger.LogInformation($"Received event '{nameof(SampleExceptionWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                throw new InvalidOperationException("This webhook is misbehaving.");
+            }
+            catch (Exception ex)
+            {
+                return WebhookException(ex);
+            }
         }
 
         #endregion

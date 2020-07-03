@@ -20,6 +20,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.Webhooks.Server.We
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Hyprsoft.Webhooks.Client.Web", "Hyprsoft.Webhooks.Client.Web\Hyprsoft.Webhooks.Client.Web.csproj", "{28A3CF5E-9A43-4013-96EE-54D2E4CC90B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hyprsoft.Webhooks.Tests", "Hyprsoft.Webhooks.Tests\Hyprsoft.Webhooks.Tests.csproj", "{054A0B37-8509-41AE-A614-EBAC082A9CCE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{28A3CF5E-9A43-4013-96EE-54D2E4CC90B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{28A3CF5E-9A43-4013-96EE-54D2E4CC90B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{28A3CF5E-9A43-4013-96EE-54D2E4CC90B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{054A0B37-8509-41AE-A614-EBAC082A9CCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{054A0B37-8509-41AE-A614-EBAC082A9CCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{054A0B37-8509-41AE-A614-EBAC082A9CCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{054A0B37-8509-41AE-A614-EBAC082A9CCE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

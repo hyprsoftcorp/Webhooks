@@ -2,20 +2,25 @@ using Hyprsoft.Webhooks.AspNetCore;
 using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Core.Rest;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace Hyprsoft.Webhooks.Client.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            Environment = env;
         }
 
         public IConfiguration Configuration { get; }
+
+        public IWebHostEnvironment Environment { get; }
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -33,7 +38,8 @@ namespace Hyprsoft.Webhooks.Client.Web
                 options.ReportApiVersions = true;
                 options.Conventions.Add(new VersionByNamespaceConvention());
             });
-            services.AddHostedService<WebhooksWorker>();
+            if (!Environment.IsEnvironment("UnitTest"))
+                services.AddHostedService<WebhooksWorker>();
         }
 
         public void Configure(IApplicationBuilder app)

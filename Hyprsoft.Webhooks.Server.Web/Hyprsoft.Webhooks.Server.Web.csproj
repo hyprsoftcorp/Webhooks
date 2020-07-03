@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="BuildBundlerMinifier" Version="3.2.447" />
+    <PackageReference Include="BuildBundlerMinifier" Version="3.2.449" />
 
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.14.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.5" />
@@ -48,6 +48,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Hyprsoft.Webhooks.AspNetCore\Hyprsoft.Webhooks.AspNetCore.csproj" />
     <ProjectReference Include="..\Hyprsoft.Webhooks.Core.Hangfire\Hyprsoft.Webhooks.Core.Hangfire.csproj" />
+    <ProjectReference Include="..\Hyprsoft.Webhooks.Core\Hyprsoft.Webhooks.Core.csproj" />
   </ItemGroup>
   
 </Project>

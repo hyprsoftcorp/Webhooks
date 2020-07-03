@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
-using Hyprsoft.Webhooks.Server.Web.Hangfire;
 
 namespace Hyprsoft.Webhooks.Server.Web
 {

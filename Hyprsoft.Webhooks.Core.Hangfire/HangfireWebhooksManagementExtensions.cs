@@ -25,7 +25,7 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
                 else
                     provider.UseSqlServer(options.DatabaseConnectionString);
             });
-            services.AddScoped<IWebhooksStorageProvider, HangfireWebhooksStorageProvider>();
+            services.AddScoped<IWebhooksStorageProvider, SqlServerWebhooksStorageProvider>();
             services.AddScoped<IHangfireWebhooksManager, HangfireWebhooksManager>();
             services.AddScoped<IWebhooksManager>(provider => provider.GetRequiredService<IHangfireWebhooksManager>());
 
