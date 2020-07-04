@@ -1,14 +1,15 @@
+using Hyprsoft.Webhooks.Client.Web.V1.Controllers;
+using Hyprsoft.Webhooks.Core;
+using Hyprsoft.Webhooks.Core.Events;
+using Hyprsoft.Webhooks.Core.Rest;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Hyprsoft.Webhooks.Core.Events;
-using Hyprsoft.Webhooks.Core.Rest;
 using Newtonsoft.Json;
 using System;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Hyprsoft.Webhooks.Client.Web.V1.Controllers;
-using Hyprsoft.Webhooks.Core;
 
 namespace Hyprsoft.Webhooks.Client.Web
 {
@@ -43,6 +44,21 @@ namespace Hyprsoft.Webhooks.Client.Web
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            async Task MakeSubscriptionRequestAsync<TEvent>(string path, bool subscribe, Expression<Func<TEvent, bool>> filter = null) where TEvent : WebhookEvent
+            {
+                var uri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{path.ToLower()}");
+                if (subscribe)
+                {
+                    _logger.LogInformation($"Subscribing to event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
+                    await _webhooksClient.SubscribeAsync<TEvent>(uri, filter);
+                }
+                else
+                {
+                    _logger.LogInformation($"Unsubscribing from event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
+                    await _webhooksClient.UnsubscribeAsync<TEvent>(uri);
+                }
+            }
+
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(3));
@@ -50,17 +66,10 @@ namespace Hyprsoft.Webhooks.Client.Web
 
                 if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
                 {
-                    var subscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleCreated).ToLower()}");
-                    _logger.LogInformation($"Subscribing to event '{typeof(SampleCreatedWebhookEvent).FullName}' with webhook '{subscribeUri}'.");
-                    await _webhooksClient.SubscribeAsync<SampleCreatedWebhookEvent>(subscribeUri, x => x.SampleType > 2);
-
-                    subscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleIsActiveChanged).ToLower()}");
-                    _logger.LogInformation($"Subscribing to event '{typeof(SampleIsActiveChangedWebhookEvent).FullName}' with webhook '{subscribeUri}'.");
-                    await _webhooksClient.SubscribeAsync<SampleIsActiveChangedWebhookEvent>(subscribeUri);
-
-                    subscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleDeleted).ToLower()}");
-                    _logger.LogInformation($"Subscribing to event '{typeof(SampleDeletedWebhookEvent).FullName}' with webhook '{subscribeUri}'.");
-                    await _webhooksClient.SubscribeAsync<SampleDeletedWebhookEvent>(subscribeUri, x => x.SampleType > 2);
+                    await MakeSubscriptionRequestAsync<SampleCreatedWebhookEvent>(nameof(WebhooksController.SampleCreated), true, x => x.SampleType > 2);
+                    await MakeSubscriptionRequestAsync<SampleIsActiveChangedWebhookEvent>(nameof(WebhooksController.SampleIsActiveChanged), true);
+                    await MakeSubscriptionRequestAsync<SampleDeletedWebhookEvent>(nameof(WebhooksController.SampleDeleted), true, x => x.SampleType > 2);
+                    await MakeSubscriptionRequestAsync<SampleExceptionWebhookEvent>(nameof(WebhooksController.SampleException), true, x => x.SampleType == 1);
                 }
 
                 while (!stoppingToken.IsCancellationRequested)
@@ -69,7 +78,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                     {
                         for (int i = 0; i < _random.Next(1, Options.MaxEventsToPublishPerInterval + 1); i++)
                         {
-                            WebhookEvent @event = _random.Next(1, 4) switch
+                            WebhookEvent @event = _random.Next(1, 5) switch
                             {
                                 1 => new SampleCreatedWebhookEvent
                                 {
@@ -91,6 +100,12 @@ namespace Hyprsoft.Webhooks.Client.Web
                                     SampleType = _random.Next(1, 6),
                                     UserId = _random.Next()
                                 },
+                                4 => new SampleExceptionWebhookEvent
+                                {
+                                    SampleId = _random.Next(),
+                                    SampleType = _random.Next(1, 26) == 1 ? 1 : 2,  // Since we only suscribe to exception events with sample type = 1; 1 in 25 % chance.
+                                    UserId = _random.Next()
+                                },
                                 _ => throw new NotImplementedException(),
                             };
                             _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
@@ -110,17 +125,10 @@ namespace Hyprsoft.Webhooks.Client.Web
             {
                 if (Options.AutoUnsubscribe && (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub))
                 {
-                    var unsubscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleCreated).ToLower()}");
-                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleCreatedWebhookEvent).FullName}' with webhook '{unsubscribeUri}'.");
-                    await _webhooksClient.UnsubscribeAsync<SampleCreatedWebhookEvent>(unsubscribeUri);
-
-                    unsubscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleIsActiveChanged).ToLower()}");
-                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleIsActiveChangedWebhookEvent)}' with webhook '{unsubscribeUri}'.");
-                    await _webhooksClient.UnsubscribeAsync<SampleIsActiveChangedWebhookEvent>(unsubscribeUri);
-
-                    unsubscribeUri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{nameof(WebhooksController.SampleDeleted).ToLower()}");
-                    _logger.LogInformation($"Unsubscribing from event '{typeof(SampleDeletedWebhookEvent).FullName}' with webhook '{unsubscribeUri}'.");
-                    await _webhooksClient.UnsubscribeAsync<SampleDeletedWebhookEvent>(unsubscribeUri);
+                    await MakeSubscriptionRequestAsync<SampleCreatedWebhookEvent>(nameof(WebhooksController.SampleCreated), false);
+                    await MakeSubscriptionRequestAsync<SampleIsActiveChangedWebhookEvent>(nameof(WebhooksController.SampleIsActiveChanged), false);
+                    await MakeSubscriptionRequestAsync<SampleDeletedWebhookEvent>(nameof(WebhooksController.SampleDeleted), false);
+                    await MakeSubscriptionRequestAsync<SampleExceptionWebhookEvent>(nameof(WebhooksController.SampleException), false);
                 }
             }
         }
