@@ -15,6 +15,8 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         #region Properties
 
+        public IQueryable<Audit> Audits => _audits.Values.AsQueryable();
+        
         public IQueryable<Subscription> Subscriptions => _subscriptions.Values.AsQueryable();
 
         #endregion

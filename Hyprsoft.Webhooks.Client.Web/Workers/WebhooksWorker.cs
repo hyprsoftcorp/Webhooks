@@ -62,7 +62,7 @@ namespace Hyprsoft.Webhooks.Client.Web
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(3));
-                _logger.LogInformation($"Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | Interval: {Options.PublishInterval} | EventCount: {Options.MaxEventsToPublishPerInterval} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
+                _logger.LogInformation($"Webhooks Worker Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | Interval: {Options.PublishInterval} | EventCount: {Options.MaxEventsToPublishPerInterval} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
 
                 if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
                 {
@@ -70,6 +70,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                     await MakeSubscriptionRequestAsync<SampleIsActiveChangedWebhookEvent>(nameof(WebhooksController.SampleIsActiveChanged), true);
                     await MakeSubscriptionRequestAsync<SampleDeletedWebhookEvent>(nameof(WebhooksController.SampleDeleted), true, x => x.SampleType > 2);
                     await MakeSubscriptionRequestAsync<SampleExceptionWebhookEvent>(nameof(WebhooksController.SampleException), true, x => x.SampleType == 1);
+                    await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), true);
                 }
 
                 while (!stoppingToken.IsCancellationRequested)
@@ -103,7 +104,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                                 4 => new SampleExceptionWebhookEvent
                                 {
                                     SampleId = _random.Next(),
-                                    SampleType = _random.Next(1, 26) == 1 ? 1 : 2,  // Since we only suscribe to exception events with sample type = 1; 1 in 25 % chance.
+                                    SampleType = _random.Next(1, 101) == 1 ? 1 : 2,  // Since we only suscribe to exception events with sample type = 1; 1 in 100% chance.
                                     UserId = _random.Next()
                                 },
                                 _ => throw new NotImplementedException(),
@@ -129,6 +130,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                     await MakeSubscriptionRequestAsync<SampleIsActiveChangedWebhookEvent>(nameof(WebhooksController.SampleIsActiveChanged), false);
                     await MakeSubscriptionRequestAsync<SampleDeletedWebhookEvent>(nameof(WebhooksController.SampleDeleted), false);
                     await MakeSubscriptionRequestAsync<SampleExceptionWebhookEvent>(nameof(WebhooksController.SampleException), false);
+                    await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), false);
                 }
             }
         }

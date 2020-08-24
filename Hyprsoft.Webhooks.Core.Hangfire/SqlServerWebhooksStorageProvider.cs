@@ -21,9 +21,15 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
 
         #endregion
 
-        #region Methods
+        #region Properties
+
+        public IQueryable<Audit> Audits => _database.Audits;
 
         public IQueryable<Subscription> Subscriptions => _database.Subscriptions;
+
+        #endregion
+
+        #region Methods
 
         public async Task AddAuditAsync(Audit audit)
         {

@@ -47,6 +47,8 @@ namespace Hyprsoft.Webhooks.Server.Web
                 options.Conventions.Add(new VersionByNamespaceConvention());
             });
             services.AddApplicationInsightsTelemetry();
+            services.Configure<WebhooksHealthWorkerOptions>(Configuration);
+            services.AddHostedService<WebhooksHealthWorker>();
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)

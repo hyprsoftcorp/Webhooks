@@ -3,6 +3,7 @@ using Hyprsoft.Webhooks.Core.Rest;
 using Newtonsoft.Json;
 using Serialize.Linq.Nodes;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
@@ -11,13 +12,15 @@ namespace Hyprsoft.Webhooks.Core.Management
 {
     public interface IWebhooksManager : IDisposable
     {
-        IQueryable<Subscription> Subscriptions { get; }
+        IEnumerable<Subscription> Subscriptions { get; }
 
         Task SubscribeAsync(string eventName, Uri webhookUri, ExpressionNode filter = null);
 
         Task UnsubscribeAsync(string eventName, Uri webhookUri);
 
         Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent;
+
+        Task<WebhooksHealthSummary> GetHealthSummaryAsync(TimeSpan period);
     }
 
     public abstract class WebhooksManager : IDisposable
@@ -48,7 +51,7 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         public WebhooksHttpClientOptions Options { get; }
 
-        public IQueryable<Subscription> Subscriptions => _storageProvider.Subscriptions.OrderBy(x => x.CreatedUtc);
+        public IEnumerable<Subscription> Subscriptions => _storageProvider.Subscriptions.OrderBy(x => x.CreatedUtc);
 
         protected WebhooksHttpClient HttpClient { get; }
 
@@ -128,6 +131,37 @@ namespace Hyprsoft.Webhooks.Core.Management
         {
             var response = await HttpClient.PostAsync(webhookUri, new WebhookContent(@event)).ConfigureAwait(false);
             await HttpClient.ValidateResponseAsync(response, "Dispatch failed.");
+        }
+
+        public Task<WebhooksHealthSummary> GetHealthSummaryAsync(TimeSpan period)
+        {
+            var summary = new WebhooksHealthSummary
+            {
+                StartDateUtc = DateTime.UtcNow - period,
+                EndDateUtc = DateTime.UtcNow,
+            };
+            summary.SuccessfulWebhooks = _storageProvider.Audits
+                            .Where(x => x.CreatedUtc >= summary.StartDateUtc && String.IsNullOrWhiteSpace(x.Error))
+                            .GroupBy(x => x.EventName)
+                            .Select(x => new WebhooksHealthSummary.SuccessfulWebhook
+                            {
+                                EventName = x.Key,
+                                Count = x.Count()
+                            }).OrderBy(x => x.EventName)
+                            .ToList();
+            summary.FailedWebhooks = _storageProvider.Audits
+                            .Where(x => x.CreatedUtc >= summary.StartDateUtc && !String.IsNullOrWhiteSpace(x.Error))
+                            .GroupBy(x => new { x.EventName, x.WebhookUri, x.Error })
+                            .Select(x => new WebhooksHealthSummary.FailedWebook
+                            {
+                                EventName = x.Key.EventName,
+                                WebhookUri = x.Key.WebhookUri,
+                                Error = x.Key.Error,
+                                Count = x.Count()
+                            }).OrderBy( x=> x.EventName)
+                            .ToList();
+
+            return Task.FromResult(summary);
         }
 
         protected virtual Task OnPublishAsync<TEvent>(Subscription subscription, TEvent @event) where TEvent : WebhookEvent => DispatchAsync(subscription.WebhookUri, @event);
