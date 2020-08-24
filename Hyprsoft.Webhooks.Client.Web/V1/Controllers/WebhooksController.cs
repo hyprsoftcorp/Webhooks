@@ -33,12 +33,12 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
             try
             {
                 _logger.LogInformation($"Received event '{nameof(SampleCreatedWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                return WebhookOk();
             }
             catch (Exception ex)
             {
                 return WebhookException(ex);
             }
-            return WebhookOk();
         }
 
         [HttpPost]
@@ -47,12 +47,12 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
             try
             {
                 _logger.LogInformation($"Received event '{nameof(SampleIsActiveChangedWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                return WebhookOk();
             }
             catch (Exception ex)
             {
                 return WebhookException(ex);
             }
-            return WebhookOk();
         }
 
         [HttpPost]
@@ -61,12 +61,12 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
             try
             {
                 _logger.LogInformation($"Received event '{nameof(SampleDeletedWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                return WebhookOk();
             }
             catch (Exception ex)
             {
                 return WebhookException(ex);
             }
-            return WebhookOk();
         }
 
         [HttpPost]
@@ -76,6 +76,20 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
             {
                 _logger.LogInformation($"Received event '{nameof(SampleExceptionWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
                 throw new InvalidOperationException("This webhook is misbehaving.");
+            }
+            catch (Exception ex)
+            {
+                return WebhookException(ex);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult HealthSummary(WebhooksHealthEvent @event)
+        {
+            try
+            {
+                _logger.LogInformation($"Received event '{nameof(WebhooksHealthEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                return WebhookOk();
             }
             catch (Exception ex)
             {

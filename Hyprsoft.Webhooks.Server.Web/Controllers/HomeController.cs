@@ -1,6 +1,8 @@
 ﻿using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Core.Management;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Server.Web.Controllers
 {
@@ -9,20 +11,25 @@ namespace Hyprsoft.Webhooks.Server.Web.Controllers
         #region Fields
 
         private readonly IWebhooksManager _webhooksManager;
+        private readonly WebhooksHealthWorkerOptions _workerOptions;
 
         #endregion
 
         #region Constructors
 
-        public HomeController(IWebhooksManager webhooksManger)
+        public HomeController(IWebhooksManager webhooksManger, IOptions<WebhooksHealthWorkerOptions> workerOptions)
         {
             _webhooksManager = webhooksManger;
+            _workerOptions = workerOptions.Value;
         }
 
         #endregion
 
         [HttpGet]
         public IActionResult Index() => View(WebhooksGlobalConfiguration.GetBuildAndVersionInfo(GetType().Assembly));
+
+        [HttpGet("health")]
+        public async Task<IActionResult> Health() => View(await _webhooksManager.GetHealthSummaryAsync(_workerOptions.PublishHealthInterval));
 
         [HttpGet("subscriptions")]
         public IActionResult Subscriptions() => View(_webhooksManager.Subscriptions);

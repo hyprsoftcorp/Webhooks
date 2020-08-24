@@ -9,7 +9,7 @@
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Web Server</Product>
     <Copyright>Copyright © 2020 by Hyprsoft Corporation.  All rights reserved.</Copyright>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
     <AssemblyName>Hyprsoft.Webhooks.Server.Web</AssemblyName>
   </PropertyGroup>
 

@@ -5,6 +5,8 @@ namespace Hyprsoft.Webhooks.Core.Management
 {
     public interface IWebhooksStorageProvider
     {
+        IQueryable<Audit> Audits { get; }
+        
         IQueryable<Subscription> Subscriptions { get; }
 
         Task AddAuditAsync(Audit audit);

@@ -1,0 +1,62 @@
+﻿@model Hyprsoft.Webhooks.Core.Management.WebhooksHealthSummary
+@{
+    ViewBag.Title = "Health";
+    var totalMinutes = (int)(Model.EndDateUtc - Model.StartDateUtc).TotalMinutes;
+}
+
+<div class="container page">
+    <h2>@ViewBag.Title</h2>
+    <p class="lead">Below is a summary of webhook activity in the last <span class="badge badge-info">@totalMinutes</span> minutes.</p>
+    <h4>Successful Webhooks</h4>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.SuccessfulWebhooks)
+                {
+                    <tr>
+                        <td>@item.EventName</td>
+                        <td>@item.Count</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.SuccessfulWebhooks.Count <= 0)
+        {
+            <div class="alert alert-warning">No successful webhooks were detected in the past <span class="badge badge-warning">@totalMinutes</span> minutes.</div>
+        }
+    </div>
+    <h4>Failed Webhooks</h4>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Webhook</th>
+                    <th>Count</th>
+                    <th>Error</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.FailedWebhooks)
+                {
+                    <tr>
+                        <td>@item.EventName</td>
+                        <td>@item.WebhookUri</td>
+                        <td>@item.Count</td>
+                        <td>@item.Error</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        @if (Model.FailedWebhooks.Count <= 0)
+        {
+            <div class="alert alert-warning">No failed webhooks were detected in the past <span class="badge badge-warning">@totalMinutes</span> minutes.</div>
+        }
+    </div>
+</div>

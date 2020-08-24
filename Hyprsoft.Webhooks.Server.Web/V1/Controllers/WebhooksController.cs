@@ -69,6 +69,7 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         {
             try
             {
+                // TODO: Depending on log level setting, this COULD log sensitive information.
                 _logger.LogDebug($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
                 await _webhooksManager.PublishAsync(@event);
                 return WebhookOk();
