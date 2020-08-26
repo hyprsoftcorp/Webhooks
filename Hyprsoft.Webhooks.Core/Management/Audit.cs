@@ -16,9 +16,6 @@ namespace Hyprsoft.Webhooks.Core.Management
         [Required, MaxLength(1024)]
         public Uri WebhookUri { get; set; }
 
-        [MaxLength(255)]
-        public string Filter { get; set; }
-
         public string Payload { get; set; }
 
         public string Error { get; set; }

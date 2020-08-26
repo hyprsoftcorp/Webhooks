@@ -54,7 +54,6 @@ CREATE TABLE [dbo].[Audits] (
     [EventName]  NVARCHAR (100)  NOT NULL,
     [CreatedUtc] DATETIME2 (7)   NOT NULL,
     [WebhookUri] NVARCHAR (1024) NOT NULL,
-    [Filter]     NVARCHAR (255)  NULL,
     [Payload]    NVARCHAR (MAX)  NULL,
     [Error]      NVARCHAR (MAX)  NULL
 );
