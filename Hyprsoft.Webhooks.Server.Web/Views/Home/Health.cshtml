@@ -2,6 +2,7 @@
 @{
     ViewBag.Title = "Health";
     var totalMinutes = (int)(Model.EndDateUtc - Model.StartDateUtc).TotalMinutes;
+    var webhookId = 0;
 }
 
 <div class="container page">
@@ -21,7 +22,7 @@
                 {
                     <tr>
                         <td>@item.EventName</td>
-                        <td>@item.Count</td>
+                        <td>@item.Count.ToString("g")</td>
                     </tr>
                 }
             </tbody>
@@ -39,17 +40,28 @@
                     <th>Event</th>
                     <th>Webhook</th>
                     <th>Count</th>
-                    <th>Error</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model.FailedWebhooks)
                 {
+                    webhookId++;
                     <tr>
-                        <td>@item.EventName</td>
+                        <td>
+                            <a class="collapsed" data-toggle="collapse" href="#webhook-@webhookId" aria-expanded="false" aria-controls="webhook-@webhookId">
+                                <i class="fa text-info" aria-hidden="true"></i>&nbsp;@item.EventName
+                            </a>
+                        </td>
                         <td>@item.WebhookUri</td>
-                        <td>@item.Count</td>
-                        <td>@item.Error</td>
+                        <td>@item.Count.ToString("g")</td>
+                    </tr>
+                    <tr>
+                        <td id="webhook-@webhookId" class="collapse" colspan="3">
+                            <div class="alert alert-danger">
+                                <h4>Stack Trace</h4>
+                                <p>@item.Error</p>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>

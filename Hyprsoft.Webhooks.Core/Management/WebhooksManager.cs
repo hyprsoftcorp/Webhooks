@@ -104,33 +104,30 @@ namespace Hyprsoft.Webhooks.Core.Management
                     shouldPublish = (bool)expression.Compile().DynamicInvoke(@event);
                 }
                 if (shouldPublish)
-                {
-                    var audit = new Audit
-                    {
-                        EventName = subscription.EventName,
-                        Filter = subscription.Filter,
-                        Payload = JsonConvert.SerializeObject(@event),
-                        WebhookUri = subscription.WebhookUri
-                    };
-                    try
-                    {
-                        await OnPublishAsync<TEvent>(subscription, @event);
-                        await _storageProvider.AddAuditAsync(audit);
-                    }
-                    catch (Exception ex)
-                    {
-                        audit.Error = ex.ToString();
-                        await _storageProvider.AddAuditAsync(audit);
-                        throw;
-                    }
-                }
-            }   // should publish?
+                    await OnPublishAsync<TEvent>(subscription, @event);
+            }   // for each subscription
         }
 
         public async Task DispatchAsync<TEvent>(Uri webhookUri, TEvent @event) where TEvent : WebhookEvent
         {
-            var response = await HttpClient.PostAsync(webhookUri, new WebhookContent(@event)).ConfigureAwait(false);
-            await HttpClient.ValidateResponseAsync(response, "Dispatch failed.");
+            var audit = new Audit
+            {
+                EventName = @event.GetType().FullName,
+                Payload = JsonConvert.SerializeObject(@event),
+                WebhookUri = webhookUri
+            };
+            try
+            {
+                var response = await HttpClient.PostAsync(webhookUri, new WebhookContent(@event)).ConfigureAwait(false);
+                await HttpClient.ValidateResponseAsync(response, "Dispatch failed.");
+                await _storageProvider.AddAuditAsync(audit);
+            }
+            catch (Exception ex)
+            {
+                audit.Error = ex.ToString();
+                await _storageProvider.AddAuditAsync(audit);
+                throw;
+            }
         }
 
         public Task<WebhooksHealthSummary> GetHealthSummaryAsync(TimeSpan period)
@@ -158,7 +155,7 @@ namespace Hyprsoft.Webhooks.Core.Management
                                 WebhookUri = x.Key.WebhookUri,
                                 Error = x.Key.Error,
                                 Count = x.Count()
-                            }).OrderBy( x=> x.EventName)
+                            }).OrderBy(x => x.EventName)
                             .ToList();
 
             return Task.FromResult(summary);
