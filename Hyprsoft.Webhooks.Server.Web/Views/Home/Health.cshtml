@@ -22,7 +22,7 @@
                 {
                     <tr>
                         <td>@item.EventName</td>
-                        <td>@item.Count.ToString("g")</td>
+                        <td><h5><span class="badge badge-success">@item.Count.ToString("g")</span></h5></td>
                     </tr>
                 }
             </tbody>
@@ -53,7 +53,7 @@
                             </a>
                         </td>
                         <td>@item.WebhookUri</td>
-                        <td>@item.Count.ToString("g")</td>
+                        <td><h5><span class="badge badge-danger">@item.Count.ToString("g")</span></h5></td>
                     </tr>
                     <tr>
                         <td id="webhook-@webhookId" class="collapse" colspan="3">
