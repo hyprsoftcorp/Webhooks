@@ -21,6 +21,11 @@ namespace Hyprsoft.Webhooks.Server.Web
 
         #region Constructors
 
+        static WebhooksHealthWorker()
+        {
+            ServerStartDateUtc = DateTime.UtcNow;
+        }
+
         public WebhooksHealthWorker(ILogger<WebhooksHealthWorker> logger, IOptions<WebhooksHealthWorkerOptions> options, IServiceScopeFactory serviceScopeFactory)
         {
             _logger = logger;
@@ -34,6 +39,8 @@ namespace Hyprsoft.Webhooks.Server.Web
 
         public WebhooksHealthWorkerOptions Options { get; }
 
+        public static DateTime ServerStartDateUtc { get; }
+
         #endregion
 
         #region Methods
@@ -43,15 +50,16 @@ namespace Hyprsoft.Webhooks.Server.Web
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(3));
-                _logger.LogInformation($"Webhooks Health Worker Settings: Interval: {Options.PublishHealthInterval}");
+                _logger.LogInformation($"Webhooks Health Worker Settings: Interval: {Options.PublishHealthEventInterval}");
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     using var scope = _serviceScopeFactory.CreateScope();
                     var manager = scope.ServiceProvider.GetRequiredService<IWebhooksManager>();
-                    var summary = await manager.GetHealthSummaryAsync(Options.PublishHealthInterval);
+                    var summary = await manager.GetHealthSummaryAsync(Options.PublishHealthEventInterval);
+                    summary.ServerStartDateUtc = ServerStartDateUtc;
                     await manager.PublishAsync(new WebhooksHealthEvent { Summary = summary });
-                    await Task.Delay(Options.PublishHealthInterval, stoppingToken);
+                    await Task.Delay(Options.PublishHealthEventInterval, stoppingToken);
                 }
             }
             catch (TaskCanceledException) { }

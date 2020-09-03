@@ -132,22 +132,21 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         public Task<WebhooksHealthSummary> GetHealthSummaryAsync(TimeSpan period)
         {
+            var startDateUtc = DateTime.UtcNow - period;
             var summary = new WebhooksHealthSummary
             {
-                StartDateUtc = DateTime.UtcNow - period,
-                EndDateUtc = DateTime.UtcNow,
-            };
-            summary.SuccessfulWebhooks = _storageProvider.Audits
-                            .Where(x => x.CreatedUtc >= summary.StartDateUtc && String.IsNullOrWhiteSpace(x.Error))
+                PublishInterval = period,
+                SuccessfulWebhooks = _storageProvider.Audits
+                            .Where(x => x.CreatedUtc >= startDateUtc && String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => x.EventName)
                             .Select(x => new WebhooksHealthSummary.SuccessfulWebhook
                             {
                                 EventName = x.Key,
                                 Count = x.Count()
                             }).OrderBy(x => x.EventName)
-                            .ToList();
-            summary.FailedWebhooks = _storageProvider.Audits
-                            .Where(x => x.CreatedUtc >= summary.StartDateUtc && !String.IsNullOrWhiteSpace(x.Error))
+                            .ToList(),
+                FailedWebhooks = _storageProvider.Audits
+                            .Where(x => x.CreatedUtc >= startDateUtc && !String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => new { x.EventName, x.WebhookUri, x.Error })
                             .Select(x => new WebhooksHealthSummary.FailedWebook
                             {
@@ -156,7 +155,8 @@ namespace Hyprsoft.Webhooks.Core.Management
                                 Error = x.Key.Error,
                                 Count = x.Count()
                             }).OrderBy(x => x.EventName)
-                            .ToList();
+                            .ToList()
+            };
 
             return Task.FromResult(summary);
         }

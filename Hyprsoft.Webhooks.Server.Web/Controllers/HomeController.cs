@@ -29,7 +29,14 @@ namespace Hyprsoft.Webhooks.Server.Web.Controllers
         public IActionResult Index() => View(WebhooksGlobalConfiguration.GetBuildAndVersionInfo(GetType().Assembly));
 
         [HttpGet("health")]
-        public async Task<IActionResult> Health() => View(await _webhooksManager.GetHealthSummaryAsync(_workerOptions.PublishHealthInterval));
+        public async Task<IActionResult> Health()
+        {
+            var summary = await _webhooksManager.GetHealthSummaryAsync(_workerOptions.PublishHealthEventInterval);
+            summary.PublishInterval = _workerOptions.PublishHealthEventInterval;
+            summary.ServerStartDateUtc = WebhooksHealthWorker.ServerStartDateUtc;
+
+            return View(summary);
+        }
 
         [HttpGet("subscriptions")]
         public IActionResult Subscriptions() => View(_webhooksManager.Subscriptions);

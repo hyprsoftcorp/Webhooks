@@ -95,6 +95,12 @@ namespace Hyprsoft.Webhooks.Tests
             await ThrowsWebhookExceptionContainingErrorText(() => client.PublishAsync(payload), "Status: 404 Not Found");
             await client.UnsubscribeAsync<SampleExceptionWebhookEvent>(uri);
 
+            // Publish system event
+            uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.HealthSummary)}");
+            await client.SubscribeAsync<WebhooksHealthEvent>(uri);
+            await ThrowsWebhookExceptionContainingErrorText(() => client.PublishAsync(new WebhooksHealthEvent()), "system event and cannot be published");
+            await client.UnsubscribeAsync<WebhooksHealthEvent>(uri);
+
             // Test a non WebhookResponse failure.
             uri = new Uri("https://www.google.com/webhooks/v1/test");
             await client.SubscribeAsync<SampleExceptionWebhookEvent>(uri);

@@ -45,7 +45,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
             if (message.IsSuccessStatusCode || responsePayload.IsSuccess)
                 return;
 
-            throw new WebhookException($"{error} | Status: {(int)message.StatusCode} {message.ReasonPhrase} | Reason: {responsePayload.ErrorMessage}");
+            throw new WebhookException($"{error} | Status: {(int)message.StatusCode} {message.ReasonPhrase} | Reason: {responsePayload.ErrorMessage ?? content}");
         }
     }
 }

@@ -1,13 +1,13 @@
 ﻿@model Hyprsoft.Webhooks.Core.Management.WebhooksHealthSummary
 @{
     ViewBag.Title = "Health";
-    var totalMinutes = (int)(Model.EndDateUtc - Model.StartDateUtc).TotalMinutes;
+    var totalMinutes = (int)Model.PublishInterval.TotalMinutes;
     var webhookId = 0;
 }
 
 <div class="container page">
     <h2>@ViewBag.Title</h2>
-    <p class="lead">Below is a summary of webhook activity in the last <span class="badge badge-info">@totalMinutes</span> minutes.</p>
+    <p class="lead">Below is a summary of webhook activity in the last <span class="badge badge-info">@totalMinutes</span> minutes.  Server has been up for <span class="badge badge-info">@DateTime.UtcNow.Subtract(Model.ServerStartDateUtc).ToString(@"d\.hh\:mm\:ss")</span>.</p>
     <h4>Successful Webhooks</h4>
     <div class="table-responsive">
         <table class="table">
