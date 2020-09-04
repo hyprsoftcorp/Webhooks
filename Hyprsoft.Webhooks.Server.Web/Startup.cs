@@ -15,15 +15,25 @@ namespace Hyprsoft.Webhooks.Server.Web
 {
     public class Startup
     {
+        #region Constructors
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             Environment = env;
         }
 
+        #endregion
+
+        #region Properties
+
         public IConfiguration Configuration { get; }
 
         public IWebHostEnvironment Environment { get; }
+
+        #endregion
+
+        #region Methods
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -67,5 +77,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             if (!Environment.IsEnvironment("UnitTest"))
                 app.UseHangfireWebhooksServer(serviceProvider);
         }
+
+        #endregion
     }
 }

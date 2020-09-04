@@ -12,15 +12,24 @@ namespace Hyprsoft.Webhooks.Client.Web
 {
     public class Startup
     {
+        #region Constructors
+
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
             Environment = env;
         }
+        #endregion
+
+        #region Properties
 
         public IConfiguration Configuration { get; }
 
         public IWebHostEnvironment Environment { get; }
+
+        #endregion
+
+        #region Methods
 
         public void ConfigureServices(IServiceCollection services)
         {
@@ -32,7 +41,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                 options.PayloadSigningSecret = payloadSigningSecret;
             });
             services.AddWebhooksAuthorization(options => options.PayloadSigningSecret = payloadSigningSecret);
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
@@ -48,5 +57,7 @@ namespace Hyprsoft.Webhooks.Client.Web
             app.UseWebhooksAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
+
+        #endregion
     }
 }
