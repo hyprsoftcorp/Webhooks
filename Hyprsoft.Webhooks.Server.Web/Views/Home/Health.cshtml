@@ -3,11 +3,12 @@
     ViewBag.Title = "Health";
     var totalMinutes = (int)Model.PublishInterval.TotalMinutes;
     var webhookId = 0;
+    var uptime = DateTime.UtcNow.Subtract(Model.ServerStartDateUtc);
 }
 
 <div class="container page">
     <h2>@ViewBag.Title</h2>
-    <p class="lead">Below is a summary of webhook activity in the last <span class="badge badge-info">@totalMinutes</span> minutes.  Server has been up for <span class="badge badge-info">@DateTime.UtcNow.Subtract(Model.ServerStartDateUtc).ToString(@"d\.hh\:mm\:ss")</span>.</p>
+    <p class="lead">Uptime: <span id="uptime" class="badge badge-info">@uptime.ToString(@"hh\:mm\:ss")</span> Below is a summary of webhook activity in the last <span class="badge badge-info">@totalMinutes</span> minutes.</p>
     <h4>Successful Webhooks</h4>
     <div class="table-responsive">
         <table class="table">
@@ -72,3 +73,12 @@
         }
     </div>
 </div>
+@section scripts {
+    <script>
+        const manager = new UptimeManager(@uptime.Hours, @uptime.Hours, @uptime.Minutes, @uptime.Seconds);
+        setInterval(() => {
+            document.getElementById('uptime').innerText = manager.getUptime();
+        }, 1000);
+
+    </script>
+}
