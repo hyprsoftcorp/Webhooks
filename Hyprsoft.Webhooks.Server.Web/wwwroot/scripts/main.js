@@ -26,7 +26,7 @@ var UptimeManager = /** @class */ (function () {
         }
         else
             this.seconds++;
-        return this.days + " " + (this.days === 1 ? 'day' : 'days') + " " + (this.hours < 10 ? '0' + this.hours : this.hours) + ":" + (this.hours < 10 ? '0' + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? '0' + this.seconds : this.seconds);
+        return this.days + " " + (this.days === 1 ? 'day' : 'days') + " " + (this.hours < 10 ? '0' + this.hours : this.hours) + ":" + (this.minutes < 10 ? '0' + this.minutes : this.minutes) + ":" + (this.seconds < 10 ? '0' + this.seconds : this.seconds);
     };
     return UptimeManager;
 }());
