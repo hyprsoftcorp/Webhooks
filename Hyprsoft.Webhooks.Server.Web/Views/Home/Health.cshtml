@@ -9,68 +9,84 @@
 <div class="container page">
     <h2>@ViewBag.Title</h2>
     <p class="lead">Uptime: <span id="uptime" class="badge badge-info">@uptime.ToString(@"hh\:mm\:ss")</span> Below is a summary of webhook activity in the last <span class="badge badge-info">@totalMinutes</span> minutes.</p>
-    <h4>Successful Webhooks</h4>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.SuccessfulWebhooks)
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-link active" id="nav-success-tab" data-toggle="tab" href="#nav-success" role="tab" aria-controls="nav-success" aria-selected="true">Successful Webhooks <span class="badge badge-success">@Model.SuccessfulWebhooks.Sum(x => x.Count).ToString("g")</span></a>
+            <a class="nav-link" id="nav-failed-tab" data-toggle="tab" href="#nav-failed" role="tab" aria-controls="nav-failed" aria-selected="false">Failed Webhooks <span class="badge badge-danger">@Model.FailedWebhooks.Sum(x => x.Count).ToString("g")</span></a>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-content">
+        <div class="tab-pane fade show active" id="nav-success" role="tabpanel" aria-labelledby="nav-success-tab">
+            @if (Model.SuccessfulWebhooks.Count <= 0)
+            {
+            <div class="alert alert-warning my-2">No successful webhooks were detected in the past <span class="badge badge-warning">@totalMinutes</span> minutes.</div>
+            }
+            else
+            {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.SuccessfulWebhooks)
                 {
-                    <tr>
-                        <td>@item.EventName</td>
-                        <td><h5><span class="badge badge-success">@item.Count.ToString("g")</span></h5></td>
-                    </tr>
+                        <tr>
+                            <td>@item.EventName</td>
+                            <td><h5><span class="badge badge-success">@item.Count.ToString("g")</span></h5></td>
+                        </tr>
                 }
-            </tbody>
-        </table>
-        @if (Model.SuccessfulWebhooks.Count <= 0)
-        {
-            <div class="alert alert-warning">No successful webhooks were detected in the past <span class="badge badge-warning">@totalMinutes</span> minutes.</div>
-        }
-    </div>
-    <h4>Failed Webhooks</h4>
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Event</th>
-                    <th>Webhook</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.FailedWebhooks)
-                {
-                    webhookId++;
-                    <tr>
-                        <td>
-                            <a class="collapsed" data-toggle="collapse" href="#webhook-@webhookId" aria-expanded="false" aria-controls="webhook-@webhookId">
-                                <i class="fa text-info" aria-hidden="true"></i>&nbsp;@item.EventName
-                            </a>
-                        </td>
-                        <td>@item.WebhookUri</td>
-                        <td><h5><span class="badge badge-danger">@item.Count.ToString("g")</span></h5></td>
-                    </tr>
-                    <tr>
-                        <td id="webhook-@webhookId" class="collapse" colspan="3">
-                            <div class="alert alert-danger">
-                                <h4>Stack Trace</h4>
-                                <p>@item.Error</p>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        @if (Model.FailedWebhooks.Count <= 0)
-        {
-            <div class="alert alert-warning">No failed webhooks were detected in the past <span class="badge badge-warning">@totalMinutes</span> minutes.</div>
-        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
+        <div class="tab-pane fade" id="nav-failed" role="tabpanel" aria-labelledby="nav-failed-tab">
+            @if (Model.FailedWebhooks.Count <= 0)
+            {
+            <div class="alert alert-warning my-2">No failed webhooks were detected in the past <span class="badge badge-warning">@totalMinutes</span> minutes.</div>
+            }
+            else
+            {
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Webhook</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.FailedWebhooks)
+                        {
+                        webhookId++;
+                        <tr>
+                            <td class="text-nowrap">
+                                <a class="collapsed" data-toggle="collapse" href="#webhook-@webhookId" aria-expanded="false" aria-controls="webhook-@webhookId">
+                                    <i class="fa text-info" aria-hidden="true"></i>&nbsp;@item.EventName
+                                </a>
+                            </td>
+                            <td>@item.WebhookUri</td>
+                            <td><h5><span class="badge badge-danger">@item.Count.ToString("g")</span></h5></td>
+                        </tr>
+                        <tr>
+                            <td id="webhook-@webhookId" class="collapse" colspan="3">
+                                <div class="alert alert-danger">
+                                    <h4>Stack Trace</h4>
+                                    <p>@item.Error</p>
+                                </div>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            }
+        </div>
     </div>
 </div>
 @section scripts {
