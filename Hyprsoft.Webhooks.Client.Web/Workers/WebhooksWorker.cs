@@ -77,9 +77,10 @@ namespace Hyprsoft.Webhooks.Client.Web
                 {
                     if (Options.Role == WebhooksWorkerRole.Pub || Options.Role == WebhooksWorkerRole.PubSub)
                     {
+
                         for (int i = 0; i < _random.Next(1, Options.MaxEventsToPublishPerInterval + 1); i++)
                         {
-                            WebhookEvent @event = _random.Next(1, 5) switch
+                            WebhookEvent @event = _random.Next(1, 4) switch
                             {
                                 1 => new SampleCreatedWebhookEvent
                                 {
@@ -101,17 +102,24 @@ namespace Hyprsoft.Webhooks.Client.Web
                                     SampleType = _random.Next(1, 6),
                                     UserId = _random.Next()
                                 },
-                                4 => new SampleExceptionWebhookEvent
-                                {
-                                    SampleId = _random.Next(),
-                                    SampleType = _random.Next(1, 101) == 1 ? 1 : 2,  // Since we only suscribe to exception events with sample type = 1; 1 in 100% chance.
-                                    UserId = _random.Next()
-                                },
                                 _ => throw new NotImplementedException(),
                             };
                             _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
                             await _webhooksClient.PublishAsync(@event);
                         }   // publish event for loop
+
+                        // Let's randomly simulate a problematic webhook.
+                        if (_random.Next(1, 501) == 1)
+                        {
+                            var @event = new SampleExceptionWebhookEvent
+                            {
+                                SampleId = _random.Next(),
+                                SampleType = 1,
+                                UserId = _random.Next()
+                            };
+                            _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                            await _webhooksClient.PublishAsync(@event);
+                        }   // simulate a problematic webhook
                     }   // publish events?
 
                     await Task.Delay(Options.PublishInterval, stoppingToken);
