@@ -11,8 +11,8 @@
     <p class="lead">Uptime: <span id="uptime" class="badge badge-info">@uptime.ToString(@"hh\:mm\:ss")</span> Below is a summary of webhook activity in the last <span class="badge badge-info">@totalMinutes</span> minutes.</p>
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-link active" id="nav-success-tab" data-toggle="tab" href="#nav-success" role="tab" aria-controls="nav-success" aria-selected="true">Successful Webhooks <span class="badge badge-success">@Model.SuccessfulWebhooks.Sum(x => x.Count).ToString("g")</span></a>
-            <a class="nav-link" id="nav-failed-tab" data-toggle="tab" href="#nav-failed" role="tab" aria-controls="nav-failed" aria-selected="false">Failed Webhooks <span class="badge badge-danger">@Model.FailedWebhooks.Sum(x => x.Count).ToString("g")</span></a>
+            <a class="nav-link active" id="nav-success-tab" data-toggle="tab" href="#nav-success" role="tab" aria-controls="nav-success" aria-selected="true">Successful Webhooks <span class="badge badge-success">@Model.SuccessfulWebhooks.Sum(x => x.Count).ToString("n0")</span></a>
+            <a class="nav-link" id="nav-failed-tab" data-toggle="tab" href="#nav-failed" role="tab" aria-controls="nav-failed" aria-selected="false">Failed Webhooks <span class="badge badge-danger">@Model.FailedWebhooks.Sum(x => x.Count).ToString("n0")</span></a>
         </div>
     </nav>
     <div class="tab-content" id="nav-content">
@@ -36,7 +36,7 @@
                 {
                         <tr>
                             <td>@item.EventName</td>
-                            <td><h5><span class="badge badge-success">@item.Count.ToString("g")</span></h5></td>
+                            <td><h5><span class="badge badge-success">@item.Count.ToString("n0")</span></h5></td>
                         </tr>
                 }
                     </tbody>
@@ -71,7 +71,7 @@
                                 </a>
                             </td>
                             <td>@item.WebhookUri</td>
-                            <td><h5><span class="badge badge-danger">@item.Count.ToString("g")</span></h5></td>
+                            <td><h5><span class="badge badge-danger">@item.Count.ToString("n0")</span></h5></td>
                         </tr>
                         <tr>
                             <td id="webhook-@webhookId" class="collapse" colspan="3">
