@@ -1,5 +1,4 @@
 ﻿using Hangfire;
-using Hangfire.MemoryStorage;
 using Hyprsoft.Webhooks.Core.Management;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -43,7 +42,7 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
             services.AddHangfire(configuration =>
             {
                 if (options.UseInMemoryDatastore)
-                    configuration.UseMemoryStorage();
+                    configuration.UseInMemoryStorage();
                 else
                     configuration.UseSqlServerStorage(options.DatabaseConnectionString);
                 configuration.UseSerializerSettings(WebhooksGlobalConfiguration.JsonSerializerSettings);
