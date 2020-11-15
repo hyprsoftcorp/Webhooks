@@ -1,7 +1,7 @@
 # Webhooks
 This is an implementation of a standalone generic publish/subscribe notification system using webhooks and Hangfire as an event dispatcher.
 
-Documentation: [https://webhooks.hyprsoft.com/](https://webhooks.hyprsoft.com/)
+Documentation: https://webhooks.hyprsoft.com/docs
 
 ## Sample Code
 ``` csharp
