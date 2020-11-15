@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Core.Rest
 {
-    public class WebhooksMessageHandler : DelegatingHandler
+    internal class WebhooksMessageHandler : DelegatingHandler
     {
         #region Fields
 

@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Core.Hangfire
 {
-    public class SqlServerWebhooksStorageProvider : IWebhooksStorageProvider
+    internal class SqlServerWebhooksStorageProvider : IWebhooksStorageProvider
     {
         #region Fields
 

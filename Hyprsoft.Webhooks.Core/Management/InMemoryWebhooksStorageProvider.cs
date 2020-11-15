@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Core.Management
 {
-    public class InMemoryWebhooksStorageProvider : IWebhooksStorageProvider
+    internal class InMemoryWebhooksStorageProvider : IWebhooksStorageProvider
     {
         #region Fields
 
