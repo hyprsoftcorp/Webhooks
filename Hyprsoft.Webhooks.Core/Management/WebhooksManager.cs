@@ -29,6 +29,7 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         private bool _isDisposed;
         private readonly IWebhooksStorageProvider _storageProvider;
+        private readonly WebhooksHttpClient _httpClient;
 
         #endregion
 
@@ -38,7 +39,7 @@ namespace Hyprsoft.Webhooks.Core.Management
         {
             _storageProvider = storageProvider;
             Options = options;
-            HttpClient = new WebhooksHttpClient(Options.PayloadSigningSecret)
+            _httpClient = new WebhooksHttpClient(Options.PayloadSigningSecret)
             {
                 BaseAddress = Options.ServerBaseUri,
                 Timeout = Options.RequestTimeout
@@ -52,8 +53,6 @@ namespace Hyprsoft.Webhooks.Core.Management
         public WebhooksHttpClientOptions Options { get; }
 
         public IEnumerable<Subscription> Subscriptions => _storageProvider.Subscriptions.OrderBy(x => x.CreatedUtc);
-
-        protected WebhooksHttpClient HttpClient { get; }
 
         #endregion
 
@@ -118,8 +117,8 @@ namespace Hyprsoft.Webhooks.Core.Management
             };
             try
             {
-                var response = await HttpClient.PostAsync(webhookUri, new WebhookContent(@event)).ConfigureAwait(false);
-                await HttpClient.ValidateResponseAsync(response, "Dispatch failed.");
+                var response = await _httpClient.PostAsync(webhookUri, new WebhookContent(@event)).ConfigureAwait(false);
+                await _httpClient.ValidateResponseAsync(response, "Dispatch failed.");
                 await _storageProvider.AddAuditAsync(audit);
             }
             catch (Exception ex)
@@ -174,7 +173,7 @@ namespace Hyprsoft.Webhooks.Core.Management
 
             if (disposing)
             {
-                HttpClient?.Dispose();
+                _httpClient?.Dispose();
             }
 
             _isDisposed = true;

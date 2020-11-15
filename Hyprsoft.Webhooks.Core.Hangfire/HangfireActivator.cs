@@ -3,7 +3,7 @@ using System;
 
 namespace Hyprsoft.Webhooks.Core.Hangfire
 {
-    public class HangfireActivator : JobActivator
+    internal class HangfireActivator : JobActivator
     {
         private readonly IServiceProvider _serviceProvider;
 

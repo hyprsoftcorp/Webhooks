@@ -2,7 +2,7 @@
 
 namespace Hyprsoft.Webhooks.Core.Management
 {
-    public sealed class InMemoryWebhooksManager : WebhooksManager, IWebhooksManager
+    internal sealed class InMemoryWebhooksManager : WebhooksManager, IWebhooksManager
     {
         #region Constructors
 

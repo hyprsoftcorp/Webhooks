@@ -72,7 +72,7 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
             try
             {
                 if (_systemEvents.Contains(@event.GetType()))
-                    throw new InvalidOperationException("The '{@event.GetType().FullName}' event is a system event and cannot be published.");
+                    throw new InvalidOperationException($"The '{@event.GetType().FullName}' event is a system event and cannot be published.");
 
                 // TODO: Depending on log level setting, this COULD log sensitive information.
                 _logger.LogDebug($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");

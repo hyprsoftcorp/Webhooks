@@ -9,7 +9,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
 {
     public class WebhooksHttpClient : HttpClient
     {
-        public WebhooksHttpClient(string payloadSigningSecret) : base(new WebhooksMessageHandler(payloadSigningSecret)) { }
+        internal WebhooksHttpClient(string payloadSigningSecret) : base(new WebhooksMessageHandler(payloadSigningSecret)) { }
 
         public const string PayloadSignatureHeaderName = "Webhooks-Payload-Signature";
 
