@@ -1,9 +1,10 @@
-# Webhooks
-This is an implementation of a standalone generic publish/subscribe notification system using webhooks and Hangfire as an event dispatcher.
+# Webhooks - Updated to .NET 5!
+A standalone generic publish/subscribe notification system using HTTP webhooks and Hangfire as a fault tolerant event dispatcher.
 
-Documentation: https://webhooks.hyprsoft.com/docs
+## Documentation
+https://webhooks.hyprsoft.com/docs
 
-## Sample Code
+### Sample Code
 ``` csharp
 // Subscribe
 var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("http://webhooks.hyprsoft.com/") });
@@ -17,8 +18,8 @@ await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleTy
 
 ## Install as Windows Service
 ``` 
-sc create HyprsoftWebhooksServer binpath= "D:\Source\Hyprsoft.Webhooks.Solution\Hyprsoft.Webhooks.Server.Web\bin\Release\netcoreapp3.1\win-x64\publish\Hyprsoft.Webhooks.Server.Web.exe  --service 1" DisplayName= "Hyprsoft Webhooks Server" start= auto
-sc description HyprsoftWebhooksServer "Hyprsoft Webhooks Server" 
+sc create HyprsoftWebhooksServer binpath= "C:\Source\Hyprsoft.Webhooks.Solution\Hyprsoft.Webhooks.Server.Web\bin\Release\netcoreapp5.0\win-x64\publish\Hyprsoft.Webhooks.Server.Web.exe  --service 1 --urls http://*:80" DisplayName= "Hyprsoft Webhooks Server" start= auto
+sc description HyprsoftWebhooksServer "A standalone generic publish/subscribe notification system using HTTP webhooks and Hangfire as a fault tolerant event dispatcher." 
 net start HyprsoftWebhooksServer
 
 sc query HyprsoftWebhooksServer 
@@ -26,7 +27,7 @@ net stop HyprsoftWebhooksServer
 sc delete HyprsoftWebhooksServer 
 ```
 
-## Sample Client Web Command Line
+## Example Client Web Command Line (for testing)
 ```
 Hyprsoft.Webhooks.Client.Web.exe ServerBaseUri="https://webhooks.hyprsoft.com/" WebhooksBaseUri="http://office.hyprsoft.com/" Role=PubSub AutoUnsubscribe=true
 ```
