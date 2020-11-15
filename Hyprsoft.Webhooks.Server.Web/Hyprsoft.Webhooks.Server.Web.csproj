@@ -2,8 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp5.0</TargetFramework>
-    <UserSecretsId>43ec3801-a88c-41b4-bc66-e91fd669524e</UserSecretsId>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <ApplicationInsightsResourceId>/subscriptions/f209e110-616c-4e7c-88fc-c3aa0c3e90c6/resourceGroups/WebhooksResourceGroup/providers/microsoft.insights/components/WebhooksServerAppInsights</ApplicationInsightsResourceId>
     <Authors>Hal Blakeslee</Authors>
     <Company>Hyprsoft Corporation</Company>

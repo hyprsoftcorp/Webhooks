@@ -3,9 +3,6 @@ This is an implementation of a standalone generic publish/subscribe notification
 
 Documentation: https://webhooks.hyprsoft.com/docs
 
-## .NET 5 Upgrade Notes
-In order to support the classic .NET framework, we use .NET standard 2.0 libraries.  Apparently the latest EF Nugets for .NET 5 only support .NET Standard 2.1 which doesn't support the classic .NET Framework.  Reference https://docs.microsoft.com/en-us/dotnet/standard/net-standard.  For now we have a separate branch.
-
 ## Sample Code
 ``` csharp
 // Subscribe
