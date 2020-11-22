@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -61,7 +62,7 @@ namespace Hyprsoft.Webhooks.Client.Web
 
             try
             {
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(TimeSpan.FromSeconds(3), stoppingToken);
                 _logger.LogInformation($"Webhooks Worker Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | Interval: {Options.PublishInterval} | EventCount: {Options.MaxEventsToPublishPerInterval} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
 
                 if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
@@ -77,8 +78,8 @@ namespace Hyprsoft.Webhooks.Client.Web
                 {
                     if (Options.Role == WebhooksWorkerRole.Pub || Options.Role == WebhooksWorkerRole.PubSub)
                     {
-
-                        for (int i = 0; i < _random.Next(1, Options.MaxEventsToPublishPerInterval + 1); i++)
+                        var eventCount = _random.Next(1, Options.MaxEventsToPublishPerInterval + 1);
+                        var tasks = Enumerable.Range(0, eventCount).Select(i =>
                         {
                             WebhookEvent @event = _random.Next(1, 4) switch
                             {
@@ -105,11 +106,12 @@ namespace Hyprsoft.Webhooks.Client.Web
                                 _ => throw new NotImplementedException(),
                             };
                             _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
-                            await _webhooksClient.PublishAsync(@event);
-                        }   // publish event for loop
+                            return _webhooksClient.PublishAsync(@event);
+                        });
+                        await Task.WhenAll(tasks);
 
                         // Let's randomly simulate a problematic webhook.
-                        if (_random.Next(1, 501) == 1)
+                        if (!stoppingToken.IsCancellationRequested && _random.Next(1, 501) == 1)
                         {
                             var @event = new SampleExceptionWebhookEvent
                             {
