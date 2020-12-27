@@ -1,0 +1,7 @@
+[data-toggle="collapse"] .bi:before {
+  content: "\f274";
+}
+
+[data-toggle="collapse"].collapsed .bi:before {
+  content: "\f270";
+}

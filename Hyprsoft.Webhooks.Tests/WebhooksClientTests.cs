@@ -48,7 +48,7 @@ namespace Hyprsoft.Webhooks.Tests
         public async Task Subscribe_Unsubscribe_Success()
         {
             // Filter our linq predicate so other unit tests don't interfere.
-            Func<Subscription, bool> eventNameFilter = x => x.EventName == typeof(SampleCreatedWebhookEvent).FullName;
+            static bool eventNameFilter(Subscription x) => x.EventName == typeof(SampleCreatedWebhookEvent).FullName;
             using var client = new WebhooksClient(new WebhooksHttpClientOptions());
 
             // Subscribe should be idempotent.

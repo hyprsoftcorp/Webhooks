@@ -8,8 +8,8 @@ namespace Hyprsoft.Webhooks.AspNetCore
     [Route("[controller]/v{version:apiVersion}/[action]")]
     public class WebhooksControllerBase : ControllerBase
     {
-        public OkObjectResult WebhookOk() => new OkObjectResult(new WebhookResponse { IsSuccess = true });
-        
-        public ObjectResult WebhookException(Exception ex) => new ObjectResult(new WebhookResponse { ErrorMessage = ex.ToString() }) { StatusCode = 500 };
+        protected OkObjectResult WebhookOk() => new OkObjectResult(new WebhookResponse { IsSuccess = true });
+
+        protected ObjectResult WebhookException(Exception ex) => new ObjectResult(new WebhookResponse { ErrorMessage = ex.ToString() }) { StatusCode = 500 };
     }
 }

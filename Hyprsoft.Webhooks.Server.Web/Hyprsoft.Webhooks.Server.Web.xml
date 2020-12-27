@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Hyprsoft.Webhooks.Server.Web</name>
+    </assembly>
+    <members>
+        <member name="T:Hyprsoft.Webhooks.Server.Web.V1.Controllers.ApiController">
+            <summary>
+            Webhooks Client API.
+            </summary>
+        </member>
+        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.ApiController.BuildInfo">
+            <summary>
+            Gets the UTC build date and the version of the Webhooks Server API.
+            </summary>
+            <returns>The UTC build date and the version of the Webhooks Server API.</returns>
+        </member>
+        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.ApiController.Health">
+            <summary>
+            Gets a health summary of the Webhooks Server API.
+            </summary>
+            <returns>A health summary of the Webhooks Server API.</returns>
+        </member>
+        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.ApiController.Subscriptions">
+            <summary>
+            Gets a list of the current webhooks event subscriptions and their endpoints.
+            </summary>
+            <returns>A list of the current webhooks event subscriptions and their endpoints.</returns>
+        </member>
+        <member name="T:Hyprsoft.Webhooks.Server.Web.V1.Controllers.WebhooksController">
+            <summary>
+            Webhooks Server API.
+            </summary>
+        </member>
+        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.WebhooksController.Subscribe(Hyprsoft.Webhooks.Core.Rest.SubscriptionRequest)">
+            <summary>
+            Subscribe to a webhook event.
+            </summary>
+            <param name="request">The subscription request.</param>
+            <returns>A webhook response indicating success or failure and the reason for the failure if applicable.</returns>
+        </member>
+        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.WebhooksController.Unsubscribe(Hyprsoft.Webhooks.Core.Rest.SubscriptionRequest)">
+            <summary>
+            Unsubscribe from a webhook event.
+            </summary>
+            <param name="request">The subscription request.</param>
+            <returns>A webhook response indicating success or failure and the reason for the failure if applicable.</returns>
+        </member>
+        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.WebhooksController.Publish(Hyprsoft.Webhooks.Core.Events.WebhookEvent)">
+            <summary>
+            Publishes a webhook event to all subscribers.
+            </summary>
+            <param name="event">The event to publish.</param>
+            <returns>A webhook response indicating success or failure and the reason for the failure if applicable.</returns>
+        </member>
+    </members>
+</doc>
