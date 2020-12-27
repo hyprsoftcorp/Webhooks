@@ -1,16 +1,19 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Hyprsoft.Webhooks.AspNetCore;
+﻿using Hyprsoft.Webhooks.AspNetCore;
 using Hyprsoft.Webhooks.Core.Events;
 using Hyprsoft.Webhooks.Core.Management;
 using Hyprsoft.Webhooks.Core.Rest;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 {
+    /// <summary>
+    /// Webhooks Server API.
+    /// </summary>
     [ApiVersion("1.0")]
     public class WebhooksController : WebhooksControllerBase
     {
@@ -34,6 +37,11 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 
         #region Methods
 
+        /// <summary>
+        /// Subscribe to a webhook event.
+        /// </summary>
+        /// <param name="request">The subscription request.</param>
+        /// <returns>A webhook response indicating success or failure and the reason for the failure if applicable.</returns>
         [HttpPut]
         public async Task<ActionResult<WebhookResponse>> Subscribe(SubscriptionRequest request)
         {
@@ -50,6 +58,11 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
             }
         }
 
+        /// <summary>
+        /// Unsubscribe from a webhook event.
+        /// </summary>
+        /// <param name="request">The subscription request.</param>
+        /// <returns>A webhook response indicating success or failure and the reason for the failure if applicable.</returns>
         [HttpDelete]
         public async Task<ActionResult<WebhookResponse>> Unsubscribe(SubscriptionRequest request)
         {
@@ -66,6 +79,11 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
             }
         }
 
+        /// <summary>
+        /// Publishes a webhook event to all subscribers.
+        /// </summary>
+        /// <param name="event">The event to publish.</param>
+        /// <returns>A webhook response indicating success or failure and the reason for the failure if applicable.</returns>
         [HttpPost]
         public async Task<ActionResult<WebhookResponse>> Publish(WebhookEvent @event)
         {

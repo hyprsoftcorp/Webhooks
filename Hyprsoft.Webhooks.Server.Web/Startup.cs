@@ -6,10 +6,14 @@ using Microsoft.ApplicationInsights.Extensibility.Implementation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Versioning.Conventions;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.OpenApi.Models;
 using System;
+using System.IO;
+using System.Reflection;
 
 namespace Hyprsoft.Webhooks.Server.Web
 {
@@ -51,17 +55,26 @@ namespace Hyprsoft.Webhooks.Server.Web
                 });
             }
             services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp/dist";
+            });
             services.AddApiVersioning(options =>
             {
                 options.ReportApiVersions = true;
                 options.Conventions.Add(new VersionByNamespaceConvention());
+            });
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hyprsoft Webhooks API", Version = "v1" });
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.XML"));
             });
             services.AddApplicationInsightsTelemetry();
             services.Configure<WebhooksHealthWorkerOptions>(Configuration);
             services.AddHostedService<WebhooksHealthWorker>();
         }
 
-        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider)
+        public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env)
         {
             if (Environment.IsDevelopment() || Environment.IsEnvironment("UnitTest"))
             {
@@ -69,13 +82,27 @@ namespace Hyprsoft.Webhooks.Server.Web
                 TelemetryDebugWriter.IsTracingDisabled = true;
             }
 
-            app.UseStaticFiles();
             app.UseHsts();
+            app.UseStaticFiles();
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
+            app.UseSwagger();
+            app.UseSwaggerUI(config => config.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyprsoft Webhooks API v1"));
             app.UseRouting();
             app.UseWebhooksAuthorization();
-            app.UseEndpoints(endpoints => endpoints.MapControllerRoute(name: "default", pattern: "{controller=Home}/{action=Index}/{id?}"));
+            app.UseEndpoints(endpoints => endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}"));
             if (!Environment.IsEnvironment("UnitTest"))
                 app.UseHangfireWebhooksServer(serviceProvider);
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "ClientApp";
+                if (env.IsDevelopment())
+                {
+                    spa.UseAngularCliServer(npmScript: "start");
+                }
+            });
         }
 
         #endregion

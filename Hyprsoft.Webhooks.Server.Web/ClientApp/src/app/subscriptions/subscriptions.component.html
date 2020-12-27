@@ -1,0 +1,33 @@
+<h2>Subscriptions</h2>
+<p class="lead">When an event is published, each webhook that's associated with the event is automatically invoked.  Failures are automatically retried.</p>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>Id</th>
+        <th>Event</th>
+        <th>Created</th>
+        <th>Active</th>
+        <th>Filtered</th>
+        <th>Webhook</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of subscriptions">
+        <td>{{item.subscriptionId}}</td>
+        <td>{{item.eventName}}</td>
+        <td class="text-nowrap">{{item.createdUtc | date:'medium'}}</td>
+        <td class="text-center">
+          <i *ngIf="item.isActive" class="bi bi-check-circle-fill text-success" title="Active"></i>
+          <i *ngIf="!item.isActive" class="bi bi-circle" title="Inactive"></i>
+        </td>
+        <td class="text-center">
+          <i *ngIf="item.filter" class="bi bi-check-circle-fill text-success" title="{{item.filter}}"></i>
+          <i *ngIf="!item.filter" class="bi bi-circle" title="Not Filtered"></i>
+        </td>
+        <td>{{item.webhookUri}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div *ngIf="subscriptions.length <= 0" class="alert alert-info">No subscriptions available.  Check the <a routerLink="/docs" title="Documentation">docs</a> on how to create a subscription.</div>

@@ -134,7 +134,7 @@ namespace Hyprsoft.Webhooks.Core.Management
             var startDateUtc = DateTime.UtcNow - period;
             var summary = new WebhooksHealthSummary
             {
-                PublishInterval = period,
+                PublishIntervalMinutes = (int)period.TotalMinutes,
                 SuccessfulWebhooks = _storageProvider.Audits
                             .Where(x => x.CreatedUtc >= startDateUtc && String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => x.EventName)

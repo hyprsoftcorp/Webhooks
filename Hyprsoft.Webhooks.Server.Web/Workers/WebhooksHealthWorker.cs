@@ -49,7 +49,7 @@ namespace Hyprsoft.Webhooks.Server.Web
         {
             try
             {
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(TimeSpan.FromSeconds(3), stoppingToken);
                 _logger.LogInformation($"Webhooks Health Worker Settings: Interval: {Options.PublishHealthEventInterval}");
 
                 while (!stoppingToken.IsCancellationRequested)
