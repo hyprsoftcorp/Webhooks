@@ -9,7 +9,7 @@ import { WebhooksService } from '../services/webhooks.service';
 })
 export class HomeComponent implements OnInit {
 
-  buildInfo: BuildInfo = { buildDateTimeUtc: new Date(), version: 'Unknown' };
+  public buildInfo: BuildInfo = { buildDateTimeUtc: new Date(), version: 'Unknown' };
 
   constructor(private webhooksService: WebhooksService) {
   }

@@ -10,17 +10,17 @@ import { interval, Subscription } from 'rxjs';
 })
 export class HealthComponent implements OnInit, OnDestroy {
 
-  summary: HealthSummary = { serverStartDateUtc: new Date(), uptime: 'Unknown', successfulWebhooks: [], failedWebhooks: [], publishIntervalMinutes: 60 };
-  successfulWebhooksCount = 0;
-  failedWebhooksCount = 0;
-  dataRefreshSeconds = 60;
-  private timer: Subscription = new Subscription();
+  public summary: HealthSummary = { serverStartDateUtc: new Date(), uptime: 'Unknown', successfulWebhooks: [], failedWebhooks: [], publishIntervalMinutes: 60 };
+  public successfulWebhooksCount = 0;
+  public failedWebhooksCount = 0;
+  public pageRefreshSeconds = 60;
+  private timer = new Subscription();
 
   constructor(private webhooksService: WebhooksService) { }
 
   ngOnInit() {
     this.getHealthSummary();
-    this.timer = interval(this.dataRefreshSeconds * 1000).subscribe(() => this.getHealthSummary());
+    this.timer = interval(this.pageRefreshSeconds * 1000).subscribe(() => this.getHealthSummary());
   }
 
   ngOnDestroy() {

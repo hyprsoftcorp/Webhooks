@@ -9,7 +9,7 @@ import { WebhooksService } from '../services/webhooks.service';
 })
 export class SubscriptionsComponent implements OnInit {
 
-  subscriptions: Subscription[] = [];
+  public subscriptions: Subscription[] = [];
 
   constructor(private webhooksService: WebhooksService) { }
 

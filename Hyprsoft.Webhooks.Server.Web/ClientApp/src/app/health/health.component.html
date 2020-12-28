@@ -1,5 +1,6 @@
 <h2>Health</h2>
-<p class="lead">Uptime: <span id="uptime" class="badge badge-info">{{summary.uptime}}</span> Below is a summary of webhook activity in the last <span class="badge badge-info">{{summary.publishIntervalMinutes}}</span> minutes.</p>
+<p class="small text-muted">Uptime: {{summary.uptime}}.</p>
+<p class="lead">Below is a summary of webhook activity in the last <span class="badge badge-info">{{summary.publishIntervalMinutes}}</span> minutes.</p>
 <nav>
   <div class="nav nav-tabs" id="nav-tab" role="tablist">
     <a class="nav-link active" id="nav-success-tab" data-toggle="tab" href="#nav-success" role="tab" aria-controls="nav-success" aria-selected="true">Successful Webhooks <span class="badge badge-success">{{successfulWebhooksCount | number}}</span></a>
@@ -62,4 +63,4 @@
     <div *ngIf="summary.failedWebhooks.length <= 0" class="alert alert-info my-2">No failed webhooks were detected in the past <span class="badge badge-primary">{{summary.publishIntervalMinutes}}</span> minutes.</div>
   </div>
 </div>
-<p class="small text-muted">Page auto refreshed every {{dataRefreshSeconds}} seconds.</p>
+<p class="small text-muted">Page auto refreshed every {{pageRefreshSeconds}} seconds.</p>
