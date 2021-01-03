@@ -5,18 +5,17 @@
 
 <hr />
 <h3>Sample Code</h3>
-<pre><code>{{code}}</code></pre>
+<pre><code [highlight]="code" [lineNumbers]="true"></code></pre>
 <hr />
 <h3>Components</h3>
 <div class="row">
   <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">Webhooks Server Web App</h5>
+        <h5 class="card-title">Webhooks Server Web App <span class="badge bg-primary">REST API</span></h5>
         <h6 class="card-subtitle mb-2 text-muted">.NET 5</h6>
         <div class="card-text">
           Standalone web app (or Windows service) that exposes REST endpoints and services to manage subscriptions and publish events.
-          <h4><span class="badge badge-primary">REST API</span></h4>
           <ul>
             <li>Subscribe(subscriptionRequest).</li>
             <li>Unsubscribe(subscriptionRequest).</li>
@@ -29,11 +28,10 @@
   <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">Webhooks Manager</h5>
+        <h5 class="card-title">Webhooks Manager <span class="badge bg-info">API</span></h5>
         <h6 class="card-subtitle mb-2 text-muted">.NET Standard 2.0</h6>
         <div class="card-text">
           Service to manage subscriptions and publish events that's part of the Webhooks Server Web App.
-          <h4><span class="badge badge-info">API</span></h4>
           <ul>
             <li>SubscribeAsync(eventName, webhookUri, filter).</li>
             <li>UnsubscribeAsync(eventName, webhookUri).</li>
@@ -49,11 +47,10 @@
   <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">Hangfire Webhooks Manager</h5>
+        <h5 class="card-title">Hangfire Webhooks Manager <span class="badge bg-info">API</span></h5>
         <h6 class="card-subtitle mb-2 text-muted">.NET Standard 2.1</h6>
         <div class="card-text">
           Service to dispatch events using Hangfire's scalable queues and automatic retry logic with exponential backoff.  Part of the Webhooks Server Web App.
-          <h4><span class="badge badge-info">API</span></h4>
           <ul>
             <li>SubscribeAsync(eventName, webhookUri, filter).</li>
             <li>UnsubscribeAsync(eventName, webhookUri).</li>
@@ -68,11 +65,10 @@
   <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">Webhooks Database</h5>
+        <h5 class="card-title">Webhooks Database <span class="badge bg-secondary">Database Tables</span></h5>
         <h6 class="card-subtitle mb-2 text-muted">SQL Server or InMemory</h6>
         <div class="card-text">
           Standalone database to manage subscriptions and dispatch events.
-          <h4><span class="badge badge-secondary">Database Tables</span></h4>
           <ul>
             <li>Event subscriptions and audits.</li>
             <li>Hangfire related.</li>
@@ -86,12 +82,10 @@
   <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">Webhooks Client</h5>
+        <h5 class="card-title">Webhooks Client <span class="badge bg-info">API</span></h5>
         <h6 class="card-subtitle mb-2 text-muted">.NET Standard 2.0</h6>
         <div class="card-text">
           Lightweight Nuget package to call Webhooks Server Web App REST API.  Part of a subscriber's web app or REST API.
-          <br />
-          <h4><span class="badge badge-info">API</span></h4>
           <ul>
             <li>SubscribeAsync&lt;TEvent&gt;(webhookUri, filter).</li>
             <li>UnsubscribeAsync&lt;TEvent&gt;(webhookUri).</li>
@@ -104,11 +98,10 @@
   <div class="col-md-6">
     <div class="card mb-4">
       <div class="card-body">
-        <h5 class="card-title">Webhooks Client Web App</h5>
+        <h5 class="card-title">Webhooks Client Web App <span class="badge bg-success">Components</span></h5>
         <h6 class="card-subtitle mb-2 text-muted">.NET 5</h6>
         <div class="card-text">
           Standalone web app to publish random test events and consume webhooks.
-          <h4><span class="badge badge-success">Components</span></h4>
           <ul>
             <li>Webhook receivers (REST API).</li>
             <li>Event publishing background worker (publishes a random number of events every (n) seconds).</li>

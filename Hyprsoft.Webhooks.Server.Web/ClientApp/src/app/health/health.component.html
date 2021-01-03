@@ -1,17 +1,15 @@
 <h2>Health</h2>
 <p class="small text-muted">Uptime: {{summary.uptime}}.</p>
-<p class="lead">Below is a summary of webhook activity in the last <span class="badge badge-info">{{summary.publishIntervalMinutes}}</span> minutes.</p>
-<nav>
-  <div class="nav nav-tabs" id="nav-tab" role="tablist">
-    <a class="nav-link active" id="nav-success-tab" data-toggle="tab" href="#nav-success" role="tab" aria-controls="nav-success" aria-selected="true">Successful Webhooks <span class="badge badge-success">{{successfulWebhooksCount | number}}</span></a>
-    <a class="nav-link" id="nav-failed-tab" data-toggle="tab" href="#nav-failed" role="tab" aria-controls="nav-failed" aria-selected="false">Failed Webhooks <span class="badge badge-danger">{{failedWebhooksCount | number}}</span></a>
-  </div>
-</nav>
+<p class="lead">Below is a summary of webhook activity in the last <span class="badge bg-info">{{summary.publishIntervalMinutes}}</span> minutes.</p>
+<ul class="nav nav-tabs" id="nav-tab" role="tablist">
+  <li class="nav-item"><a class="nav-link active" id="nav-success-tab" data-bs-toggle="tab" href="#nav-success" role="tab" aria-controls="nav-success" aria-selected="true">Successful Webhooks <span class="badge bg-success">{{successfulWebhooksCount | number}}</span></a></li>
+  <li class="nav-item"><a class="nav-link" id="nav-failed-tab" data-bs-toggle="tab" href="#nav-failed" role="tab" aria-controls="nav-failed" aria-selected="false">Failed Webhooks <span class="badge bg-danger">{{failedWebhooksCount | number}}</span></a></li>
+</ul>
 <div class="tab-content" id="nav-content">
   <div class="tab-pane fade show active" id="nav-success" role="tabpanel" aria-labelledby="nav-success-tab">
     <div class="table-responsive">
       <table class="table table-striped">
-        <thead class="thead-dark">
+        <thead class="table-dark">
           <tr>
             <th>Event</th>
             <th>Count</th>
@@ -20,17 +18,17 @@
         <tbody>
           <tr *ngFor="let item of summary.successfulWebhooks">
             <td>{{item.eventName}}</td>
-            <td><h5><span class="badge badge-success">{{item.count | number}}</span></h5></td>
+            <td><h5><span class="badge bg-success">{{item.count | number}}</span></h5></td>
           </tr>
         </tbody>
       </table>
     </div>
-    <div *ngIf="summary.successfulWebhooks.length <= 0" class="alert alert-info my-2">No successful webhooks were detected in the past <span class="badge badge-primary">{{summary.publishIntervalMinutes}}</span> minutes.</div>
+    <div *ngIf="summary.successfulWebhooks.length <= 0" class="alert alert-info my-2">No successful webhooks were detected.</div>
   </div>
   <div class="tab-pane fade" id="nav-failed" role="tabpanel" aria-labelledby="nav-failed-tab">
     <div class="table-responsive">
       <table class="table">
-        <thead class="thead-dark">
+        <thead class="table-dark">
           <tr>
             <th>Event</th>
             <th>Webhook</th>
@@ -41,12 +39,12 @@
           <ng-container *ngFor="let item of summary.failedWebhooks; let i = index">
             <tr>
               <td class="text-nowrap">
-                <a class="collapsed" data-toggle="collapse" href="{{'#webhook-' + i}}" aria-expanded="false" [attr.aria-controls]="'webhook-' + i">
+                <a class="collapsed" data-bs-toggle="collapse" href="{{'#webhook-' + i}}" aria-expanded="false" [attr.aria-controls]="'webhook-' + i">
                   <i class="bi bi-chevron-up" aria-hidden="true"></i>&nbsp;{{item.eventName}}
                 </a>
               </td>
               <td>{{item.webhookUri}}</td>
-              <td><h5><span class="badge badge-danger">{{item.count | number}}</span></h5></td>
+              <td><h5><span class="badge bg-danger">{{item.count | number}}</span></h5></td>
             </tr>
             <tr>
               <td id="{{'webhook-' + i}}" class="collapse" colspan="3">
@@ -60,7 +58,7 @@
         </tbody>
       </table>
     </div>
-    <div *ngIf="summary.failedWebhooks.length <= 0" class="alert alert-info my-2">No failed webhooks were detected in the past <span class="badge badge-primary">{{summary.publishIntervalMinutes}}</span> minutes.</div>
+    <div *ngIf="summary.failedWebhooks.length <= 0" class="alert alert-info my-2">No failed webhooks were detected.</div>
   </div>
 </div>
 <p class="small text-muted">Page auto refreshed every {{pageRefreshSeconds}} seconds.</p>

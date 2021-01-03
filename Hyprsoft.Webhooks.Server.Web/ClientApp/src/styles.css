@@ -1,3 +1,11 @@
 .page {
   padding-top: 6rem;
 }
+
+a {
+  text-decoration: none;
+}
+
+  a:hover {
+    text-decoration: underline;
+  }

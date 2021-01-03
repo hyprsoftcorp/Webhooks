@@ -11,18 +11,19 @@ export class DocsComponent implements OnInit {
 
   public buildInfo: BuildInfo = { buildDateTimeUtc: new Date(), version: 'Unknown' };
 
-  public code = `// Webhooks REST client
-var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });
+  public code = ` // Webhooks REST client
+  var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });
 
-// Subscribe
-var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/v1/samplecreated");
-await client.SubscribeAsync<SampleCreatedWebhookEvent>(webhookUri, x => x.SampleType == 2);
+  // Subscribe
+  var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/v1/samplecreated");
+  await client.SubscribeAsync<SampleCreatedWebhookEvent>(webhookUri, x => x.SampleType == 2);
 
-// Publish
-await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });
+  // Publish
+  await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });
 
-// Unsubscribe
-await client.UnsubscribeAsync<SampleCreatedWebhookEvent>(webhookUri);`;
+  // Unsubscribe
+  await client.UnsubscribeAsync<SampleCreatedWebhookEvent>(webhookUri);
+`;
 
   constructor(private webhooksService: WebhooksService) {
   }
