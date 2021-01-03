@@ -10,6 +10,6 @@ namespace Hyprsoft.Webhooks.AspNetCore
     {
         protected OkObjectResult WebhookOk() => new OkObjectResult(new WebhookResponse { IsSuccess = true });
 
-        protected ObjectResult WebhookException(Exception ex) => new ObjectResult(new WebhookResponse { ErrorMessage = ex.ToString() }) { StatusCode = 500 };
+        protected ObjectResult WebhookException(Exception ex) => new ObjectResult(new WebhookResponse { ErrorMessage = ex.Message }) { StatusCode = 500 };
     }
 }

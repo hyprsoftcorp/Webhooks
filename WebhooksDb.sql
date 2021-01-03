@@ -53,9 +53,9 @@ CREATE TABLE [dbo].[Audits] (
     [AuditId]    INT             IDENTITY (1, 1) NOT NULL,
     [EventName]  NVARCHAR (100)  NOT NULL,
     [CreatedUtc] DATETIME2 (7)   NOT NULL,
-    [WebhookUri] NVARCHAR (1024) NOT NULL,
+    [WebhookUri] NVARCHAR (500) NOT NULL,
     [Payload]    NVARCHAR (MAX)  NULL,
-    [Error]      NVARCHAR (MAX)  NULL
+    [Error]      NVARCHAR (1024)  NULL
 );
 
 ALTER TABLE [dbo].[Audits]

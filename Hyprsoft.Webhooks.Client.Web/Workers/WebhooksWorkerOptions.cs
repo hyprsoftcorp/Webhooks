@@ -21,10 +21,6 @@ namespace Hyprsoft.Webhooks.Client.Web
 
         public WebhooksWorkerRole Role { get; set; } = WebhooksWorkerRole.PubSub;
 
-        public TimeSpan PublishInterval { get; set; } = TimeSpan.FromSeconds(10);
-
-        public int MaxEventsToPublishPerInterval { get; set; } = 10;
-
         public bool AutoUnsubscribe { get; set; } = true;
     }
 }

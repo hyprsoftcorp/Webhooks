@@ -28,54 +28,14 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
         #region Methods
 
         [HttpPost]
-        public IActionResult SampleCreated(SampleCreatedWebhookEvent @event)
+        public IActionResult Ping(PingWebhookEvent @event)
         {
             try
             {
-                _logger.LogInformation($"Received event '{nameof(SampleCreatedWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                _logger.LogInformation($"Received event '{nameof(PingWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                if (@event.IsException)
+                    throw new InvalidOperationException("This webhook is misbehaving.");
                 return WebhookOk();
-            }
-            catch (Exception ex)
-            {
-                return WebhookException(ex);
-            }
-        }
-
-        [HttpPost]
-        public IActionResult SampleIsActiveChanged(SampleIsActiveChangedWebhookEvent @event)
-        {
-            try
-            {
-                _logger.LogInformation($"Received event '{nameof(SampleIsActiveChangedWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
-                return WebhookOk();
-            }
-            catch (Exception ex)
-            {
-                return WebhookException(ex);
-            }
-        }
-
-        [HttpPost]
-        public IActionResult SampleDeleted(SampleDeletedWebhookEvent @event)
-        {
-            try
-            {
-                _logger.LogInformation($"Received event '{nameof(SampleDeletedWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
-                return WebhookOk();
-            }
-            catch (Exception ex)
-            {
-                return WebhookException(ex);
-            }
-        }
-
-        [HttpPost]
-        public IActionResult SampleException(SampleExceptionWebhookEvent @event)
-        {
-            try
-            {
-                _logger.LogInformation($"Received event '{nameof(SampleExceptionWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
-                throw new InvalidOperationException("This webhook is misbehaving.");
             }
             catch (Exception ex)
             {

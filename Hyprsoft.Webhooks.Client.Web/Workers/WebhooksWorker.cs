@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -60,71 +59,42 @@ namespace Hyprsoft.Webhooks.Client.Web
                 }
             }
 
+            async Task PublishPingAsync(bool isException = false)
+            {
+                var @event = new PingWebhookEvent { IsException = isException };
+                _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                await _webhooksClient.PublishAsync(@event);
+            }
+
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(3), stoppingToken);
-                _logger.LogInformation($"Webhooks Worker Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | Interval: {Options.PublishInterval} | EventCount: {Options.MaxEventsToPublishPerInterval} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
+                _logger.LogInformation($"Webhooks Worker Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
 
                 if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
                 {
-                    await MakeSubscriptionRequestAsync<SampleCreatedWebhookEvent>(nameof(WebhooksController.SampleCreated), true, x => x.SampleType > 2);
-                    await MakeSubscriptionRequestAsync<SampleIsActiveChangedWebhookEvent>(nameof(WebhooksController.SampleIsActiveChanged), true);
-                    await MakeSubscriptionRequestAsync<SampleDeletedWebhookEvent>(nameof(WebhooksController.SampleDeleted), true, x => x.SampleType > 2);
-                    await MakeSubscriptionRequestAsync<SampleExceptionWebhookEvent>(nameof(WebhooksController.SampleException), true, x => x.SampleType == 1);
+                    await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), true);
                     await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), true);
                 }
 
                 while (!stoppingToken.IsCancellationRequested)
                 {
+                    // If we aren't publishing any events then we are just a subscriber and can "delay" infinitely.
+                    var delay = TimeSpan.Zero;
                     if (Options.Role == WebhooksWorkerRole.Pub || Options.Role == WebhooksWorkerRole.PubSub)
                     {
-                        var eventCount = _random.Next(1, Options.MaxEventsToPublishPerInterval + 1);
-                        var tasks = Enumerable.Range(0, eventCount).Select(i =>
-                        {
-                            WebhookEvent @event = _random.Next(1, 4) switch
-                            {
-                                1 => new SampleCreatedWebhookEvent
-                                {
-                                    SampleId = _random.Next(),
-                                    SampleType = _random.Next(1, 6),
-                                    UserId = _random.Next(),
-                                    ReferenceId = _random.Next()
-                                },
-                                2 => new SampleIsActiveChangedWebhookEvent
-                                {
-                                    SampleId = _random.Next(),
-                                    SampleType = _random.Next(1, 6),
-                                    UserId = _random.Next(),
-                                    IsActive = Convert.ToBoolean(_random.Next(0, 2))
-                                },
-                                3 => new SampleDeletedWebhookEvent
-                                {
-                                    SampleId = _random.Next(),
-                                    SampleType = _random.Next(1, 6),
-                                    UserId = _random.Next()
-                                },
-                                _ => throw new NotImplementedException(),
-                            };
-                            _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
-                            return _webhooksClient.PublishAsync(@event);
-                        });
-                        await Task.WhenAll(tasks);
+                        // Publish a ping every 1 to 60 seconds.
+                        delay = TimeSpan.FromSeconds(_random.Next(1, 61));
+                        await PublishPingAsync();
 
                         // Let's randomly simulate a problematic webhook.
-                        if (!stoppingToken.IsCancellationRequested && _random.Next(1, 501) == 1)
-                        {
-                            var @event = new SampleExceptionWebhookEvent
-                            {
-                                SampleId = _random.Next(),
-                                SampleType = 1,
-                                UserId = _random.Next()
-                            };
-                            _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
-                            await _webhooksClient.PublishAsync(@event);
-                        }   // simulate a problematic webhook
+                        if (!stoppingToken.IsCancellationRequested && _random.Next(1, 1001) == 1)
+                            await PublishPingAsync(true);
+
+                        _logger.LogInformation($"Next publish at '{DateTime.Now.Add(delay)}'.");
                     }   // publish events?
 
-                    await Task.Delay(Options.PublishInterval, stoppingToken);
+                    await Task.Delay(delay, stoppingToken);
                 }
             }
             catch (TaskCanceledException) { }
@@ -136,10 +106,7 @@ namespace Hyprsoft.Webhooks.Client.Web
             {
                 if (Options.AutoUnsubscribe && (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub))
                 {
-                    await MakeSubscriptionRequestAsync<SampleCreatedWebhookEvent>(nameof(WebhooksController.SampleCreated), false);
-                    await MakeSubscriptionRequestAsync<SampleIsActiveChangedWebhookEvent>(nameof(WebhooksController.SampleIsActiveChanged), false);
-                    await MakeSubscriptionRequestAsync<SampleDeletedWebhookEvent>(nameof(WebhooksController.SampleDeleted), false);
-                    await MakeSubscriptionRequestAsync<SampleExceptionWebhookEvent>(nameof(WebhooksController.SampleException), false);
+                    await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), false);
                     await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), false);
                 }
             }

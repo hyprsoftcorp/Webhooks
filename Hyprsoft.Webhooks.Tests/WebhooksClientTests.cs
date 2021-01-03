@@ -10,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Tests
@@ -48,23 +49,23 @@ namespace Hyprsoft.Webhooks.Tests
         public async Task Subscribe_Unsubscribe_Success()
         {
             // Filter our linq predicate so other unit tests don't interfere.
-            static bool eventNameFilter(Subscription x) => x.EventName == typeof(SampleCreatedWebhookEvent).FullName;
+            static bool eventNameFilter(Subscription x) => x.EventName == typeof(PingWebhookEvent).FullName;
             using var client = new WebhooksClient(new WebhooksHttpClientOptions());
 
             // Subscribe should be idempotent.
             var uri = new Uri("http://mydomain.com/webhooks/v1/blah");
-            await client.SubscribeAsync<SampleCreatedWebhookEvent>(uri);
+            await client.SubscribeAsync<PingWebhookEvent>(uri);
             Assert.AreEqual(1, _webhooksManager.Subscriptions.Count());
-            await client.SubscribeAsync<SampleCreatedWebhookEvent>(uri);
+            await client.SubscribeAsync<PingWebhookEvent>(uri);
             Assert.AreEqual(1, _webhooksManager.Subscriptions.Where(eventNameFilter).Count());
 
             // Unsubscribe should be idempotent.
-            await client.UnsubscribeAsync<SampleCreatedWebhookEvent>(new Uri("http://mydomain.com/webhooks/v1/doesntexist"));
+            await client.UnsubscribeAsync<PingWebhookEvent>(new Uri("http://mydomain.com/webhooks/v1/doesntexist"));
             Assert.AreEqual(1, _webhooksManager.Subscriptions.Where(eventNameFilter).Count());
             Assert.AreEqual(1, _webhooksManager.Subscriptions.Where(x => eventNameFilter(x) && x.Filter == null && x.FilterExpression == null && x.IsActive && x.WebhookUri == uri).Count());
-            await client.UnsubscribeAsync<SampleCreatedWebhookEvent>(uri);
+            await client.UnsubscribeAsync<PingWebhookEvent>(uri);
             Assert.AreEqual(0, _webhooksManager.Subscriptions.Where(eventNameFilter).Count());
-            await client.UnsubscribeAsync<SampleCreatedWebhookEvent>(uri);
+            await client.UnsubscribeAsync<PingWebhookEvent>(uri);
             Assert.AreEqual(0, _webhooksManager.Subscriptions.Where(eventNameFilter).Count());
         }
 
@@ -73,27 +74,27 @@ namespace Hyprsoft.Webhooks.Tests
         {
             using var client = new WebhooksClient(new WebhooksHttpClientOptions());
 
-            var uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.SampleDeleted)}");
-            await client.SubscribeAsync<SampleDeletedWebhookEvent>(uri);
-            await client.PublishAsync(new SampleDeletedWebhookEvent());
-            await client.UnsubscribeAsync<SampleDeletedWebhookEvent>(uri);
+            var uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.Ping)}");
+            await client.SubscribeAsync<PingWebhookEvent>(uri);
+            await client.PublishAsync(new PingWebhookEvent());
+            await client.UnsubscribeAsync<PingWebhookEvent>(uri);
         }
 
         [TestMethod]
         public async Task Publish_Fail()
         {
-            var payload = new SampleExceptionWebhookEvent();
+            var payload = new PingWebhookEvent { IsException = true };
             using var client = new WebhooksClient(new WebhooksHttpClientOptions());
 
-            var uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.SampleException)}");
-            await client.SubscribeAsync<SampleExceptionWebhookEvent>(uri);
+            var uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.Ping)}");
+            await client.SubscribeAsync<PingWebhookEvent>(uri);
             await ThrowsWebhookExceptionContainingErrorText(() => client.PublishAsync(payload), "This webhook is misbehaving.");
-            await client.UnsubscribeAsync<SampleExceptionWebhookEvent>(uri);
+            await client.UnsubscribeAsync<PingWebhookEvent>(uri);
 
             uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/doesntexist");
-            await client.SubscribeAsync<SampleExceptionWebhookEvent>(uri);
+            await client.SubscribeAsync<PingWebhookEvent>(uri);
             await ThrowsWebhookExceptionContainingErrorText(() => client.PublishAsync(payload), "Status: 404 Not Found");
-            await client.UnsubscribeAsync<SampleExceptionWebhookEvent>(uri);
+            await client.UnsubscribeAsync<PingWebhookEvent>(uri);
 
             // Publish system event
             uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.HealthSummary)}");
@@ -103,9 +104,9 @@ namespace Hyprsoft.Webhooks.Tests
 
             // Test a non WebhookResponse failure.
             uri = new Uri("https://www.google.com/webhooks/v1/test");
-            await client.SubscribeAsync<SampleExceptionWebhookEvent>(uri);
+            await client.SubscribeAsync<PingWebhookEvent>(uri);
             await ThrowsWebhookExceptionContainingErrorText(() => client.PublishAsync(payload), "Status: 404 Not Found");
-            await client.UnsubscribeAsync<SampleExceptionWebhookEvent>(uri);
+            await client.UnsubscribeAsync<PingWebhookEvent>(uri);
         }
 
         [TestMethod]
@@ -116,8 +117,18 @@ namespace Hyprsoft.Webhooks.Tests
             await ThrowsWebhookExceptionContainingErrorText(() =>
             {
                 var uri = new Uri("http://mydomain.com/webhooks/v1/blah");
-                return client.SubscribeAsync<SampleCreatedWebhookEvent>(uri);
+                return client.SubscribeAsync<PingWebhookEvent>(uri);
             }, "Status: 403 Forbidden");
+        }
+
+        [TestMethod]
+        public void Create_PingWebhookEvent_Success()
+        {
+            var @event = new PingWebhookEvent();
+            Assert.IsNotNull(@event.WebhookId);
+            Assert.IsTrue(@event.CreatedUtc <= DateTime.UtcNow);
+            Assert.AreEqual(Dns.GetHostName(), @event.OriginatorHostname);
+            Assert.IsFalse(@event.IsException);
         }
 
         private static async Task ThrowsWebhookExceptionContainingErrorText(Func<Task> callback, string errorText)

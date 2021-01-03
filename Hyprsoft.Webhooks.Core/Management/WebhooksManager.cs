@@ -123,7 +123,7 @@ namespace Hyprsoft.Webhooks.Core.Management
             }
             catch (Exception ex)
             {
-                audit.Error = ex.ToString();
+                audit.Error = ex.Message;
                 await _storageProvider.AddAuditAsync(audit);
                 throw;
             }
