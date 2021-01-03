@@ -49,11 +49,15 @@ IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Audit
 DROP TABLE [dbo].[Audits]
 GO
 
+IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Subscriptions]') AND type in (N'U'))
+DROP TABLE [dbo].[Subscriptions]
+GO
+
 CREATE TABLE [dbo].[Audits] (
     [AuditId]    INT             IDENTITY (1, 1) NOT NULL,
     [EventName]  NVARCHAR (100)  NOT NULL,
     [CreatedUtc] DATETIME2 (7)   NOT NULL,
-    [WebhookUri] NVARCHAR (500) NOT NULL,
+    [WebhookUri] NVARCHAR (255) NOT NULL,
     [Payload]    NVARCHAR (MAX)  NULL,
     [Error]      NVARCHAR (1024)  NULL
 );
@@ -65,15 +69,11 @@ GO
 ALTER TABLE [dbo].[Audits] ADD  DEFAULT (GETUTCDATE()) FOR [CreatedUtc]
 GO
 
-IF  EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[Subscriptions]') AND type in (N'U'))
-DROP TABLE [dbo].[Subscriptions]
-GO
-
 CREATE TABLE [dbo].[Subscriptions] (
     [SubscriptionId]   INT             IDENTITY (1, 1) NOT NULL,
     [EventName]        NVARCHAR (100)  NOT NULL,
     [CreatedUtc]       DATETIME2 (7)   NOT NULL,
-    [WebhookUri]       NVARCHAR (1024) NOT NULL,
+    [WebhookUri]       NVARCHAR (255) NOT NULL,
     [FilterExpression] NVARCHAR (MAX)  NULL,
     [Filter]           NVARCHAR (255)  NULL,
     [IsActive]         BIT             NOT NULL

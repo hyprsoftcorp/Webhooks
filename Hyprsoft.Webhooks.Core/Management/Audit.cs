@@ -13,7 +13,7 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
 
-        [Required, MaxLength(500)]
+        [Required, MaxLength(255)]
         public Uri WebhookUri { get; set; }
 
         public string Payload { get; set; }
