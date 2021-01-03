@@ -39,9 +39,7 @@
           <ng-container *ngFor="let item of summary.failedWebhooks; let i = index">
             <tr>
               <td class="text-nowrap">
-                <a class="collapsed" data-bs-toggle="collapse" href="{{'#webhook-' + i}}" aria-expanded="false" [attr.aria-controls]="'webhook-' + i">
-                  <i class="bi bi-chevron-up" aria-hidden="true"></i>&nbsp;{{item.eventName}}
-                </a>
+                <a class="collapsed" data-bs-toggle="collapse" href="{{'#webhook-' + i}}" aria-expanded="false" [attr.aria-controls]="'webhook-' + i">{{item.eventName}}</a>
               </td>
               <td>{{item.webhookUri}}</td>
               <td><h5><span class="badge bg-danger">{{item.count | number}}</span></h5></td>

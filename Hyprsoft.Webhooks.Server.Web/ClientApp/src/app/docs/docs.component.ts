@@ -15,14 +15,14 @@ export class DocsComponent implements OnInit {
   var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });
 
   // Subscribe
-  var webhookUri = new Uri("http://webhooks.hyprsoft.com/webhooks/v1/samplecreated");
-  await client.SubscribeAsync<SampleCreatedWebhookEvent>(webhookUri, x => x.SampleType == 2);
+  var webhookUri = new Uri("https://office.hyprsoft.com/webhooks/v1/ping");
+  await client.SubscribeAsync<PingWebhookEvent>(webhookUri);
 
   // Publish
-  await client.PublishAsync(new SampleCreatedWebhookEvent { SampleId = 1, SampleType = 2, UserId = 3, ReferenceId = 4 });
+  await client.PublishAsync(new PingWebhookEvent());
 
   // Unsubscribe
-  await client.UnsubscribeAsync<SampleCreatedWebhookEvent>(webhookUri);
+  await client.UnsubscribeAsync<PingWebhookEvent>(webhookUri);
 `;
 
   constructor(private webhooksService: WebhooksService) {
