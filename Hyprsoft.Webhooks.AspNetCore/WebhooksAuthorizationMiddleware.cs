@@ -1,7 +1,6 @@
 ﻿using Hyprsoft.Webhooks.Core.Rest;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -28,13 +27,10 @@ namespace Hyprsoft.Webhooks.AspNetCore
 
         public async Task Invoke(HttpContext httpContext, WebhooksAuthorizationOptions options)
         {
-            if (httpContext.Request.Path.StartsWithSegments(options.Segments))
+            if (httpContext.Request.Path.StartsWithSegments(options.Segments) && httpContext.Request.Method.ToUpper() != "GET")
             {
-                if (httpContext.Request.Headers.ContainsKey(WebhooksHttpClient.PayloadSignatureHeaderName))
+                if (httpContext.Request.Headers.ContainsKey(WebhooksHttpClient.PayloadSignatureHeaderName) && !String.IsNullOrWhiteSpace(options.PayloadSigningSecret))
                 {
-                    if (String.IsNullOrWhiteSpace(options.PayloadSigningSecret))
-                        throw new InvalidOperationException("Missing payload signing secret.  Please check your configuration.");
-
                     httpContext.Request.EnableBuffering();
                     var requestPayload = new byte[Convert.ToInt32(httpContext.Request.ContentLength)];
                     await httpContext.Request.Body.ReadAsync(requestPayload, 0, requestPayload.Length).ConfigureAwait(false);
@@ -53,7 +49,7 @@ namespace Hyprsoft.Webhooks.AspNetCore
                 {
                     httpContext.Response.ContentType = "application/json";
                     httpContext.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                    var error = await CreateResponseBodyAsync($"The '{WebhooksHttpClient.PayloadSignatureHeaderName}' request header is missing.").ConfigureAwait(false);
+                    var error = await CreateResponseBodyAsync($"The '{WebhooksHttpClient.PayloadSignatureHeaderName}' request header or payload signing secret is missing.").ConfigureAwait(false);
                     await httpContext.Response.Body.WriteAsync(error, 0, error.Length).ConfigureAwait(false);
                     return;
                 }

@@ -139,11 +139,14 @@ namespace Hyprsoft.Webhooks.Tests
             }
             catch (WebhookException ex) when (ex.Message.Contains(errorText))
             {
+                return;
             }
             catch (Exception)
             {
                 throw;
             }
+
+            throw new WebhookException($"This webhook should have thrown an exception containing the following text '{errorText}' but did not.");
         }
     }
 }

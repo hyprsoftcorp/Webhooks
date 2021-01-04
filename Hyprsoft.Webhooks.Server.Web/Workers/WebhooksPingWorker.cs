@@ -1,4 +1,4 @@
-using Hyprsoft.Webhooks.Core.Events;
+﻿using Hyprsoft.Webhooks.Core.Events;
 using Hyprsoft.Webhooks.Core.Management;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,23 +10,18 @@ using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Server.Web
 {
-    public class WebhooksHealthWorker : BackgroundService
+    public class WebhooksPingWorker : BackgroundService
     {
         #region Fields
 
-        private readonly ILogger<WebhooksHealthWorker> _logger;
+        private readonly ILogger<WebhooksPingWorker> _logger;
         private readonly IServiceScopeFactory _serviceScopeFactory;
 
         #endregion
 
         #region Constructors
 
-        static WebhooksHealthWorker()
-        {
-            ServerStartDateUtc = DateTime.UtcNow;
-        }
-
-        public WebhooksHealthWorker(ILogger<WebhooksHealthWorker> logger, IOptions<WebhooksHealthWorkerOptions> options, IServiceScopeFactory serviceScopeFactory)
+        public WebhooksPingWorker(ILogger<WebhooksPingWorker> logger, IOptions<WebhooksPingWorkerOptions> options, IServiceScopeFactory serviceScopeFactory)
         {
             _logger = logger;
             Options = options.Value;
@@ -37,9 +32,7 @@ namespace Hyprsoft.Webhooks.Server.Web
 
         #region Properties
 
-        public WebhooksHealthWorkerOptions Options { get; }
-
-        public static DateTime ServerStartDateUtc { get; }
+        public WebhooksPingWorkerOptions Options { get; }
 
         #endregion
 
@@ -47,7 +40,7 @@ namespace Hyprsoft.Webhooks.Server.Web
 
         public override Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation($"Webhooks Health Worker Settings: Interval: {Options.PublishHealthEventInterval}");
+            _logger.LogInformation($"Webhooks Ping Worker Settings: Interval: {Options.PublishPingEventInterval}");
             return base.StartAsync(stoppingToken);
         }
 
@@ -59,10 +52,8 @@ namespace Hyprsoft.Webhooks.Server.Web
                 {
                     using var scope = _serviceScopeFactory.CreateScope();
                     var manager = scope.ServiceProvider.GetRequiredService<IWebhooksManager>(); // Singleton lifetime
-                    var summary = await manager.GetHealthSummaryAsync(Options.PublishHealthEventInterval);
-                    summary.ServerStartDateUtc = ServerStartDateUtc;
-                    await manager.PublishAsync(new WebhooksHealthEvent { Summary = summary });
-                    await Task.Delay(Options.PublishHealthEventInterval, stoppingToken);
+                    await manager.PublishAsync(new PingWebhookEvent());
+                    await Task.Delay(Options.PublishPingEventInterval, stoppingToken);
                 }
             }
             catch (TaskCanceledException) { }

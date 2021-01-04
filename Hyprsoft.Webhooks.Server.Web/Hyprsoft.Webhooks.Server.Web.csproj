@@ -6,7 +6,7 @@
     <Authors>Hal Blakeslee</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Web Server</Product>
-    <Copyright>Copyright © 2020 by Hyprsoft Corporation.  All rights reserved.</Copyright>
+    <Copyright>Copyright © 2021 by Hyprsoft Corporation.  All rights reserved.</Copyright>
     <Version>1.2.0</Version>
     <AssemblyName>Hyprsoft.Webhooks.Server.Web</AssemblyName>
     <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>

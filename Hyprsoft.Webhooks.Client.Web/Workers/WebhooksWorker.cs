@@ -42,23 +42,19 @@ namespace Hyprsoft.Webhooks.Client.Web
 
         #region Methods
 
+        public override async Task StartAsync(CancellationToken stoppingToken)
+        {
+            _logger.LogInformation($"Webhooks Worker Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
+            if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
+            {
+                await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), true);
+                await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), true);
+            }
+            await base.StartAsync(stoppingToken);
+        }
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            async Task MakeSubscriptionRequestAsync<TEvent>(string path, bool subscribe, Expression<Func<TEvent, bool>> filter = null) where TEvent : WebhookEvent
-            {
-                var uri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{path.ToLower()}");
-                if (subscribe)
-                {
-                    _logger.LogInformation($"Subscribing to event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
-                    await _webhooksClient.SubscribeAsync<TEvent>(uri, filter);
-                }
-                else
-                {
-                    _logger.LogInformation($"Unsubscribing from event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
-                    await _webhooksClient.UnsubscribeAsync<TEvent>(uri);
-                }
-            }
-
             async Task PublishPingAsync(bool isException = false)
             {
                 var @event = new PingWebhookEvent { IsException = isException };
@@ -68,33 +64,25 @@ namespace Hyprsoft.Webhooks.Client.Web
 
             try
             {
-                await Task.Delay(TimeSpan.FromSeconds(3), stoppingToken);
-                _logger.LogInformation($"Webhooks Worker Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
-
-                if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
-                {
-                    await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), true);
-                    await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), true);
-                }
-
+                await Task.Delay(3000, stoppingToken);
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     // If we aren't publishing any events then we are just a subscriber and can "delay" infinitely.
-                    var delay = TimeSpan.Zero;
+                    var delay = 0;
                     if (Options.Role == WebhooksWorkerRole.Pub || Options.Role == WebhooksWorkerRole.PubSub)
                     {
                         // Publish a ping every 1 to 60 seconds.
-                        delay = TimeSpan.FromSeconds(_random.Next(1, 61));
+                        delay = _random.Next(1, 61);
                         await PublishPingAsync();
 
                         // Let's randomly simulate a problematic webhook.
                         if (!stoppingToken.IsCancellationRequested && _random.Next(1, 1001) == 1)
                             await PublishPingAsync(true);
 
-                        _logger.LogInformation($"Next publish at '{DateTime.Now.Add(delay)}'.");
+                        _logger.LogInformation($"Next publish at '{DateTime.Now.AddSeconds(delay)}'.");
                     }   // publish events?
 
-                    await Task.Delay(delay, stoppingToken);
+                    await Task.Delay(delay * 1_000, stoppingToken);
                 }
             }
             catch (TaskCanceledException) { }
@@ -102,13 +90,30 @@ namespace Hyprsoft.Webhooks.Client.Web
             {
                 _logger.LogError(ex, ex.Message);
             }
-            finally
+        }
+
+        public override async Task StopAsync(CancellationToken stoppingToken)
+        {
+            if (Options.AutoUnsubscribe && (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub))
             {
-                if (Options.AutoUnsubscribe && (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub))
-                {
-                    await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), false);
-                    await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), false);
-                }
+                await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), false);
+                await MakeSubscriptionRequestAsync<WebhooksHealthEvent>(nameof(WebhooksController.HealthSummary), false);
+            }
+            await base.StopAsync(stoppingToken);
+        }
+
+        private async Task MakeSubscriptionRequestAsync<TEvent>(string path, bool subscribe, Expression<Func<TEvent, bool>> filter = null) where TEvent : WebhookEvent
+        {
+            var uri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{path.ToLower()}");
+            if (subscribe)
+            {
+                _logger.LogInformation($"Subscribing to event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
+                await _webhooksClient.SubscribeAsync<TEvent>(uri, filter);
+            }
+            else
+            {
+                _logger.LogInformation($"Unsubscribing from event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
+                await _webhooksClient.UnsubscribeAsync<TEvent>(uri);
             }
         }
 

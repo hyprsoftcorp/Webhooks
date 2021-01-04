@@ -5,8 +5,9 @@
     <Authors>Hal Blakeslee</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Helpers for ASP.NET Core</Product>
-    <Copyright>Copyright © 2020 by Hyprsoft Corporation.  All rights reserved.</Copyright>
+    <Copyright>Copyright © 2021 by Hyprsoft Corporation.  All rights reserved.</Copyright>
     <Version>1.2.0</Version>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>

@@ -70,8 +70,13 @@ namespace Hyprsoft.Webhooks.Server.Web
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.XML"));
             });
             services.AddApplicationInsightsTelemetry();
-            services.Configure<WebhooksHealthWorkerOptions>(Configuration);
-            services.AddHostedService<WebhooksHealthWorker>();
+            if (!Environment.IsEnvironment("UnitTest"))
+            {
+                services.Configure<WebhooksHealthWorkerOptions>(Configuration);
+                services.AddHostedService<WebhooksHealthWorker>();
+                services.Configure<WebhooksPingWorkerOptions>(Configuration);
+                services.AddHostedService<WebhooksPingWorker>();
+            }
         }
 
         public void Configure(IApplicationBuilder app, IServiceProvider serviceProvider, IWebHostEnvironment env)
