@@ -67,7 +67,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hyprsoft Webhooks API", Version = "v1" });
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.XML"));
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
             });
             services.AddApplicationInsightsTelemetry();
             if (!Environment.IsEnvironment("UnitTest"))
