@@ -63,7 +63,6 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
         public static IApplicationBuilder UseHangfireWebhooksServer(this IApplicationBuilder app, IServiceProvider serviceProvider)
         {
             GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
-            app.UseHangfireServer();
             // TODO: We need to allow a custom dashboard path and Hangfire authorization.
             app.UseHangfireDashboard("/hangfire", new DashboardOptions { DashboardTitle = "Webhooks Dashboard", Authorization = new[] { new HangfireAuthorizationFilter() } });
 
