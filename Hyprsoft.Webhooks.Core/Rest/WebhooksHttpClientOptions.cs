@@ -10,6 +10,6 @@ namespace Hyprsoft.Webhooks.Core.Rest
 
         public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(30);
 
-        public string PayloadSigningSecret { get; set; } = WebhooksGlobalConfiguration.DefaultPayloadSigningSecret;
+        public string ApiKey { get; set; } = WebhooksGlobalConfiguration.DefaultApiKey;
     }
 }

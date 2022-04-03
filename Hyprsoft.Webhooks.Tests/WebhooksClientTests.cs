@@ -7,6 +7,7 @@ using Hyprsoft.Webhooks.Core.Rest;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Linq;
@@ -50,7 +51,7 @@ namespace Hyprsoft.Webhooks.Tests
         {
             // Filter our linq predicate so other unit tests don't interfere.
             static bool eventNameFilter(Subscription x) => x.EventName == typeof(PingWebhookEvent).FullName;
-            using var client = new WebhooksClient(new WebhooksHttpClientOptions());
+            using var client = new WebhooksClient(Options.Create(new WebhooksHttpClientOptions()));
 
             // Subscribe should be idempotent.
             var uri = new Uri("http://mydomain.com/webhooks/v1/blah");
@@ -72,7 +73,7 @@ namespace Hyprsoft.Webhooks.Tests
         [TestMethod]
         public async Task Publish_Success()
         {
-            using var client = new WebhooksClient(new WebhooksHttpClientOptions());
+            using var client = new WebhooksClient(Options.Create(new WebhooksHttpClientOptions()));
 
             var uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.Ping)}");
             await client.SubscribeAsync<PingWebhookEvent>(uri);
@@ -84,7 +85,7 @@ namespace Hyprsoft.Webhooks.Tests
         public async Task Publish_Fail()
         {
             var payload = new PingWebhookEvent { IsException = true };
-            using var client = new WebhooksClient(new WebhooksHttpClientOptions());
+            using var client = new WebhooksClient(Options.Create(new WebhooksHttpClientOptions()));
 
             var uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.Ping)}");
             await client.SubscribeAsync<PingWebhookEvent>(uri);
@@ -110,15 +111,15 @@ namespace Hyprsoft.Webhooks.Tests
         }
 
         [TestMethod]
-        public async Task PayloadSigningSecret_Fail()
+        public async Task ApiKey_Fail()
         {
-            using var client = new WebhooksClient(new WebhooksHttpClientOptions { PayloadSigningSecret = "xyz" });
+            using var client = new WebhooksClient(Options.Create(new WebhooksHttpClientOptions { ApiKey = "xyz" }));
 
             await ThrowsWebhookExceptionContainingErrorText(() =>
             {
                 var uri = new Uri("http://mydomain.com/webhooks/v1/blah");
                 return client.SubscribeAsync<PingWebhookEvent>(uri);
-            }, "Status: 403 Forbidden");
+            }, "Status: 401 Unauthorized");
         }
 
         [TestMethod]

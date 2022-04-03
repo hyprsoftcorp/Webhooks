@@ -33,14 +33,14 @@ namespace Hyprsoft.Webhooks.Client.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var payloadSigningSecret = Configuration.GetValue(nameof(WebhooksAuthorizationOptions.PayloadSigningSecret), WebhooksGlobalConfiguration.DefaultPayloadSigningSecret);
+            var apiKey = Configuration.GetValue(nameof(WebhooksAuthenticationOptions.ApiKey), WebhooksGlobalConfiguration.DefaultApiKey);
             services.Configure<WebhooksWorkerOptions>(Configuration);
+            services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
             services.AddWebhooksClient(options =>
             {
                 options.ServerBaseUri = Configuration.GetValue(nameof(WebhooksHttpClientOptions.ServerBaseUri), WebhooksHttpClientOptions.DefaultServerBaseUri);
-                options.PayloadSigningSecret = payloadSigningSecret;
+                options.ApiKey = apiKey;
             });
-            services.AddWebhooksAuthorization(options => options.PayloadSigningSecret = payloadSigningSecret);
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
             services.AddApiVersioning(options =>
             {
@@ -54,7 +54,8 @@ namespace Hyprsoft.Webhooks.Client.Web
         public void Configure(IApplicationBuilder app)
         {
             app.UseRouting();
-            app.UseWebhooksAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
         }
 

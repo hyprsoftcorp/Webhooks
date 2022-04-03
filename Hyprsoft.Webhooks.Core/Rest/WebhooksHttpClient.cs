@@ -1,25 +1,15 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Core.Rest
 {
     public class WebhooksHttpClient : HttpClient
     {
-        internal WebhooksHttpClient(string payloadSigningSecret) : base(new WebhooksMessageHandler(payloadSigningSecret)) { }
+        internal WebhooksHttpClient(string apiKey) : base(new WebhooksMessageHandler(apiKey)) { }
 
-        public const string PayloadSignatureHeaderName = "Webhooks-Payload-Signature";
-
-        public static string GetSignature(string payloadSigningSecret, string payload)
-        {
-            using (var hasher = new HMACSHA256(Encoding.UTF8.GetBytes(payloadSigningSecret)))
-            {
-                return Convert.ToBase64String(hasher.ComputeHash(Encoding.UTF8.GetBytes(payload)));
-            }
-        }
+        public const string ApiKeyHeaderName = "X-API-KEY";
 
         public async Task ValidateResponseAsync(HttpResponseMessage message, string error)
         {

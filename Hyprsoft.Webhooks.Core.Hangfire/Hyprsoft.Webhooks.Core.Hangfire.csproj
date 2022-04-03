@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <Version>1.2.0</Version>
     <Authors>Hal Blakeslee</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Hangfire Manager</Product>
-    <Copyright>Copyright © 2021 by Hyprsoft Corporation.  All rights reserved.</Copyright>
+    <Copyright>Copyright © 2022 by Hyprsoft Corporation.  All rights reserved.</Copyright>
     <AssemblyName>Hyprsoft.Webhooks.Core.Hangfire</AssemblyName>
     <RootNamespace>Hyprsoft.Webhooks.Core.Hangfire</RootNamespace>
   </PropertyGroup>
@@ -21,6 +20,10 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.11" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.11" />
+    <PackageReference Include="MinVer" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>

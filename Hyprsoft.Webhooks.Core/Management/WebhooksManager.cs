@@ -1,5 +1,6 @@
 ﻿using Hyprsoft.Webhooks.Core.Events;
 using Hyprsoft.Webhooks.Core.Rest;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serialize.Linq.Nodes;
 using System;
@@ -35,11 +36,11 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         #region Constructors
 
-        public WebhooksManager(IWebhooksStorageProvider storageProvider, WebhooksHttpClientOptions options)
+        public WebhooksManager(IWebhooksStorageProvider storageProvider, IOptions<WebhooksHttpClientOptions> options)
         {
             _storageProvider = storageProvider;
-            Options = options;
-            _httpClient = new WebhooksHttpClient(Options.PayloadSigningSecret)
+            Options = options.Value;
+            _httpClient = new WebhooksHttpClient(Options.ApiKey)
             {
                 BaseAddress = Options.ServerBaseUri,
                 Timeout = Options.RequestTimeout

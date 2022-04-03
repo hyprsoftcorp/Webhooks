@@ -1,4 +1,5 @@
 ﻿using Hyprsoft.Webhooks.Core.Events;
+using Microsoft.Extensions.Options;
 using Serialize.Linq.Extensions;
 using System;
 using System.Linq.Expressions;
@@ -27,10 +28,10 @@ namespace Hyprsoft.Webhooks.Core.Rest
 
         #region Constructors
 
-        public WebhooksClient(WebhooksHttpClientOptions options)
+        public WebhooksClient(IOptions<WebhooksHttpClientOptions> options)
         {
-            Options = options;
-            _client = new WebhooksHttpClient(Options.PayloadSigningSecret)
+            Options = options.Value;
+            _client = new WebhooksHttpClient(Options.ApiKey)
             {
                 BaseAddress = Options.ServerBaseUri,
                 Timeout = Options.RequestTimeout

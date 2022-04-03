@@ -12,13 +12,20 @@ namespace Hyprsoft.Webhooks.Core.Rest
             if (options == null)
                 throw new InvalidOperationException("The webhooks HTTP client options are missing.  Please check your configuration.");
 
-            services.AddSingleton(options);
+            services.AddOptions<WebhooksHttpClientOptions>()
+                .Configure(addOptions =>
+                {
+                    addOptions.ApiKey = options.ApiKey;
+                    addOptions.RequestTimeout = options.RequestTimeout;
+                    addOptions.ServerBaseUri = options.ServerBaseUri;
+                });
+
             services.AddTransient<IWebhooksClient, WebhooksClient>();
 
             return services;
         }
 
-        public static IServiceCollection AddWebhooksClient(this IServiceCollection services, Action<WebhooksHttpClientOptions> configure = null)
+        public static IServiceCollection AddWebhooksClient(this IServiceCollection services, Action<WebhooksHttpClientOptions> configure)
         {
             var options = new WebhooksHttpClientOptions();
             configure.Invoke(options);

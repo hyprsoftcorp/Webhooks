@@ -2,6 +2,7 @@
 using Hyprsoft.Webhooks.Core.Events;
 using Hyprsoft.Webhooks.Core.Management;
 using Hyprsoft.Webhooks.Core.Rest;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
     {
         #region Constructors
 
-        public HangfireWebhooksManager(IWebhooksStorageProvider storageProvider, WebhooksHttpClientOptions options) : base(storageProvider, options) { }
+        public HangfireWebhooksManager(IWebhooksStorageProvider storageProvider, IOptions<WebhooksHttpClientOptions> options) : base(storageProvider, options) { }
 
         #endregion
 

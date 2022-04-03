@@ -1,4 +1,5 @@
 ﻿using Hyprsoft.Webhooks.Core.Rest;
+using Microsoft.Extensions.Options;
 
 namespace Hyprsoft.Webhooks.Core.Management
 {
@@ -6,7 +7,7 @@ namespace Hyprsoft.Webhooks.Core.Management
     {
         #region Constructors
 
-        public InMemoryWebhooksManager(IWebhooksStorageProvider storageProvider, WebhooksHttpClientOptions options) : base(storageProvider, options) { }
+        public InMemoryWebhooksManager(IWebhooksStorageProvider storageProvider, IOptions<WebhooksHttpClientOptions> options) : base(storageProvider, options) { }
 
         #endregion
     }

@@ -16,7 +16,14 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
             if (options == null)
                 throw new InvalidOperationException("The Hangfire webhooks manager options are missing.  Please check your configuration.");
 
-            services.AddSingleton(options.HttpClientOptions);
+            services.AddOptions<HangfireWebhooksManagerOptions>()
+                .Configure(addOptions =>
+                {
+                    addOptions.DatabaseConnectionString = options.DatabaseConnectionString;
+                    addOptions.HttpClientOptions = options.HttpClientOptions;
+                    addOptions.UseInMemoryDatastore = options.UseInMemoryDatastore;
+                });
+
             services.AddDbContext<WebhooksDbContext>(provider =>
             {
                 if (options.UseInMemoryDatastore)
