@@ -25,8 +25,8 @@ await client.UnsubscribeAsync<PingWebhookEvent>(webhookUri);
 Simply deploy the Hyprsoft.Webhooks.Server.Web project to any Azure App service (only tested on Windows hosts).
 #### App Service Configuration Changes
 1. By default the webhooks server uses an in memory data store.  Add an app service configuration setting "UseInMemoryDatastore = false" to use SQL Server instead.
-2. Ensure an Azure SQL database named "WebhooksDb" exists and add/update the "Webhooksdb" connection string in your app configuration accordingly.
-3. Change your playload signing secret!  Add an app service configuration setting "PayloadSigningSecret = [MyFancyNewSecret]".
+2. Ensure an Azure SQL database named "WebhooksDb" exists and add/update the "WebhooksDb" connection string in your app configuration accordingly.
+3. Change your api key!  Add an app service configuration setting "ApiKey = [MyFancyNewApiKey]".
 ### Add to an existing ASP.NET Core Website
 You'll need a reference to the Hyprsoft.Webhooks.AspNetCore assembly.
 #### Startup (Web API)
@@ -52,12 +52,11 @@ namespace WebApplication1
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddWebhooksAuthentication(options => options.ApiKey = "my-api-key");
+            services.AddWebhooksClient(options => options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/"));
             // Using Newtonsoft.Json here is currently required (a fix is coming).
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication1", Version = "v1" }));
-            
-            services.AddWebhooksClient(options => options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/"));
-            services.AddWebhooksAuthorization();
             services.AddHostedService<StartupWorker>();
         }
 
@@ -69,8 +68,8 @@ namespace WebApplication1
             }
 
             app.UseRouting();
+            app.UseAuthentication();
             app.UseAuthorization();
-            app.UseWebhooksAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllers());
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 v1"));

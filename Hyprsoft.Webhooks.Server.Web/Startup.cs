@@ -41,17 +41,17 @@ namespace Hyprsoft.Webhooks.Server.Web
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var payloadSigningSecret = Configuration.GetValue(nameof(WebhooksAuthorizationOptions.PayloadSigningSecret), WebhooksGlobalConfiguration.DefaultPayloadSigningSecret);
-            services.AddWebhooksAuthorization(options => options.PayloadSigningSecret = payloadSigningSecret);
+            var apiKey = Configuration.GetValue(nameof(WebhooksAuthenticationOptions.ApiKey), WebhooksGlobalConfiguration.DefaultApiKey);
+            services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
             if (Environment.IsEnvironment("UnitTest"))
-                services.AddWebhooksServer(options => options.PayloadSigningSecret = payloadSigningSecret);
+                services.AddWebhooksServer(options => options.ApiKey = apiKey);
             else
             {
                 services.AddHangfireWebhooksServer(options =>
                 {
                     options.DatabaseConnectionString = Configuration.GetConnectionString(WebhooksDbContext.WebhooksDbName);
                     options.UseInMemoryDatastore = Configuration.GetValue(nameof(HangfireWebhooksManagerOptions.UseInMemoryDatastore), true);
-                    options.HttpClientOptions.PayloadSigningSecret = payloadSigningSecret;
+                    options.HttpClientOptions.ApiKey = apiKey;
                 });
             }
             services.AddControllersWithViews().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
@@ -96,7 +96,8 @@ namespace Hyprsoft.Webhooks.Server.Web
             app.UseSwagger();
             app.UseSwaggerUI(config => config.SwaggerEndpoint("/swagger/v1/swagger.json", "Hyprsoft Webhooks API v1"));
             app.UseRouting();
-            app.UseWebhooksAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
             app.UseEndpoints(endpoints => endpoints.MapControllerRoute(name: "default", pattern: "{controller}/{action=Index}/{id?}"));
             if (!Environment.IsEnvironment("UnitTest"))
                 app.UseHangfireWebhooksServer(serviceProvider);

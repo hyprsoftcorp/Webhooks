@@ -13,7 +13,14 @@ namespace Hyprsoft.Webhooks.Core.Management
             if (options == null)
                 throw new InvalidOperationException("The webhooks HTTP client options are missing.  Please check your configuration.");
 
-            services.AddSingleton(options);
+            services.AddOptions<WebhooksHttpClientOptions>()
+                .Configure(addOptions =>
+                {
+                    addOptions.ApiKey = options.ApiKey;
+                    addOptions.RequestTimeout = options.RequestTimeout;
+                    addOptions.ServerBaseUri = options.ServerBaseUri;
+                });
+
             services.AddSingleton<IWebhooksStorageProvider, InMemoryWebhooksStorageProvider>();
             services.AddSingleton<IWebhooksManager, InMemoryWebhooksManager>();
 
@@ -25,7 +32,7 @@ namespace Hyprsoft.Webhooks.Core.Management
             var options = new WebhooksHttpClientOptions();
             configure.Invoke(options);
 
-            return AddWebhooksServer(services, options: options);
+            return AddWebhooksServer(services, options);
         }
     }
 }

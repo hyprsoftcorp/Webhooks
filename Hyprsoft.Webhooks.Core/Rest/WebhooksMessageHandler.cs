@@ -9,16 +9,13 @@ namespace Hyprsoft.Webhooks.Core.Rest
     {
         #region Fields
 
-        private readonly string _payloadSigningSecret;
+        private readonly string _apiKey;
 
         #endregion
 
         #region Constructors
 
-        public WebhooksMessageHandler(string payloadSigningSecret) : base(new HttpClientHandler())
-        {
-            _payloadSigningSecret = payloadSigningSecret;
-        }
+        public WebhooksMessageHandler(string apiKey) : base(new HttpClientHandler()) => _apiKey = apiKey;
 
         #endregion
 
@@ -26,13 +23,11 @@ namespace Hyprsoft.Webhooks.Core.Rest
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (String.IsNullOrWhiteSpace(_payloadSigningSecret))
-                throw new InvalidOperationException("Missing client secret.  Please check your configuration.");
+            if (String.IsNullOrWhiteSpace(_apiKey))
+                throw new InvalidOperationException("Missing api key.  Please check your configuration.");
 
-            request.Headers.Remove(WebhooksHttpClient.PayloadSignatureHeaderName);
-            var requestPayload = await request.Content.ReadAsStringAsync();
-            var signature = WebhooksHttpClient.GetSignature(_payloadSigningSecret, requestPayload);
-            request.Headers.Add(WebhooksHttpClient.PayloadSignatureHeaderName, signature);
+            request.Headers.Remove(WebhooksHttpClient.ApiKeyHeaderName);
+            request.Headers.Add(WebhooksHttpClient.ApiKeyHeaderName, _apiKey);
 
             return await base.SendAsync(request, cancellationToken);
         }

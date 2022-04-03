@@ -5,7 +5,9 @@ namespace Hyprsoft.Webhooks.Core
     public static class WebhooksGlobalConfiguration
     {
         public const string LatestWebhooksApiVersion = "1.0";
-        public const string DefaultPayloadSigningSecret = "A68B5DB1237B410BB1447E1130DAEF1B0752988081784DBD945A661A416E1AD5";
+        public const string DefaultApiKey = "default-api-key";
+        public const string DefaultApiUserIdentifier = "448A0C99-6F82-4EAF-A1F9-3F131094F05B";
+        public const string DefaultApiUsername = "Webhooks API User";
 
         public static JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
     }
