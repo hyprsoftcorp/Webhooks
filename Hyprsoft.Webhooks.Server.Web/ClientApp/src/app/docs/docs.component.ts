@@ -1,11 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { BuildInfo } from '../interfaces/build-info';
 import { WebhooksService } from '../services/webhooks.service';
+import { HighlightModule } from 'ngx-highlightjs';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-docs',
   templateUrl: './docs.component.html',
-  styleUrls: ['./docs.component.css']
+  styleUrls: ['./docs.component.css'],
+  imports: [HighlightModule, DatePipe],
+  standalone: true
 })
 export class DocsComponent implements OnInit {
 
