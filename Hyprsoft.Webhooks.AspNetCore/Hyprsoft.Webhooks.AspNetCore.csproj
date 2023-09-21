@@ -1,21 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <Authors>Hal Blakeslee</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Helpers for ASP.NET Core</Product>
-    <Copyright>Copyright © 2022 by Hyprsoft Corporation.  All rights reserved.</Copyright>
+    <Copyright>Copyright © 2023 by Hyprsoft Corporation.  All rights reserved.</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
-    <PackageReference Include="AspNetCore.Authentication.ApiKey" Version="6.0.1" />
-    <PackageReference Include="MinVer" Version="3.1.0">
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
+    <PackageReference Include="AspNetCore.Authentication.ApiKey" Version="7.0.0" />
+    <PackageReference Include="MinVer" Version="4.3.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
