@@ -9,6 +9,6 @@ namespace Hyprsoft.Webhooks.Core
         public const string DefaultApiUserIdentifier = "448A0C99-6F82-4EAF-A1F9-3F131094F05B";
         public const string DefaultApiUsername = "Webhooks API User";
 
-        public static JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        public static readonly JsonSerializerSettings JsonSerializerSettings = new() { TypeNameHandling = TypeNameHandling.All };
     }
 }

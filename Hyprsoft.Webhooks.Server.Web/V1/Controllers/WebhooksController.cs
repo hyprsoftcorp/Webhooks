@@ -21,7 +21,7 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 
         private readonly ILogger<WebhooksController> _logger;
         private readonly IWebhooksManager _webhooksManager;
-        private static readonly List<Type> _systemEvents = new List<Type> { typeof(WebhooksHealthEvent) };
+        private static readonly List<Type> _systemEvents = [typeof(WebhooksHealthEvent)];
 
         #endregion
 
@@ -47,13 +47,13 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         {
             try
             {
-                _logger.LogDebug($"Creating subscription for '{request.EventName}' with webhook '{request.WebhookUri}'.");
+                _logger.LogDebug("Creating subscription for '{eventName}' with webhook '{webhookUri}'.", request.EventName, request.WebhookUri);
                 await _webhooksManager.SubscribeAsync(request.EventName, request.WebhookUri, request.Filter);
                 return WebhookOk();
             }
             catch (Exception ex)
             {
-                _logger.LogError("Subscribe failed.", ex);
+                _logger.LogError(ex, "Subscribe failed.");
                 return WebhookException(ex);
             }
         }
@@ -68,13 +68,13 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         {
             try
             {
-                _logger.LogDebug($"Removing subscription for '{request.EventName}' with webhook '{request.WebhookUri}'.");
+                _logger.LogDebug("Removing subscription for '{eventName}' with webhook '{webhookUri}'.", request.EventName, request.WebhookUri);
                 await _webhooksManager.UnsubscribeAsync(request.EventName, request.WebhookUri);
                 return WebhookOk();
             }
             catch (Exception ex)
             {
-                _logger.LogError("Unsubscribe failed.", ex);
+                _logger.LogError(ex, "Unsubscribe failed.");
                 return WebhookException(ex);
             }
         }
@@ -93,13 +93,13 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
                     throw new InvalidOperationException($"The '{@event.GetType().FullName}' event is a system event and cannot be published.");
 
                 // TODO: Depending on log level setting, this COULD log sensitive information.
-                _logger.LogDebug($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                _logger.LogDebug("Publishing event '{fullName}' with payload '{payload}'.", @event.GetType().FullName, JsonConvert.SerializeObject(@event));
                 await _webhooksManager.PublishAsync(@event);
                 return WebhookOk();
             }
             catch (Exception ex)
             {
-                _logger.LogError("Publish failed.", ex);
+                _logger.LogError(ex, "Publish failed.");
                 return WebhookException(ex);
             }
         }

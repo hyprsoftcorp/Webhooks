@@ -100,7 +100,11 @@ namespace Hyprsoft.Webhooks.Core.Rest
             _isDisposed = true;
         }
 
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         #endregion
     }

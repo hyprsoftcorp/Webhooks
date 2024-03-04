@@ -11,9 +11,9 @@ namespace Hyprsoft.Webhooks.Client.Web
 
     public class WebhooksWorkerOptions
     {
-        public static readonly Uri DefaultServerBaseUri = new Uri("http://localhost:5000/");
+        public static readonly Uri DefaultServerBaseUri = new("http://localhost:5000/");
 
-        public static readonly Uri DefaultWebhooksBaseUri = new Uri($"http://localhost:5001/");
+        public static readonly Uri DefaultWebhooksBaseUri = new($"http://localhost:5001/");
 
         public Uri ServerBaseUri { get; set; } = DefaultServerBaseUri;
 
