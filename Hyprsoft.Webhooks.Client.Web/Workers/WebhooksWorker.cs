@@ -19,7 +19,7 @@ namespace Hyprsoft.Webhooks.Client.Web
 
         private readonly ILogger<WebhooksWorker> _logger;
         private readonly IWebhooksClient _webhooksClient;
-        private readonly Random _random = new Random((int)DateTime.Now.Ticks);
+        private readonly Random _random = new((int)DateTime.Now.Ticks);
 
         #endregion
 
@@ -44,7 +44,8 @@ namespace Hyprsoft.Webhooks.Client.Web
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation($"Webhooks Worker Settings: Server: {Options.ServerBaseUri} |  Webhook: {Options.WebhooksBaseUri} | Role: {Options.Role} | AutoUnsubscribe: {Options.AutoUnsubscribe}");
+            _logger.LogInformation("Webhooks Worker Settings: Server: {serverBaseUri} |  Webhook: {webhooksBaseUri} | Role: {role} | AutoUnsubscribe: {autoUnsubscribe}",
+                Options.ServerBaseUri, Options.WebhooksBaseUri, Options.Role, Options.AutoUnsubscribe);
             if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
             {
                 await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), true);
@@ -58,7 +59,7 @@ namespace Hyprsoft.Webhooks.Client.Web
             async Task PublishPingAsync(bool isException = false)
             {
                 var @event = new PingWebhookEvent { IsException = isException };
-                _logger.LogInformation($"Publishing event '{@event.GetType().FullName}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                _logger.LogInformation("Publishing event '{fullName}' with payload '{payload}'.", @event.GetType().FullName, JsonConvert.SerializeObject(@event));
                 await _webhooksClient.PublishAsync(@event);
             }
 
@@ -79,7 +80,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                         if (!stoppingToken.IsCancellationRequested && _random.Next(1, 1001) == 1)
                             await PublishPingAsync(true);
 
-                        _logger.LogInformation($"Next publish at '{DateTime.Now.AddSeconds(delay)}'.");
+                        _logger.LogInformation("Next publish at '{delay}'.", args: DateTime.Now.AddSeconds(delay));
                     }   // publish events?
 
                     await Task.Delay(delay * 1_000, stoppingToken);
@@ -88,7 +89,7 @@ namespace Hyprsoft.Webhooks.Client.Web
             catch (TaskCanceledException) { }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
+                _logger.LogError("{message}", ex.Message);
             }
         }
 
@@ -107,12 +108,12 @@ namespace Hyprsoft.Webhooks.Client.Web
             var uri = new Uri($"{Options.WebhooksBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/{path.ToLower()}");
             if (subscribe)
             {
-                _logger.LogInformation($"Subscribing to event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
+                _logger.LogInformation("Subscribing to event '{fullName}' with webhook '{uri}'.", typeof(TEvent).FullName, uri);
                 await _webhooksClient.SubscribeAsync<TEvent>(uri, filter);
             }
             else
             {
-                _logger.LogInformation($"Unsubscribing from event '{typeof(TEvent).FullName}' with webhook '{uri}'.");
+                _logger.LogInformation("Unsubscribing from event '{fullName}' with webhook '{uri}'.", typeof(TEvent).FullName, uri);
                 await _webhooksClient.UnsubscribeAsync<TEvent>(uri);
             }
         }

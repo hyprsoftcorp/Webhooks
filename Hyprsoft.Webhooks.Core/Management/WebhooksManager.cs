@@ -98,7 +98,7 @@ namespace Hyprsoft.Webhooks.Core.Management
                 if (!String.IsNullOrWhiteSpace(subscription.FilterExpression))
                 {
                     var node = JsonConvert.DeserializeObject<ExpressionNode>(subscription.FilterExpression, WebhooksGlobalConfiguration.JsonSerializerSettings);
-                    if (!(node.ToExpression() is LambdaExpression expression))
+                    if (node.ToExpression() is not LambdaExpression expression)
                         throw new WebhookException($"Invalid webhook predicate expression for event '{@event.GetType().FullName}'.");
 
                     shouldPublish = (bool)expression.Compile().DynamicInvoke(@event);
@@ -124,7 +124,7 @@ namespace Hyprsoft.Webhooks.Core.Management
             }
             catch (Exception ex)
             {
-                audit.Error = ex.Message.Length > 1024 ? ex.Message.Substring(0, 1024) : ex.Message;
+                audit.Error = ex.Message.Length > 1024 ? ex.Message[..1024] : ex.Message;
                 await _storageProvider.AddAuditAsync(audit);
                 throw;
             }
@@ -136,16 +136,15 @@ namespace Hyprsoft.Webhooks.Core.Management
             var summary = new WebhooksHealthSummary
             {
                 PublishIntervalMinutes = (int)period.TotalMinutes,
-                SuccessfulWebhooks = _storageProvider.Audits
+                SuccessfulWebhooks = [.. _storageProvider.Audits
                             .Where(x => x.CreatedUtc >= startDateUtc && String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => x.EventName)
                             .Select(x => new WebhooksHealthSummary.SuccessfulWebhook
                             {
                                 EventName = x.Key,
                                 Count = x.Count()
-                            }).OrderBy(x => x.EventName)
-                            .ToList(),
-                FailedWebhooks = _storageProvider.Audits
+                            }).OrderBy(x => x.EventName)],
+                FailedWebhooks = [.. _storageProvider.Audits
                             .Where(x => x.CreatedUtc >= startDateUtc && !String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => new { x.EventName, x.WebhookUri, x.Error })
                             .Select(x => new WebhooksHealthSummary.FailedWebook
@@ -154,8 +153,7 @@ namespace Hyprsoft.Webhooks.Core.Management
                                 WebhookUri = x.Key.WebhookUri,
                                 Error = x.Key.Error,
                                 Count = x.Count()
-                            }).OrderBy(x => x.EventName)
-                            .ToList()
+                            }).OrderBy(x => x.EventName)]
             };
 
             return Task.FromResult(summary);
@@ -180,7 +178,11 @@ namespace Hyprsoft.Webhooks.Core.Management
             _isDisposed = true;
         }
 
-        public void Dispose() => Dispose(true);
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
         #endregion
     }
