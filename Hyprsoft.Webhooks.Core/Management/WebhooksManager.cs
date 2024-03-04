@@ -61,9 +61,9 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         public async Task SubscribeAsync(string eventName, Uri webhookUri, ExpressionNode filter = null)
         {
-            var node = filter == null ? null : JsonConvert.SerializeObject(filter, WebhooksGlobalConfiguration.JsonSerializerSettings);
+            var node = filter is null ? null : JsonConvert.SerializeObject(filter, WebhooksGlobalConfiguration.JsonSerializerSettings);
             var subscription = _storageProvider.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
-            if (subscription == null)
+            if (subscription is null)
             {
                 subscription = new Subscription
                 {

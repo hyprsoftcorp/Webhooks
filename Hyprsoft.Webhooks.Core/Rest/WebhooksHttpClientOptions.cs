@@ -4,7 +4,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
 {
     public class WebhooksHttpClientOptions
     {
-        public static readonly Uri DefaultServerBaseUri = new Uri("http://localhost:5000/");
+        public static readonly Uri DefaultServerBaseUri = new("http://localhost:5000/");
 
         public Uri ServerBaseUri { get; set; } = DefaultServerBaseUri;
 

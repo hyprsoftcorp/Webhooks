@@ -47,7 +47,7 @@ namespace Hyprsoft.Webhooks.Server.Web
 
         public override Task StartAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation($"Webhooks Health Worker Settings: Interval: {Options.PublishHealthEventInterval}");
+            _logger.LogInformation("Webhooks Health Worker Settings: Interval: {interval}", Options.PublishHealthEventInterval);
             return base.StartAsync(stoppingToken);
         }
 
@@ -68,7 +68,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             catch (TaskCanceledException) { }
             catch (Exception ex)
             {
-                _logger.LogError(ex, ex.Message);
+                _logger.LogError("{message}", ex.Message);
             }
         }
 

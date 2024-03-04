@@ -20,7 +20,7 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         private readonly IWebhooksManager _webhooksManager;
         private readonly WebhooksHealthWorkerOptions _workerOptions;
         // TODO: Since we use different serialization settings for the webhooks controller, find a better approach to use the default serialization settings for this controller.
-        private static readonly JsonSerializerSettings _serializerSettings = new JsonSerializerSettings { DateFormatString = "yyyy-MM-ddTHH:mm:ssZ", ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() } };
+        private static readonly JsonSerializerSettings _serializerSettings = new() { DateFormatString = "yyyy-MM-ddTHH:mm:ssZ", ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() } };
 
         #endregion
 
