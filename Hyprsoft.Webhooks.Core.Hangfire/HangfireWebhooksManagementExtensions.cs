@@ -1,5 +1,6 @@
 ﻿using Hangfire;
 using Hyprsoft.Webhooks.Core.Management;
+using Hyprsoft.Webhooks.Core.Rest;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +14,7 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
 
         public static IServiceCollection AddHangfireWebhooksServer(this IServiceCollection services, HangfireWebhooksManagerOptions options)
         {
-            if (options == null)
+            if (options is null)
                 throw new InvalidOperationException("The Hangfire webhooks manager options are missing.  Please check your configuration.");
 
             services.AddOptions<HangfireWebhooksManagerOptions>()
@@ -22,6 +23,14 @@ namespace Hyprsoft.Webhooks.Core.Hangfire
                     addOptions.DatabaseConnectionString = options.DatabaseConnectionString;
                     addOptions.HttpClientOptions = options.HttpClientOptions;
                     addOptions.UseInMemoryDatastore = options.UseInMemoryDatastore;
+                });
+
+            services.AddOptions<WebhooksHttpClientOptions>()
+                .Configure(addOptions =>
+                {
+                    addOptions.ApiKey = options.HttpClientOptions.ApiKey;
+                    addOptions.RequestTimeout = options.HttpClientOptions.RequestTimeout;
+                    addOptions.ServerBaseUri = options.HttpClientOptions.ServerBaseUri;
                 });
 
             services.AddDbContext<WebhooksDbContext>(provider =>

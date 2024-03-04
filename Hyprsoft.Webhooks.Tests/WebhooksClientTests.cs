@@ -63,7 +63,7 @@ namespace Hyprsoft.Webhooks.Tests
             // Unsubscribe should be idempotent.
             await client.UnsubscribeAsync<PingWebhookEvent>(new Uri("http://mydomain.com/webhooks/v1/doesntexist"));
             Assert.AreEqual(1, _webhooksManager.Subscriptions.Where(eventNameFilter).Count());
-            Assert.AreEqual(1, _webhooksManager.Subscriptions.Where(x => eventNameFilter(x) && x.Filter == null && x.FilterExpression == null && x.IsActive && x.WebhookUri == uri).Count());
+            Assert.AreEqual(1, _webhooksManager.Subscriptions.Where(x => eventNameFilter(x) && x.Filter is null && x.FilterExpression is null && x.IsActive && x.WebhookUri == uri).Count());
             await client.UnsubscribeAsync<PingWebhookEvent>(uri);
             Assert.AreEqual(0, _webhooksManager.Subscriptions.Where(eventNameFilter).Count());
             await client.UnsubscribeAsync<PingWebhookEvent>(uri);

@@ -32,7 +32,7 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
         {
             try
             {
-                _logger.LogInformation($"Received event '{nameof(PingWebhookEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                _logger.LogInformation("Received event '{eventName}' with payload '{payload}'.", nameof(PingWebhookEvent), JsonConvert.SerializeObject(@event));
                 if (@event.IsException)
                     throw new InvalidOperationException("This webhook is misbehaving.");
                 return WebhookOk();
@@ -48,7 +48,7 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
         {
             try
             {
-                _logger.LogInformation($"Received event '{nameof(WebhooksHealthEvent)}' with payload '{JsonConvert.SerializeObject(@event)}'.");
+                _logger.LogInformation("Received event '{eventName}' with payload '{payload}'.", nameof(WebhooksHealthEvent), JsonConvert.SerializeObject(@event));
                 return WebhookOk();
             }
             catch (Exception ex)

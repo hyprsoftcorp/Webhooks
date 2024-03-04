@@ -9,7 +9,7 @@ namespace Hyprsoft.Webhooks.Core.Rest
 
         public static IServiceCollection AddWebhooksClient(this IServiceCollection services, WebhooksHttpClientOptions options)
         {
-            if (options == null)
+            if (options is null)
                 throw new InvalidOperationException("The webhooks HTTP client options are missing.  Please check your configuration.");
 
             services.AddOptions<WebhooksHttpClientOptions>()

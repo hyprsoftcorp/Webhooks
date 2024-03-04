@@ -8,8 +8,8 @@ namespace Hyprsoft.Webhooks.Core.Management
     {
         #region Fields
 
-        private readonly Dictionary<int, Audit> _audits = new Dictionary<int, Audit>();
-        private readonly Dictionary<int, Subscription> _subscriptions = new Dictionary<int, Subscription>();
+        private readonly Dictionary<int, Audit> _audits = [];
+        private readonly Dictionary<int, Subscription> _subscriptions = [];
 
         #endregion
 
@@ -43,9 +43,8 @@ namespace Hyprsoft.Webhooks.Core.Management
 
         public Task RemoveSubscriptionAsync(Subscription subscription)
         {
-            if (_subscriptions.ContainsKey(subscription.SubscriptionId))
-                _subscriptions.Remove(subscription.SubscriptionId);
-            
+            _subscriptions.Remove(subscription.SubscriptionId);
+
             return Task.CompletedTask;
         }
         

@@ -13,7 +13,7 @@ namespace Hyprsoft.Webhooks.AspNetCore
 
         public static IServiceCollection AddWebhooksAuthentication(this IServiceCollection services, WebhooksAuthenticationOptions options)
         {
-            if (options == null)
+            if (options is null)
                 throw new InvalidOperationException("The webhooks authentication options are missing.  Please check your configuration.");
 
             services.AddOptions<WebhooksAuthenticationOptions>()

@@ -11,7 +11,9 @@ namespace Hyprsoft.Webhooks.Core.Rest
 
         public const string ApiKeyHeaderName = "X-API-KEY";
 
+#pragma warning disable CA1822 // Mark members as static
         public async Task ValidateResponseAsync(HttpResponseMessage message, string error)
+#pragma warning restore CA1822 // Mark members as static
         {
             var content = await message.Content.ReadAsStringAsync().ConfigureAwait(false);
             WebhookResponse responsePayload = null;
@@ -23,14 +25,11 @@ namespace Hyprsoft.Webhooks.Core.Rest
             catch (Exception)
             {
             }
-            if (responsePayload == null)
-            {
-                responsePayload = new WebhookResponse
+            responsePayload ??= new WebhookResponse
                 {
                     IsSuccess = false,
                     ErrorMessage = String.IsNullOrWhiteSpace(content) ? "Unknown." : content
                 };
-            }
 
             if (message.IsSuccessStatusCode || responsePayload.IsSuccess)
                 return;
