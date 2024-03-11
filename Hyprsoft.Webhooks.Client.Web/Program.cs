@@ -1,7 +1,4 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Hyprsoft.Webhooks.Core;
 
 namespace Hyprsoft.Webhooks.Client.Web
 {
@@ -9,24 +6,36 @@ namespace Hyprsoft.Webhooks.Client.Web
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
-        }
+            var builder = WebApplication.CreateBuilder(args);
+            var apiKey = builder.Configuration.GetValue(nameof(WebhooksAuthenticationOptions.ApiKey), WebhooksGlobalConfiguration.DefaultApiKey)!;
+            var workerOptions = new WebhooksWorkerOptions();
 
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            var config = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json", true)
-                .AddCommandLine(args)
-                .Build();
+            builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
+            builder.Services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
+            if (!builder.Environment.IsEnvironment("UnitTest"))
+                builder.Services.AddHostedService<WebhooksWorker>();
 
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    var workerOptions = new WebhooksWorkerOptions();
-                    config.Bind(workerOptions);
-                    webBuilder.UseUrls(workerOptions.WebhooksBaseUri.ToString());
-                    webBuilder.UseStartup<Startup>();
-                });
+            builder.Configuration.Bind(workerOptions);
+            builder.Services.Configure<WebhooksWorkerOptions>(builder.Configuration);
+            builder.Services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
+            builder.Services.AddWebhooksClient(options =>
+            {
+                options.ServerBaseUri = builder.Configuration.GetValue(nameof(WebhooksHttpClientOptions.ServerBaseUri), WebhooksHttpClientOptions.DefaultServerBaseUri)!;
+                options.ApiKey = apiKey;
+            });
+
+            var app = builder.Build();
+
+            if (!builder.Environment.IsDevelopment())
+                app.UseHsts();
+            app.UseSwagger();
+            app.UseSwaggerUI();
+            app.UseWebhooksAuthentication();
+            app.MapControllers();
+
+            app.Run();
         }
     }
 }

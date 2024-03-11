@@ -1,17 +1,13 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Net;
 
-namespace Hyprsoft.Webhooks.Core.Events
+namespace Hyprsoft.Webhooks.Core
 {
     public abstract class WebhookEvent
     {
         private static readonly string _hostname;
 
-        static WebhookEvent()
-        {
-            _hostname = Dns.GetHostName().ToUpper();
-        }
+        static WebhookEvent() => _hostname = $"{Dns.GetHostName().ToLower()}.{AppDomain.CurrentDomain.FriendlyName.ToLower()}";
 
         [JsonProperty]
         public Guid WebhookId { get; internal set; } = Guid.NewGuid();
@@ -20,7 +16,7 @@ namespace Hyprsoft.Webhooks.Core.Events
         public DateTime CreatedUtc { get; internal set; } = DateTime.UtcNow;
 
         [JsonProperty]
-        public string OriginatorHostname { get; internal set; } = _hostname;
+        public string Originator { get; internal set; } = _hostname;
 
     }
 }

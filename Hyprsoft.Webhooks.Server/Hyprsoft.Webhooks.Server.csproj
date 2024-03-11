@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Authors>Hal Blakeslee</Authors>
+    <Company>Hyprsoft Corporation</Company>
+    <Product>Webhooks Server Manager</Product>
+    <Copyright>Copyright © 2024 by Hyprsoft Corporation.  All rights reserved.</Copyright>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hangfire.Core" Version="1.8.11" />
+    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.11" />
+    <PackageReference Include="Hangfire.InMemory" Version="0.8.0" />
+    <PackageReference Include="Hangfire.SqlServer" Version="1.8.11" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.2" />
+    <PackageReference Include="MinVer" Version="5.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Hyprsoft.Webhooks.Client\Hyprsoft.Webhooks.Client.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,12 +1,6 @@
-﻿using Hyprsoft.Webhooks.Core.Events;
-using Hyprsoft.Webhooks.Core.Management;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+﻿using Hyprsoft.Webhooks.Core;
 using Microsoft.Extensions.Options;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Hyprsoft.Webhooks.Server.Web
 {
@@ -51,8 +45,11 @@ namespace Hyprsoft.Webhooks.Server.Web
                 while (!stoppingToken.IsCancellationRequested)
                 {
                     using var scope = _serviceScopeFactory.CreateScope();
-                    var manager = scope.ServiceProvider.GetRequiredService<IWebhooksManager>(); // Singleton lifetime
-                    await manager.PublishAsync(new PingWebhookEvent());
+                    var manager = scope.ServiceProvider.GetRequiredService<IWebhooksManager>();
+                    var @event = new PingWebhookEvent();
+                    
+                    _logger.LogInformation("Publishing event '{fullName}' with payload '{payload}'.", @event.GetType().FullName, JsonConvert.SerializeObject(@event));
+                    await manager.PublishAsync(@event);
                     await Task.Delay(Options.PublishPingEventInterval, stoppingToken);
                 }
             }

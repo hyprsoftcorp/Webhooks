@@ -1,22 +1,20 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
+using System.Runtime.InteropServices;
 
 namespace Hyprsoft.Webhooks.Core
 {
-    public class BuildInfo
+    public sealed record BuildInfo(string Version, DateTime BuildDateTimeUtc, string Framework)
     {
-        public string Version { get; private set; }
-        
-        public DateTime BuildDateTimeUtc { get; private set; }
-
         public static BuildInfo FromAssembly(Assembly assembly)
         {
-            var attribute = assembly.GetCustomAttribute<BuildDateAttribute>();
+            var buildAttribute = assembly.GetCustomAttribute<BuildDateAttribute>();
+            var informationalVersionAttribute = assembly.GetCustomAttribute(typeof(AssemblyInformationalVersionAttribute)) as AssemblyInformationalVersionAttribute;
             return new BuildInfo
-            {
-                Version = (((AssemblyInformationalVersionAttribute)assembly.GetCustomAttribute(typeof(AssemblyInformationalVersionAttribute))).InformationalVersion),
-                BuildDateTimeUtc = attribute?.DateTimeUtc ?? default
-            };
+            (
+                informationalVersionAttribute?.InformationalVersion ?? "0.0.0",
+                buildAttribute?.DateTimeUtc ?? default,
+                $"{RuntimeInformation.FrameworkDescription} {RuntimeInformation.RuntimeIdentifier}"
+            );
         }
     }
 }

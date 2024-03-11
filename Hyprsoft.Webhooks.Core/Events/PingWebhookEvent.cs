@@ -1,4 +1,4 @@
-﻿namespace Hyprsoft.Webhooks.Core.Events
+﻿namespace Hyprsoft.Webhooks.Core
 {
     public class PingWebhookEvent : WebhookEvent
     {

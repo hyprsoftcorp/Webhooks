@@ -1,25 +1,21 @@
+using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Client.Web;
 using Hyprsoft.Webhooks.Client.Web.V1.Controllers;
 using Hyprsoft.Webhooks.Core;
-using Hyprsoft.Webhooks.Core.Events;
-using Hyprsoft.Webhooks.Core.Management;
-using Hyprsoft.Webhooks.Core.Rest;
+using Hyprsoft.Webhooks.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Tests
 {
     [TestClass]
     public class WebhooksClientTests
     {
-        private static IWebhooksManager _webhooksManager;
+        private static IWebhooksManager _webhooksManager = null!;
 
         [ClassInitialize]
 #pragma warning disable IDE0060 // Remove unused parameter
@@ -29,7 +25,7 @@ namespace Hyprsoft.Webhooks.Tests
             var webhooksServer = Host.CreateDefaultBuilder();
             webhooksServer.ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseStartup<Hyprsoft.Webhooks.Server.Web.Startup>();
+                webBuilder.UseStartup<Hyprsoft.Webhooks.Server.Web.Program>();
                 webBuilder.UseUrls(WebhooksHttpClientOptions.DefaultServerBaseUri.ToString());
                 webBuilder.UseEnvironment("UnitTest");
             });
@@ -39,7 +35,7 @@ namespace Hyprsoft.Webhooks.Tests
             var webhooksClient = Host.CreateDefaultBuilder();
             webhooksClient.ConfigureWebHostDefaults(webBuilder =>
             {
-                webBuilder.UseStartup<Hyprsoft.Webhooks.Client.Web.Startup>();
+                webBuilder.UseStartup<Hyprsoft.Webhooks.Client.Web.Program>();
                 webBuilder.UseUrls(WebhooksWorkerOptions.DefaultWebhooksBaseUri.ToString());
                 webBuilder.UseEnvironment("UnitTest");
             });
@@ -97,11 +93,6 @@ namespace Hyprsoft.Webhooks.Tests
             await ThrowsWebhookExceptionContainingErrorText(() => client.PublishAsync(payload), "Status: 404 Not Found");
             await client.UnsubscribeAsync<PingWebhookEvent>(uri);
 
-            // Publish system event
-            uri = new Uri($"{WebhooksWorkerOptions.DefaultWebhooksBaseUri}webhooks/v1/{nameof(WebhooksController.HealthSummary)}");
-            await client.SubscribeAsync<WebhooksHealthEvent>(uri);
-            await ThrowsWebhookExceptionContainingErrorText(() => client.PublishAsync(new WebhooksHealthEvent()), "system event and cannot be published");
-            await client.UnsubscribeAsync<WebhooksHealthEvent>(uri);
 
             // Test a non WebhookResponse failure.
             uri = new Uri("https://www.google.com/webhooks/v1/test");
@@ -128,7 +119,7 @@ namespace Hyprsoft.Webhooks.Tests
             var @event = new PingWebhookEvent();
             Assert.IsNotNull(@event.WebhookId);
             Assert.IsTrue(@event.CreatedUtc <= DateTime.UtcNow);
-            Assert.AreEqual(Dns.GetHostName(), @event.OriginatorHostname);
+            Assert.AreEqual(Dns.GetHostName(), @event.Originator);
             Assert.IsFalse(@event.IsException);
         }
 

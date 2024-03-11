@@ -2,58 +2,39 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <ApplicationInsightsResourceId>/subscriptions/f209e110-616c-4e7c-88fc-c3aa0c3e90c6/resourceGroups/WebhooksResourceGroup/providers/microsoft.insights/components/WebhooksServerAppInsights</ApplicationInsightsResourceId>
     <Authors>Hal Blakeslee</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Web Server</Product>
     <Copyright>Copyright © 2024 by Hyprsoft Corporation.  All rights reserved.</Copyright>
-    <AssemblyName>Hyprsoft.Webhooks.Server.Web</AssemblyName>
-    <TypeScriptCompileBlocked>true</TypeScriptCompileBlocked>
-    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
-    <IsPackable>false</IsPackable>
-    <SpaRoot>ClientApp\</SpaRoot>
-    <DefaultItemExcludes>$(DefaultItemExcludes);$(SpaRoot)node_modules\**</DefaultItemExcludes>
-
-    <!-- Set this to true if you enable server-side prerendering -->
-    <BuildServerSideRenderer>false</BuildServerSideRenderer>
-    <UserSecretsId>1a22b03e-57ad-48b9-8cac-bbbae3b7aec4</UserSecretsId>
+    <SpaRoot>..\Hyprsoft.Webhooks.Server.Spa</SpaRoot>
+    <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
+    <SpaProxyServerUrl>http://localhost:4200</SpaProxyServerUrl>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>C:\Source\Hyprsoft.Webhooks.Solution\Hyprsoft.Webhooks.Server.Web\Hyprsoft.Webhooks.Server.Web.xml</DocumentationFile>
-    <NoWarn>1701;1702;CS1591</NoWarn>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <PropertyGroup>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <DocumentationFile>C:\Source\Hyprsoft.Webhooks.Solution\Hyprsoft.Webhooks.Server.Web\Hyprsoft.Webhooks.Server.Web.xml</DocumentationFile>
     <NoWarn>1701;1702;CS1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.SpaProxy">
+      <Version>8.*-*</Version>
+    </PackageReference>
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="8.0.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="8.0.0" />
-    <PackageReference Include="MinVer" Version="4.3.0">
+    <PackageReference Include="MinVer" Version="5.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-    <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="5.3.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Connected Services\" />
-  </ItemGroup>
-
+ 
   <ItemGroup>
     <AssemblyAttribute Include="Hyprsoft.Webhooks.Core.BuildDateAttribute">
       <_Parameter1>$([System.DateTime]::UtcNow.ToString("yyyyMMddHHmmss"))</_Parameter1>
@@ -61,60 +42,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Hyprsoft.Webhooks.AspNetCore\Hyprsoft.Webhooks.AspNetCore.csproj" />
-    <ProjectReference Include="..\Hyprsoft.Webhooks.Core.Hangfire\Hyprsoft.Webhooks.Core.Hangfire.csproj" />
-    <ProjectReference Include="..\Hyprsoft.Webhooks.Core\Hyprsoft.Webhooks.Core.csproj" />
+    <ProjectReference Include="..\Hyprsoft.Webhooks.Server.Spa\Hyprsoft.Webhooks.Server.Spa.esproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\Hyprsoft.Webhooks.Server\Hyprsoft.Webhooks.Server.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Content Remove="$(SpaRoot)**" />
-    <None Remove="$(SpaRoot)**" />
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Remove="ClientApp\src\assets\images\webhooks-client-console-screenshot.jpg" />
-    <None Remove="ClientApp\src\assets\images\webhooks-dashboard-screenshot.jpg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="ClientApp\src\assets\images\webhooks-client-console-screenshot.jpg">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="ClientApp\src\assets\images\webhooks-dashboard-screenshot.jpg">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
-    <!-- Ensure Node.js is installed -->
-    <Exec Command="node --version" ContinueOnError="true">
-      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
-    </Exec>
-    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
-    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-  </Target>
-
-  <Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
-    <!-- As part of publishing, ensure the JS resources are freshly built in production mode -->
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build --prod" />
-    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build:ssr --prod" Condition=" '$(BuildServerSideRenderer)' == 'true' " />
-
-    <!-- Include the newly-built files in the publish output -->
-    <ItemGroup>
-      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
-      <DistFiles Include="$(SpaRoot)node_modules\**" Condition="'$(BuildServerSideRenderer)' == 'true'" />
-      <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
-        <RelativePath>%(DistFiles.Identity)</RelativePath>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      </ResolvedFileToPublish>
-    </ItemGroup>
-  </Target>
   
 </Project>

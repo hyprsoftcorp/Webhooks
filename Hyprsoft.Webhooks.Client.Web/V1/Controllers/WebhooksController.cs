@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Hyprsoft.Webhooks.AspNetCore;
-using Hyprsoft.Webhooks.Core.Events;
+﻿using Asp.Versioning;
+using Hyprsoft.Webhooks.Core;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
 
 namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
 {
@@ -18,10 +16,7 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
 
         #region Constructors
 
-        public WebhooksController(ILogger<WebhooksController> logger)
-        {
-            _logger = logger;
-        }
+        public WebhooksController(ILogger<WebhooksController> logger) => _logger = logger;
 
         #endregion
 
@@ -35,20 +30,6 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
                 _logger.LogInformation("Received event '{eventName}' with payload '{payload}'.", nameof(PingWebhookEvent), JsonConvert.SerializeObject(@event));
                 if (@event.IsException)
                     throw new InvalidOperationException("This webhook is misbehaving.");
-                return WebhookOk();
-            }
-            catch (Exception ex)
-            {
-                return WebhookException(ex);
-            }
-        }
-
-        [HttpPost]
-        public IActionResult HealthSummary(WebhooksHealthEvent @event)
-        {
-            try
-            {
-                _logger.LogInformation("Received event '{eventName}' with payload '{payload}'.", nameof(WebhooksHealthEvent), JsonConvert.SerializeObject(@event));
                 return WebhookOk();
             }
             catch (Exception ex)
