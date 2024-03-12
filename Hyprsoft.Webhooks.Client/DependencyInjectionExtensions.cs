@@ -1,9 +1,7 @@
 ﻿using AspNetCore.Authentication.ApiKey;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
 using System.Security.Claims;
-[assembly: InternalsVisibleToAttribute("Hyprsoft.Webhooks.Server")]
 
 namespace Hyprsoft.Webhooks.Client
 {

@@ -5,10 +5,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <ApplicationInsightsResourceId>/subscriptions/f209e110-616c-4e7c-88fc-c3aa0c3e90c6/resourceGroups/WebhooksResourceGroup/providers/microsoft.insights/components/WebhooksServerAppInsights</ApplicationInsightsResourceId>
-    <Authors>Hal Blakeslee</Authors>
+    <Authors>Hyprsoft Corporation</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Web Server</Product>
     <Copyright>Copyright © 2024 by Hyprsoft Corporation.  All rights reserved.</Copyright>
+    <Description>Webhooks Server Web</Description>
     <SpaRoot>..\Hyprsoft.Webhooks.Server.Spa</SpaRoot>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <SpaProxyServerUrl>http://localhost:4200</SpaProxyServerUrl>

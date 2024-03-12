@@ -4,9 +4,10 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Authors>Hal Blakeslee</Authors>
+    <Authors>Hyprsoft Corporation</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Client Web</Product>
+    <Description>Webhooks Client Web</Description>
     <Copyright>Copyright © 2024 by Hyprsoft Corporation.  All rights reserved.</Copyright>
   </PropertyGroup>
 

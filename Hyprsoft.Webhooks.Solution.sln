@@ -5,6 +5,7 @@ VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{FB347596-C203-497C-9FB9-5C82828348E9}"
 	ProjectSection(SolutionItems) = preProject
+		deploy-nugets.cmd = deploy-nugets.cmd
 		LICENSE = LICENSE
 		NuGet.Config = NuGet.Config
 		README.md = README.md
