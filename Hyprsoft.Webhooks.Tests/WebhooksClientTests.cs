@@ -2,6 +2,7 @@ using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Client.Web;
 using Hyprsoft.Webhooks.Client.Web.V1.Controllers;
 using Hyprsoft.Webhooks.Core;
+using Hyprsoft.Webhooks.Events;
 using Hyprsoft.Webhooks.Server;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;

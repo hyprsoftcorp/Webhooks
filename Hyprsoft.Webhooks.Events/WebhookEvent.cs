@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System.Net;
 
-namespace Hyprsoft.Webhooks.Core
+namespace Hyprsoft.Webhooks.Events
 {
     public abstract class WebhookEvent
     {

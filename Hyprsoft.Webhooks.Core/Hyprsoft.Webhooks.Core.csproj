@@ -10,6 +10,7 @@
     <Description>Webhooks Core</Description>
     <Copyright>Copyright © 2024 by Hyprsoft Corporation.  All rights reserved.</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>

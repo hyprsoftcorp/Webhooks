@@ -1,5 +1,5 @@
 ﻿using Asp.Versioning;
-using Hyprsoft.Webhooks.Core;
+using Hyprsoft.Webhooks.Events;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

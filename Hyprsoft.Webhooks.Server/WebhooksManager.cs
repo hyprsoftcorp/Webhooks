@@ -1,5 +1,6 @@
 ﻿using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Core;
+using Hyprsoft.Webhooks.Events;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serialize.Linq.Nodes;

@@ -1,4 +1,5 @@
 ﻿using Hyprsoft.Webhooks.Core;
+using Hyprsoft.Webhooks.Events;
 using Microsoft.Extensions.Options;
 using Serialize.Linq.Extensions;
 using System.Linq.Expressions;

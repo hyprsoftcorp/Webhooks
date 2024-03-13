@@ -46,7 +46,7 @@
             <param name="request">The subscription request.</param>
             <returns>A webhook response indicating success or failure and the reason for the failure if applicable.</returns>
         </member>
-        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.WebhooksController.Publish(Hyprsoft.Webhooks.Core.WebhookEvent)">
+        <member name="M:Hyprsoft.Webhooks.Server.Web.V1.Controllers.WebhooksController.Publish(Hyprsoft.Webhooks.Events.WebhookEvent)">
             <summary>
             Publishes a webhook event to all subscribers.
             </summary>

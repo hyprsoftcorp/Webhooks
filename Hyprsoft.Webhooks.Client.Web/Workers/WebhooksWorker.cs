@@ -1,5 +1,6 @@
 using Hyprsoft.Webhooks.Client.Web.V1.Controllers;
 using Hyprsoft.Webhooks.Core;
+using Hyprsoft.Webhooks.Events;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System.Linq.Expressions;

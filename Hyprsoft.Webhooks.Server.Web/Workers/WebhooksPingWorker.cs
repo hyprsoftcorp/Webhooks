@@ -1,4 +1,4 @@
-﻿using Hyprsoft.Webhooks.Core;
+﻿using Hyprsoft.Webhooks.Events;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 
