@@ -15,7 +15,7 @@ namespace Hyprsoft.Webhooks.Core
         [MaxLength(255)]
         public Uri? WebhookUri { get; set; }
 
-        public string Payload { get; set; } = null!;
+        public string? Payload { get; set; }
 
         [MaxLength(1024)]
         public string? Error { get; set; }

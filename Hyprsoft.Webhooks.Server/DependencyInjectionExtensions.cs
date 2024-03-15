@@ -1,10 +1,13 @@
 ﻿using Hangfire;
 using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Core;
+using Hyprsoft.Webhooks.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO;
+using System.Reflection;
 
 namespace Hyprsoft.Webhooks.Server
 {
@@ -84,6 +87,12 @@ namespace Hyprsoft.Webhooks.Server
                 configuration.UseSerializerSettings(WebhooksGlobalConfiguration.JsonSerializerSettings);
             });
             services.AddHangfireServer();
+
+            foreach (var file in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.events.dll"))
+            {
+                if (string.Compare(Path.GetFileName(file), $"{typeof(PingEvent).Namespace}.dll", true) != 0)
+                    Assembly.Load(file);
+            }
 
             return services;
         }
