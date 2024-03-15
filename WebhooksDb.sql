@@ -54,12 +54,13 @@ DROP TABLE [dbo].[Subscriptions]
 GO
 
 CREATE TABLE [dbo].[Audits] (
-    [AuditId]    INT             IDENTITY (1, 1) NOT NULL,
-    [EventName]  NVARCHAR (100)  NOT NULL,
-    [CreatedUtc] DATETIME2 (7)   NOT NULL,
-    [WebhookUri] NVARCHAR (255) NOT NULL,
-    [Payload]    NVARCHAR (MAX)  NULL,
-    [Error]      NVARCHAR (1024)  NULL
+    [AuditId]    INT                IDENTITY (1, 1) NOT NULL,
+    [EventName]  NVARCHAR (100)     NOT NULL,
+    [CreatedUtc] DATETIME2 (7)      NOT NULL,
+    [WebhookUri] NVARCHAR (255)     NULL,
+    [Payload]    NVARCHAR (MAX)     NULL,
+    [Error]      NVARCHAR (1024)    NULL,
+    [AuditType]  INT                NOT NULL
 );
 
 ALTER TABLE [dbo].[Audits]
@@ -70,13 +71,13 @@ ALTER TABLE [dbo].[Audits] ADD  DEFAULT (GETUTCDATE()) FOR [CreatedUtc]
 GO
 
 CREATE TABLE [dbo].[Subscriptions] (
-    [SubscriptionId]   INT             IDENTITY (1, 1) NOT NULL,
-    [EventName]        NVARCHAR (100)  NOT NULL,
-    [CreatedUtc]       DATETIME2 (7)   NOT NULL,
-    [WebhookUri]       NVARCHAR (255) NOT NULL,
-    [FilterExpression] NVARCHAR (MAX)  NULL,
-    [Filter]           NVARCHAR (255)  NULL,
-    [IsActive]         BIT             NOT NULL
+    [SubscriptionId]   INT              IDENTITY (1, 1) NOT NULL,
+    [EventName]        NVARCHAR (100)   NOT NULL,
+    [CreatedUtc]       DATETIME2 (7)    NOT NULL,
+    [WebhookUri]       NVARCHAR (255)   NOT NULL,
+    [FilterExpression] NVARCHAR (MAX)   NULL,
+    [Filter]           NVARCHAR (255)   NULL,
+    [IsActive]         BIT              NOT NULL
 );
 GO
 

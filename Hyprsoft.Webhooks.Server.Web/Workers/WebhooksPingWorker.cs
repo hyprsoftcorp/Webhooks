@@ -46,7 +46,7 @@ namespace Hyprsoft.Webhooks.Server.Web
                 {
                     using var scope = _serviceScopeFactory.CreateScope();
                     var manager = scope.ServiceProvider.GetRequiredService<IWebhooksManager>();
-                    var @event = new PingWebhookEvent();
+                    var @event = new PingEvent();
                     
                     _logger.LogInformation("Publishing event '{fullName}' with payload '{payload}'.", @event.GetType().FullName, JsonConvert.SerializeObject(@event));
                     await manager.PublishAsync(@event);

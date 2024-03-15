@@ -23,11 +23,11 @@ namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
         #region Methods
 
         [HttpPost]
-        public IActionResult Ping(PingWebhookEvent @event)
+        public IActionResult Ping(PingEvent @event)
         {
             try
             {
-                _logger.LogInformation("Received event '{eventName}' with payload '{payload}'.", nameof(PingWebhookEvent), JsonConvert.SerializeObject(@event));
+                _logger.LogInformation("Received event '{eventName}' with payload '{payload}'.", nameof(PingEvent), JsonConvert.SerializeObject(@event));
                 if (@event.IsException)
                     throw new InvalidOperationException("This webhook is misbehaving.");
                 return WebhookOk();

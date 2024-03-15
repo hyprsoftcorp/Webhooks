@@ -79,18 +79,40 @@ namespace Hyprsoft.Webhooks.Server
                 subscription.FilterExpression = node;
                 subscription.Filter = filter?.ToString();
             }
+
             await _database.UpsertSubscriptionAsync(subscription);
+            await _database.AddAuditAsync(new Audit
+            {
+                EventName = eventName,
+                AuditType = AuditType.Subscribe,
+                WebhookUri = webhookUri
+            });
         }
 
         public async Task UnsubscribeAsync(string eventName, Uri webhookUri)
         {
             var subscription = _database.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
-            if (subscription != null)
-                await _database.RemoveSubscriptionAsync(subscription);
+            if (subscription is null)
+                return;
+
+            await _database.RemoveSubscriptionAsync(subscription);
+            await _database.AddAuditAsync(new Audit
+            {
+                EventName = eventName,
+                AuditType = AuditType.Unsubscribe,
+                WebhookUri = webhookUri
+            });
         }
 
         public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent
         {
+            await _database.AddAuditAsync(new Audit
+            {
+                EventName = @event.GetType().FullName!,
+                AuditType = AuditType.Publish,
+                Payload = JsonConvert.SerializeObject(@event)
+            });
+
             foreach (var subscription in _database.Subscriptions.Where(s => s.EventName == @event.GetType().FullName && s.IsActive).ToList())
             {
                 var shouldPublish = true;
@@ -100,7 +122,7 @@ namespace Hyprsoft.Webhooks.Server
                     if (node?.ToExpression() is not LambdaExpression expression)
                         throw new WebhookException($"Invalid webhook predicate expression for event '{@event.GetType().FullName}'.");
 
-                    shouldPublish = (bool)expression.Compile().DynamicInvoke(@event);
+                    shouldPublish = (bool)(expression.Compile().DynamicInvoke(@event) ?? false);
                 }
                 if (shouldPublish)
                     await OnPublishAsync<TEvent>(subscription, @event);
@@ -112,6 +134,7 @@ namespace Hyprsoft.Webhooks.Server
             var audit = new Audit
             {
                 EventName = @event.GetType().FullName!,
+                AuditType = AuditType.Dispatch,
                 Payload = JsonConvert.SerializeObject(@event),
                 WebhookUri = webhookUri
             };
@@ -136,7 +159,7 @@ namespace Hyprsoft.Webhooks.Server
             {
                 PublishIntervalMinutes = (int)period.TotalMinutes,
                 SuccessfulWebhooks = [.. _database.Audits
-                            .Where(x => x.CreatedUtc >= startDateUtc && String.IsNullOrWhiteSpace(x.Error))
+                            .Where(x => x.AuditType == AuditType.Dispatch && x.CreatedUtc >= startDateUtc && String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => x.EventName)
                             .Select(x => new WebhooksHealthSummary.SuccessfulWebhook
                             {
@@ -144,7 +167,7 @@ namespace Hyprsoft.Webhooks.Server
                                 Count = x.Count()
                             }).OrderBy(x => x.EventName)],
                 FailedWebhooks = [.. _database.Audits
-                            .Where(x => x.CreatedUtc >= startDateUtc && !String.IsNullOrWhiteSpace(x.Error))
+                            .Where(x => x.AuditType == AuditType.Dispatch && x.CreatedUtc >= startDateUtc && !String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => new { x.EventName, x.WebhookUri, x.Error })
                             .Select(x => new WebhooksHealthSummary.FailedWebook
                             {

@@ -42,7 +42,7 @@ namespace Hyprsoft.Webhooks.Client.Web
                 Options.ServerBaseUri, Options.WebhooksBaseUri, Options.Role, Options.AutoUnsubscribe);
             if (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub)
             {
-                await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), true);
+                await MakeSubscriptionRequestAsync<PingEvent>(nameof(WebhooksController.Ping), true);
             }
             await base.StartAsync(stoppingToken);
         }
@@ -51,7 +51,7 @@ namespace Hyprsoft.Webhooks.Client.Web
         {
             async Task PublishPingAsync(bool isException = false)
             {
-                var @event = new PingWebhookEvent { IsException = isException };
+                var @event = new PingEvent { IsException = isException };
                 _logger.LogInformation("Publishing event '{fullName}' with payload '{payload}'.", @event.GetType().FullName, JsonConvert.SerializeObject(@event));
                 await _webhooksClient.PublishAsync(@event);
             }
@@ -90,7 +90,7 @@ namespace Hyprsoft.Webhooks.Client.Web
         {
             if (Options.AutoUnsubscribe && (Options.Role == WebhooksWorkerRole.Sub || Options.Role == WebhooksWorkerRole.PubSub))
             {
-                await MakeSubscriptionRequestAsync<PingWebhookEvent>(nameof(WebhooksController.Ping), false);
+                await MakeSubscriptionRequestAsync<PingEvent>(nameof(WebhooksController.Ping), false);
             }
             await base.StopAsync(stoppingToken);
         }

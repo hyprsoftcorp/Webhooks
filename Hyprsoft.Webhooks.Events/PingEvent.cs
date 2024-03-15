@@ -1,6 +1,6 @@
 ﻿namespace Hyprsoft.Webhooks.Events
 {
-    public class PingWebhookEvent : WebhookEvent
+    public class PingEvent : WebhookEvent
     {
         public bool IsException { get; set; }
     }
