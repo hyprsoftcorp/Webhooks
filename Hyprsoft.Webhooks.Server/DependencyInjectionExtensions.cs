@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using System.IO;
 using System.Reflection;
 
 namespace Hyprsoft.Webhooks.Server
@@ -88,10 +87,21 @@ namespace Hyprsoft.Webhooks.Server
             });
             services.AddHangfireServer();
 
-            foreach (var file in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory, "*.events.dll"))
+            foreach (var customEventAssemblyName in options.CustomEventAssemblyNames)
             {
-                if (string.Compare(Path.GetFileName(file), $"{typeof(PingEvent).Namespace}.dll", true) != 0)
-                    Assembly.Load(file);
+                var assemblyFilename = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, customEventAssemblyName);
+                if (File.Exists(assemblyFilename))
+                {
+                    var assembly = Assembly.LoadFrom(assemblyFilename);
+                    if (assembly is null)
+                        continue;
+
+                    var eventType = assembly.GetExportedTypes().FirstOrDefault(x => x.IsSubclassOf(typeof(WebhookEvent)));
+                    if (eventType is not null && !string.IsNullOrWhiteSpace(eventType.FullName))
+                    {
+                        var _ = assembly.CreateInstance(eventType.FullName);
+                    }
+                }
             }
 
             return services;

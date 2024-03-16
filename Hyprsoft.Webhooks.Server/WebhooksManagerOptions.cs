@@ -7,5 +7,7 @@ namespace Hyprsoft.Webhooks.Server
         public string? DatabaseConnectionString { get; set; }
 
         public WebhooksHttpClientOptions HttpClientOptions { get; set; } = new();
+
+        public IEnumerable<string> CustomEventAssemblyNames { get; set; } = [];
     }
 }

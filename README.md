@@ -26,7 +26,7 @@ await client.UnsubscribeAsync<PingWebhookEvent>(webhookUri);
 ###  Azure App Service
 Simply deploy the Hyprsoft.Webhooks.Server.Web project to any Azure App service (only tested on Windows hosts).
 #### App Service Configuration Changes
-1. By default the webhooks server uses an in memory data store.  Add an Azure SQL database connection string to use a persistent datastore.
+1. By default the webhooks server uses an in-memory data store.  Add an Azure SQL database connection string to use a persistent datastore.
 2. Change your api key!  Add an app service configuration setting "ApiKey = [MyFancyNewApiKey]".
 ### Sample Code
 You'll need a reference to the Hyprsoft.Webhooks.Client Nuget.
@@ -138,5 +138,29 @@ Hyprsoft.Webhooks.Client.Web.exe ServerBaseUri="https://webhooks.hyprsoft.com/" 
 ./Hyprsoft.Webhooks.Client.Web --ServerBaseUri "https://webhooks.hyprsoft.com/" --WebhooksBaseUri "http://office.hyprsoft.com/" --Role PubSub
 ```
 
-## Adding your own webhook events
-Coming soon.
+## Adding your own custom webhook events
+You can dynamically add your own custom webhook events to the system by placing your custom .NET event assembly in the webhook server's bin folder and adding the name of the assembly to the server's application settings
+configuration.
+### Example
+1. Add a new class library project to your solution.
+2. Add a reference to the "Hyprsoft.Webhooks.Events" Nuget.
+3. Add a new class to your new class library project inheriting from "Hyprsoft.Webhooks.Events.WebhookEvent".
+4. Build your project in release and place the class library project's output assembly (and it's dependencies if applicable) in the webhook server's bin folder.  Your assembly must publically expose at least one type derived from "Hyprsoft.Webhooks.Events.WebhookEvent".
+
+
+``` csharp
+using Hyprsoft.Webhooks.Events;
+
+namespace MyCompany.MyProduct1.WebhookEvents
+{
+
+    public class MyEvent : WebhookEvent
+    {
+        public string Message { get; set; }
+    }
+}
+```
+#### Configuration
+``` json
+"CustomEventAssemblyNames" : [ "MyCompany.MyProduct1.WebhookEvents.dll", "MyCompany.MyProduct2.WebhookEvents.dll", ... ] 
+```

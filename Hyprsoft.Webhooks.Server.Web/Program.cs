@@ -32,6 +32,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             {
                 options.DatabaseConnectionString = builder.Configuration.GetConnectionString(WebhooksGlobalConfiguration.WebhooksDbName);
                 options.HttpClientOptions.ApiKey = apiKey;
+                options.CustomEventAssemblyNames = builder.Configuration.GetSection(nameof(WebhooksManagerOptions.CustomEventAssemblyNames)).GetChildren().Select(x => x.Value!);
             });
 
             builder.Services.AddApplicationInsightsTelemetry();
