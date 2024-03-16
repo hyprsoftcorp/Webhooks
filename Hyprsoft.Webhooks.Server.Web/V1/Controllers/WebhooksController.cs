@@ -1,13 +1,8 @@
-﻿using Hyprsoft.Webhooks.AspNetCore;
-using Hyprsoft.Webhooks.Core.Events;
-using Hyprsoft.Webhooks.Core.Management;
-using Hyprsoft.Webhooks.Core.Rest;
+﻿using Asp.Versioning;
+using Hyprsoft.Webhooks.Client;
+using Hyprsoft.Webhooks.Events;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 {
@@ -21,7 +16,6 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 
         private readonly ILogger<WebhooksController> _logger;
         private readonly IWebhooksManager _webhooksManager;
-        private static readonly List<Type> _systemEvents = [typeof(WebhooksHealthEvent)];
 
         #endregion
 
@@ -89,9 +83,6 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         {
             try
             {
-                if (_systemEvents.Contains(@event.GetType()))
-                    throw new InvalidOperationException($"The '{@event.GetType().FullName}' event is a system event and cannot be published.");
-
                 // TODO: Depending on log level setting, this COULD log sensitive information.
                 _logger.LogDebug("Publishing event '{fullName}' with payload '{payload}'.", @event.GetType().FullName, JsonConvert.SerializeObject(@event));
                 await _webhooksManager.PublishAsync(@event);

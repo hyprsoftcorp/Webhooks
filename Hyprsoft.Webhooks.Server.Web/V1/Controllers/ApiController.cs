@@ -1,9 +1,7 @@
-﻿using Hyprsoft.Webhooks.Core.Management;
+﻿using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 {
@@ -18,7 +16,6 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         #region Fields
 
         private readonly IWebhooksManager _webhooksManager;
-        private readonly WebhooksHealthWorkerOptions _workerOptions;
         // TODO: Since we use different serialization settings for the webhooks controller, find a better approach to use the default serialization settings for this controller.
         private static readonly JsonSerializerSettings _serializerSettings = new() { DateFormatString = "yyyy-MM-ddTHH:mm:ssZ", ContractResolver = new DefaultContractResolver() { NamingStrategy = new CamelCaseNamingStrategy() } };
 
@@ -26,10 +23,9 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
 
         #region Constructors
 
-        public ApiController(IWebhooksManager webhooksManger, IOptions<WebhooksHealthWorkerOptions> workerOptions)
+        public ApiController(IWebhooksManager webhooksManger)
         {
             _webhooksManager = webhooksManger;
-            _workerOptions = workerOptions.Value;
         }
 
         #endregion
@@ -46,11 +42,11 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
         /// </summary>
         /// <returns>A health summary of the Webhooks Server API.</returns>
         [HttpGet]
-        public async Task<IActionResult> Health()
+        public async Task<IActionResult> Health([FromQuery] TimeSpan period)
         {
-            var summary = await _webhooksManager.GetHealthSummaryAsync(_workerOptions.PublishHealthEventInterval);
-            summary.PublishIntervalMinutes = (int)_workerOptions.PublishHealthEventInterval.TotalMinutes;
-            summary.ServerStartDateUtc = WebhooksHealthWorker.ServerStartDateUtc;
+            var summary = await _webhooksManager.GetHealthSummaryAsync(period);
+            summary.PublishIntervalMinutes = (int)period.TotalMinutes;
+            summary.ServerStartDateUtc = Program.ServerStartDateUtc;
             
             return new JsonResult(summary, _serializerSettings);
         }

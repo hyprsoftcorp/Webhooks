@@ -6,10 +6,12 @@ https://webhooks.hyprsoft.com/docs
 
 ### Sample Code
 ``` csharp
-// Webhooks REST client
-var client = new WebhooksClient(new WebhooksHttpClientOptions { ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/") });
+using Hyprsoft.Webhooks.Client;
 
-// Subscribe
+// Webhooks REST client
+var client = new WebhooksClient(options => options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/"));
+
+// Subscribe (a REST controller is needed to host the webhook callback endpoints)
 var webhookUri = new Uri("https://office.hyprsoft.com/webhooks/v1/ping");
 await client.SubscribeAsync<PingWebhookEvent>(webhookUri);
 
@@ -24,72 +26,52 @@ await client.UnsubscribeAsync<PingWebhookEvent>(webhookUri);
 ###  Azure App Service
 Simply deploy the Hyprsoft.Webhooks.Server.Web project to any Azure App service (only tested on Windows hosts).
 #### App Service Configuration Changes
-1. By default the webhooks server uses an in memory data store.  Add an app service configuration setting "UseInMemoryDatastore = false" to use SQL Server instead.
-2. Ensure an Azure SQL database named "WebhooksDb" exists and add/update the "WebhooksDb" connection string in your app configuration accordingly.
-3. Change your api key!  Add an app service configuration setting "ApiKey = [MyFancyNewApiKey]".
-### Add to an existing ASP.NET Core Website
-You'll need a reference to the Hyprsoft.Webhooks.AspNetCore assembly.
-#### Startup (Web API)
+1. By default the webhooks server uses an in-memory data store.  Add an Azure SQL database connection string to use a persistent datastore.
+2. Change your api key!  Add an app service configuration setting "ApiKey = [MyFancyNewApiKey]".
+### Sample Code
+You'll need a reference to the Hyprsoft.Webhooks.Client Nuget.
+#### Webhooks Client Web
 ``` csharp
-using Hyprsoft.Webhooks.AspNetCore;
 using Hyprsoft.Webhooks.Core;
-using Hyprsoft.Webhooks.Core.Rest;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
-using System;
 
-namespace WebApplication1
+namespace Hyprsoft.Webhooks.Client.Web
 {
-    public class Startup
+    public class Program
     {
-        public Startup(IConfiguration configuration) => Configuration = configuration;
-
-        public IConfiguration Configuration { get; }
-
-        public void ConfigureServices(IServiceCollection services)
+        public static void Main(string[] args)
         {
-            services.AddWebhooksAuthentication(options => options.ApiKey = "my-api-key");
-            services.AddWebhooksClient(options => options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/"));
-            // Using Newtonsoft.Json here is currently required (a fix is coming).
-            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
-            services.AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebApplication1", Version = "v1" }));
-            services.AddHostedService<StartupWorker>();
-        }
+            var builder = WebApplication.CreateBuilder(args);
+            var apiKey = "my-secret-api-key";
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
-        {
-            if (env.IsDevelopment())
+            builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
+            builder.Services.AddHostedService<WebhooksWorker>();
+
+            // Authentication is only required if your subscribing to any webhooks.
+            builder.Services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
+            builder.Services.AddWebhooksClient(options =>
             {
-                app.UseDeveloperExceptionPage();
-            }
+                options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com");
+                options.ApiKey = apiKey;
+            });
 
-            app.UseRouting();
-            app.UseAuthentication();
-            app.UseAuthorization();
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
-            app.UseSwagger();
-            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebApplication1 v1"));
+            var app = builder.Build();
+
+            // Authentication is only required if your subscribing to any webhooks.
+            app.UseWebhooksAuthentication();
+            app.MapControllers();
+
+            app.Run();
         }
     }
 }
-
 ```
-#### Startup Worker
+#### Webhooks Worker
 ``` csharp
-using Hyprsoft.Webhooks.Core.Events;
-using Hyprsoft.Webhooks.Core.Rest;
-using Microsoft.Extensions.Hosting;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Hyprsoft.Webhooks.Core;
 
-namespace WebApplication1
+namespace Hyprsoft.Webhooks.Client.Web
 {
-    public class StartupWorker : BackgroundService
+    public class WebhooksWorker : BackgroundService
     {
         private readonly IWebhooksClient _webhooksClient;
         private readonly Uri _webhookBaseUri = new Uri("http://office.hyprsoft.com/webhooks/ping");
@@ -106,7 +88,6 @@ namespace WebApplication1
 
         public override async Task StopAsync(CancellationToken stoppingToken)
         {
-            // You may not want to unsubscibe if the webhook events are "mission critical".
             await _webhooksClient.UnsubscribeAsync<PingWebhookEvent>(_webhookBaseUri);
             await base.StopAsync(stoppingToken);
         }
@@ -115,14 +96,10 @@ namespace WebApplication1
 ```
 #### Webhooks Controller
 ``` csharp
-using Hyprsoft.Webhooks.AspNetCore;
-using Hyprsoft.Webhooks.Core.Events;
-using Microsoft.AspNetCore.Mvc;
-using System;
+using Hyprsoft.Webhooks.Core;
 
-namespace WebApplication1.Controllers
+namespace Hyprsoft.Webhooks.Client.Web.Controllers
 {
-    // Unless you're using API versioning (and you should be), this is required since the WebhooksControllerBase is decorated with an API versioned route.
     [Route("[controller]/[action]")]
     public class WebhooksController : WebhooksControllerBase
     {
@@ -161,8 +138,29 @@ Hyprsoft.Webhooks.Client.Web.exe ServerBaseUri="https://webhooks.hyprsoft.com/" 
 ./Hyprsoft.Webhooks.Client.Web --ServerBaseUri "https://webhooks.hyprsoft.com/" --WebhooksBaseUri "http://office.hyprsoft.com/" --Role PubSub
 ```
 
-## TODOs
-1. Add the ability to use System.Text.Json side-by-side with Newtonsoft.Json.  https://blogs.taiga.nl/martijn/2020/05/28/system-text-json-and-newtonsoft-json-side-by-side-in-asp-net-core/ 
-2. Figure out a way to balance performance and usability/effectivness when it comes to logging errors in the audit table.  Currently the audit table's error column is nvarchar(1024) and we only audit the exception's message property.  We'd like to audit the exception's call stack which can certainly exceed 1024 characters.  If we alter the column to be nvarchar(max) we will eventually run into performance issues generating the failed webhooks data in the health summary which groups by event name, webhook URI, and error message.
-3. Fluent API implementation?
-4. gRPC implementation?
+## Adding your own custom webhook events
+You can dynamically add your own custom webhook events to the system by placing your custom .NET event assembly in the webhook server's bin folder and adding the name of the assembly to the server's application settings
+configuration.
+### Example
+1. Add a new class library project to your solution.
+2. Add a reference to the "Hyprsoft.Webhooks.Events" Nuget.
+3. Add a new class to your new class library project inheriting from "Hyprsoft.Webhooks.Events.WebhookEvent".
+4. Build your project in release and place the class library project's output assembly (and it's dependencies if applicable) in the webhook server's bin folder.  Your assembly must publically expose at least one type derived from "Hyprsoft.Webhooks.Events.WebhookEvent".
+
+
+``` csharp
+using Hyprsoft.Webhooks.Events;
+
+namespace MyCompany.MyProduct1.WebhookEvents
+{
+
+    public class MyEvent : WebhookEvent
+    {
+        public string Message { get; set; }
+    }
+}
+```
+#### Configuration
+``` json
+"CustomEventAssemblyNames" : [ "MyCompany.MyProduct1.WebhookEvents.dll", "MyCompany.MyProduct2.WebhookEvents.dll", ... ] 
+```

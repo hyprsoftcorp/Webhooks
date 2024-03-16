@@ -1,7 +1,9 @@
 {
+  "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
     "Hyprsoft.Webhooks.Client.Web": {
       "commandName": "Project",
+      "applicationUrl": "http://localhost:5001",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }

@@ -351,3 +351,4 @@ MigrationBackup/
 .config/
 lib/
 /NuGet.Config
+/deploy-nugets.cmd

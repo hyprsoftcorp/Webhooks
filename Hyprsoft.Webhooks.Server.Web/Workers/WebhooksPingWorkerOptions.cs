@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hyprsoft.Webhooks.Server.Web
+﻿namespace Hyprsoft.Webhooks.Server.Web
 {
     public class WebhooksPingWorkerOptions
     {

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Hyprsoft.Webhooks.Client.Web
+﻿namespace Hyprsoft.Webhooks.Client.Web
 {
     public enum WebhooksWorkerRole
     {
