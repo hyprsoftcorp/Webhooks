@@ -1,6 +1,6 @@
 ﻿namespace Hyprsoft.Webhooks.Server
 {
-    public class WebhooksHealthSummary
+    public sealed class WebhooksHealthSummary
     {
         public class SuccessfulWebhook
         {

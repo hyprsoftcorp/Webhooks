@@ -2,7 +2,7 @@
 
 namespace Hyprsoft.Webhooks.Server
 {
-    internal class HangfireActivator : JobActivator
+    internal sealed class HangfireActivator : JobActivator
     {
         private readonly IServiceProvider _serviceProvider;
 

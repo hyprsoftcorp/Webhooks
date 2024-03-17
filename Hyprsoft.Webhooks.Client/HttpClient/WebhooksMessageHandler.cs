@@ -1,16 +1,17 @@
 ﻿namespace Hyprsoft.Webhooks.Client
 {
-    internal class WebhooksMessageHandler : DelegatingHandler
+    internal sealed class WebhooksMessageHandler : DelegatingHandler
     {
         #region Fields
 
+        public const string ApiKeyHeaderName = "X-API-KEY";
         private readonly string _apiKey;
 
         #endregion
 
         #region Constructors
 
-        public WebhooksMessageHandler(string apiKey) : base(new HttpClientHandler()) => _apiKey = apiKey;
+        public WebhooksMessageHandler(string apiKey) => _apiKey = apiKey;
 
         #endregion
 
@@ -21,8 +22,8 @@
             if (String.IsNullOrWhiteSpace(_apiKey))
                 throw new InvalidOperationException("Missing api key.  Please check your configuration.");
 
-            request.Headers.Remove(WebhooksHttpClient.ApiKeyHeaderName);
-            request.Headers.Add(WebhooksHttpClient.ApiKeyHeaderName, _apiKey);
+            request.Headers.Remove(ApiKeyHeaderName);
+            request.Headers.Add(ApiKeyHeaderName, _apiKey);
 
             return await base.SendAsync(request, cancellationToken);
         }

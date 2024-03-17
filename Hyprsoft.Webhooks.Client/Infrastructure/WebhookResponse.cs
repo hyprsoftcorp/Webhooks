@@ -1,6 +1,6 @@
 ﻿namespace Hyprsoft.Webhooks.Client
 {
-    public class WebhookResponse
+    public sealed class WebhookResponse
     {
         public bool IsSuccess { get; set; }
 

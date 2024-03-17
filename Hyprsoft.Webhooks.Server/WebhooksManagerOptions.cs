@@ -2,7 +2,7 @@
 
 namespace Hyprsoft.Webhooks.Server
 {
-    public class WebhooksManagerOptions
+    public sealed class WebhooksManagerOptions
     {
         public string? DatabaseConnectionString { get; set; }
 

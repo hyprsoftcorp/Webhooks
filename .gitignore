@@ -352,3 +352,4 @@ MigrationBackup/
 lib/
 /NuGet.Config
 /deploy-nugets.cmd
+/Hyprsoft.Webhooks.Server.Web/appsettings.Production.json

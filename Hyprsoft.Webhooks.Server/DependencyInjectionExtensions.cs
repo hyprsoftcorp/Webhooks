@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using System.Reflection;
 
 namespace Hyprsoft.Webhooks.Server
@@ -63,8 +65,10 @@ namespace Hyprsoft.Webhooks.Server
                     .AllowCredentials();
             }));
 
-            services.AddScoped<IWebhooksRepository, WebhooksRepository>();
-            services.AddScoped<IWebhooksManager, HangfireWebhooksManager>();
+            services.TryAddScoped<IWebhooksRepository, WebhooksRepository>();
+            services.TryAddTransient<WebhooksMessageHandler>(services => new WebhooksMessageHandler(services.GetRequiredService<IOptions<WebhooksHttpClientOptions>>().Value.ApiKey));
+            services.AddHttpClient<IWebhooksManager, HangfireWebhooksManager>()
+                .AddHttpMessageHandler<WebhooksMessageHandler>();
 
             // TODO: Fix this hack!  
             // 1. Hangfire expects the DB to be created.

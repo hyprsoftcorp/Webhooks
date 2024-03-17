@@ -15,7 +15,7 @@ namespace Hyprsoft.Webhooks.Server
         Task RemoveSubscriptionAsync(Subscription subscription);
     }
 
-    internal class WebhooksRepository : IWebhooksRepository
+    internal sealed class WebhooksRepository : IWebhooksRepository
     {
         #region Fields
 

@@ -7,7 +7,7 @@ using System.Linq.Expressions;
 
 namespace Hyprsoft.Webhooks.Client.Web
 {
-    public class WebhooksWorker : BackgroundService
+    internal sealed class WebhooksWorker : BackgroundService
     {
         #region Fields
 

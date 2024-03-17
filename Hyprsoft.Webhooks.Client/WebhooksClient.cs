@@ -1,12 +1,11 @@
 ﻿using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Events;
-using Microsoft.Extensions.Options;
 using Serialize.Linq.Extensions;
 using System.Linq.Expressions;
 
 namespace Hyprsoft.Webhooks.Client
 {
-    public interface IWebhooksClient : IDisposable
+    public interface IWebhooksClient
     {
         Task SubscribeAsync<TEvent>(Uri webhookUri, Expression<Func<TEvent, bool>>? filterExpression = null) where TEvent : WebhookEvent;
 
@@ -15,32 +14,17 @@ namespace Hyprsoft.Webhooks.Client
         Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent;
     }
 
-    public class WebhooksClient : IWebhooksClient, IDisposable
+    public sealed class WebhooksClient : IWebhooksClient
     {
         #region Fields
 
-        private bool _isDisposed;
-        private readonly WebhooksHttpClient _client;
+        private readonly HttpClient _httpClient;
 
         #endregion
 
         #region Constructors
 
-        public WebhooksClient(IOptions<WebhooksHttpClientOptions> options)
-        {
-            Options = options.Value;
-            _client = new WebhooksHttpClient(Options.ApiKey)
-            {
-                BaseAddress = Options.ServerBaseUri,
-                Timeout = Options.RequestTimeout
-            };
-        }
-
-        #endregion
-
-        #region Properties
-
-        public WebhooksHttpClientOptions Options { get; }
+        public WebhooksClient(HttpClient httpClient) => _httpClient = httpClient;
 
         #endregion
 
@@ -48,60 +32,28 @@ namespace Hyprsoft.Webhooks.Client
 
         public async Task SubscribeAsync<TEvent>(Uri webhookUri, Expression<Func<TEvent, bool>>? filterExpression = null) where TEvent : WebhookEvent
         {
-            var requestPayload = new SubscriptionRequest
-            {
-                EventName = typeof(TEvent).FullName!,
-                WebhookUri = webhookUri,
-                Filter = filterExpression?.ToExpressionNode()
-            };
-            var response = await _client.PutAsync($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/subscribe", new WebhookContent(requestPayload)).ConfigureAwait(false);
-            await _client.ValidateResponseAsync(response, "Subscribe failed.");
+            var requestPayload = new SubscriptionRequest(typeof(TEvent).FullName!, webhookUri, filterExpression?.ToExpressionNode());
+            var response = await _httpClient.PutAsync($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/subscribe", new WebhookContent(requestPayload)).ConfigureAwait(false);
+            await _httpClient.ValidateResponseAsync(response, "Subscribe failed.");
         }
 
         public async Task UnsubscribeAsync<TEvent>(Uri webhookUri) where TEvent : WebhookEvent
         {
-            var requestPayload = new SubscriptionRequest
-            {
-                EventName = typeof(TEvent).FullName!,
-                WebhookUri = webhookUri
-            };
+            var requestPayload = new SubscriptionRequest(typeof(TEvent).FullName!, webhookUri, null);
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
-                RequestUri = new Uri($"{Options.ServerBaseUri}webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/unsubscribe"),
+                RequestUri = new Uri($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/unsubscribe"),
                 Content = new WebhookContent(requestPayload)
             };
-            var response = await _client.SendAsync(request).ConfigureAwait(false);
-            await _client.ValidateResponseAsync(response, "Unsubscribe failed.");
+            var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
+            await _httpClient.ValidateResponseAsync(response, "Unsubscribe failed.");
         }
 
         public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent
         {
-            var response = await _client.PostAsync($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/publish", new WebhookContent(@event)).ConfigureAwait(false);
-            await _client.ValidateResponseAsync(response, "Publish failed.");
-        }
-
-        #endregion
-
-        #region IDisposable
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_isDisposed)
-                return;
-
-            if (disposing)
-            {
-                _client?.Dispose();
-            }
-
-            _isDisposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+            var response = await _httpClient.PostAsync($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/publish", new WebhookContent(@event)).ConfigureAwait(false);
+            await _httpClient.ValidateResponseAsync(response, "Publish failed.");
         }
 
         #endregion

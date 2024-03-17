@@ -2,7 +2,7 @@ using Hyprsoft.Webhooks.Core;
 
 namespace Hyprsoft.Webhooks.Client.Web
 {
-    public class Program
+    public sealed class Program
     {
         public static void Main(string[] args)
         {

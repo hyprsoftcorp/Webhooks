@@ -6,7 +6,7 @@ using System.Reflection;
 
 namespace Hyprsoft.Webhooks.Server.Web
 {
-    public class Program
+    public sealed class Program
     {
         public static DateTime ServerStartDateUtc { get; private set; }
 
