@@ -7,7 +7,7 @@
         Sub
     }
 
-    public class WebhooksWorkerOptions
+    public sealed class WebhooksWorkerOptions
     {
         public static readonly Uri DefaultServerBaseUri = new("http://localhost:5000/");
 

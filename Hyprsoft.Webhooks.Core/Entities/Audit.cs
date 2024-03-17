@@ -2,7 +2,7 @@
 
 namespace Hyprsoft.Webhooks.Core
 {
-    public class Audit
+    public sealed class Audit
     {
         [Key, Required]
         public int AuditId { get; set; }

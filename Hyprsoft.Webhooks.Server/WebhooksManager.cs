@@ -1,14 +1,13 @@
 ﻿using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Events;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serialize.Linq.Nodes;
 using System.Linq.Expressions;
 
 namespace Hyprsoft.Webhooks.Server
 {
-    public interface IWebhooksManager : IDisposable
+    public interface IWebhooksManager
     {
         IEnumerable<Subscription> Subscriptions { get; }
 
@@ -23,36 +22,28 @@ namespace Hyprsoft.Webhooks.Server
         Task<WebhooksHealthSummary> GetHealthSummaryAsync(TimeSpan period);
     }
 
-    internal abstract class WebhooksManager : IWebhooksManager, IDisposable
+    internal abstract class WebhooksManager : IWebhooksManager
     {
         #region Fields
 
-        private bool _isDisposed;
-        private readonly IWebhooksRepository _database;
-        private readonly WebhooksHttpClient _httpClient;
+        private readonly IWebhooksRepository _webhooksRepository;
+        private readonly HttpClient _httpClient;
 
         #endregion
 
         #region Constructors
 
-        public WebhooksManager(IWebhooksRepository database, IOptions<WebhooksHttpClientOptions> options)
+        public WebhooksManager(IWebhooksRepository reepository, HttpClient httpClient)
         {
-            _database = database;
-            Options = options.Value;
-            _httpClient = new WebhooksHttpClient(Options.ApiKey)
-            {
-                BaseAddress = Options.ServerBaseUri,
-                Timeout = Options.RequestTimeout
-            };
+            _webhooksRepository = reepository;
+            _httpClient = httpClient;
         }
 
         #endregion
 
         #region Properties
 
-        public WebhooksHttpClientOptions Options { get; }
-
-        public IEnumerable<Subscription> Subscriptions => _database.Subscriptions.OrderBy(x => x.CreatedUtc);
+        public IEnumerable<Subscription> Subscriptions => _webhooksRepository.Subscriptions.OrderBy(x => x.CreatedUtc);
 
         #endregion
 
@@ -61,7 +52,7 @@ namespace Hyprsoft.Webhooks.Server
         public async Task SubscribeAsync(string eventName, Uri webhookUri, ExpressionNode? filter = null)
         {
             var node = filter is null ? null : JsonConvert.SerializeObject(filter, WebhooksGlobalConfiguration.JsonSerializerSettings);
-            var subscription = _database.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
+            var subscription = _webhooksRepository.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
             if (subscription is null)
             {
                 subscription = new Subscription
@@ -80,8 +71,8 @@ namespace Hyprsoft.Webhooks.Server
                 subscription.Filter = filter?.ToString();
             }
 
-            await _database.UpsertSubscriptionAsync(subscription);
-            await _database.AddAuditAsync(new Audit
+            await _webhooksRepository.UpsertSubscriptionAsync(subscription);
+            await _webhooksRepository.AddAuditAsync(new Audit
             {
                 EventName = eventName,
                 AuditType = AuditType.Subscribe,
@@ -91,12 +82,12 @@ namespace Hyprsoft.Webhooks.Server
 
         public async Task UnsubscribeAsync(string eventName, Uri webhookUri)
         {
-            var subscription = _database.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
+            var subscription = _webhooksRepository.Subscriptions.FirstOrDefault(s => s.EventName == eventName && s.WebhookUri == webhookUri);
             if (subscription is null)
                 return;
 
-            await _database.RemoveSubscriptionAsync(subscription);
-            await _database.AddAuditAsync(new Audit
+            await _webhooksRepository.RemoveSubscriptionAsync(subscription);
+            await _webhooksRepository.AddAuditAsync(new Audit
             {
                 EventName = eventName,
                 AuditType = AuditType.Unsubscribe,
@@ -106,14 +97,14 @@ namespace Hyprsoft.Webhooks.Server
 
         public async Task PublishAsync<TEvent>(TEvent @event) where TEvent : WebhookEvent
         {
-            await _database.AddAuditAsync(new Audit
+            await _webhooksRepository.AddAuditAsync(new Audit
             {
                 EventName = @event.GetType().FullName!,
                 AuditType = AuditType.Publish,
                 Payload = JsonConvert.SerializeObject(@event)
             });
 
-            foreach (var subscription in _database.Subscriptions.Where(s => s.EventName == @event.GetType().FullName && s.IsActive).ToList())
+            foreach (var subscription in _webhooksRepository.Subscriptions.Where(s => s.EventName == @event.GetType().FullName && s.IsActive).ToList())
             {
                 var shouldPublish = true;
                 if (!String.IsNullOrWhiteSpace(subscription.FilterExpression))
@@ -142,12 +133,12 @@ namespace Hyprsoft.Webhooks.Server
             {
                 var response = await _httpClient.PostAsync(webhookUri, new WebhookContent(@event)).ConfigureAwait(false);
                 await _httpClient.ValidateResponseAsync(response, "Dispatch failed.");
-                await _database.AddAuditAsync(audit);
+                await _webhooksRepository.AddAuditAsync(audit);
             }
             catch (Exception ex)
             {
                 audit.Error = ex.Message.Length > 1024 ? ex.Message[..1024] : ex.Message;
-                await _database.AddAuditAsync(audit);
+                await _webhooksRepository.AddAuditAsync(audit);
                 throw;
             }
         }
@@ -158,7 +149,7 @@ namespace Hyprsoft.Webhooks.Server
             var summary = new WebhooksHealthSummary
             {
                 PublishIntervalMinutes = (int)period.TotalMinutes,
-                SuccessfulWebhooks = [.. _database.Audits
+                SuccessfulWebhooks = [.. _webhooksRepository.Audits
                             .Where(x => x.AuditType == AuditType.Dispatch && x.CreatedUtc >= startDateUtc && String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => x.EventName)
                             .Select(x => new WebhooksHealthSummary.SuccessfulWebhook
@@ -166,7 +157,7 @@ namespace Hyprsoft.Webhooks.Server
                                 EventName = x.Key,
                                 Count = x.Count()
                             }).OrderBy(x => x.EventName)],
-                FailedWebhooks = [.. _database.Audits
+                FailedWebhooks = [.. _webhooksRepository.Audits
                             .Where(x => x.AuditType == AuditType.Dispatch && x.CreatedUtc >= startDateUtc && !String.IsNullOrWhiteSpace(x.Error))
                             .GroupBy(x => new { x.EventName, x.WebhookUri, x.Error })
                             .Select(x => new WebhooksHealthSummary.FailedWebook
@@ -182,29 +173,6 @@ namespace Hyprsoft.Webhooks.Server
         }
 
         protected virtual Task OnPublishAsync<TEvent>(Subscription subscription, TEvent @event) where TEvent : WebhookEvent => DispatchAsync(subscription.WebhookUri, @event);
-
-        #endregion
-
-        #region IDisposable
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (_isDisposed)
-                return;
-
-            if (disposing)
-            {
-                _httpClient?.Dispose();
-            }
-
-            _isDisposed = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
 
         #endregion
     }

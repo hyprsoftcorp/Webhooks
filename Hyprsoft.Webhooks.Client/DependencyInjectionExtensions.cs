@@ -1,6 +1,8 @@
 ﻿using AspNetCore.Authentication.ApiKey;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
 namespace Hyprsoft.Webhooks.Client
@@ -34,7 +36,7 @@ namespace Hyprsoft.Webhooks.Client
                 .AddApiKeyInHeader(apiOptions =>
                 {
                     apiOptions.Realm = "Webhooks API";
-                    apiOptions.KeyName = WebhooksHttpClient.ApiKeyHeaderName;
+                    apiOptions.KeyName = WebhooksMessageHandler.ApiKeyHeaderName;
                     apiOptions.Events = new ApiKeyEvents
                     {
                         OnValidateKey = (context) =>
@@ -90,7 +92,13 @@ namespace Hyprsoft.Webhooks.Client
                     addOptions.ServerBaseUri = options.ServerBaseUri;
                 });
 
-            services.AddTransient<IWebhooksClient, WebhooksClient>();
+            services.TryAddTransient<WebhooksMessageHandler>(services => new WebhooksMessageHandler(services.GetRequiredService<IOptions<WebhooksHttpClientOptions>>().Value.ApiKey));
+            services.AddHttpClient<IWebhooksClient, WebhooksClient>(httpOptions =>
+                {
+                    httpOptions.BaseAddress = options.ServerBaseUri;
+                    httpOptions.Timeout = options.RequestTimeout;
+                })
+                .AddHttpMessageHandler<WebhooksMessageHandler>();
 
             return services;
         }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hyprsoft.Webhooks.Server
 {
-    internal class WebhooksDbContext : DbContext
+    internal sealed class WebhooksDbContext : DbContext
     {
         public WebhooksDbContext(DbContextOptions<WebhooksDbContext> options) : base(options)
         {

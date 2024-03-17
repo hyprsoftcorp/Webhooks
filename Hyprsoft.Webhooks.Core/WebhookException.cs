@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace Hyprsoft.Webhooks.Core
+﻿namespace Hyprsoft.Webhooks.Core
 {
-    public class WebhookException : Exception
+    public sealed class WebhookException : Exception
     {
         public WebhookException() : base() { }
 

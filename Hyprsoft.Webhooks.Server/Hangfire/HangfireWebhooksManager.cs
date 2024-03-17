@@ -1,15 +1,13 @@
 ﻿using Hangfire;
-using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Core;
-using Microsoft.Extensions.Options;
 
 namespace Hyprsoft.Webhooks.Server
 {
-    internal class HangfireWebhooksManager : WebhooksManager
+    internal sealed class HangfireWebhooksManager : WebhooksManager
     {
         #region Constructors
 
-        public HangfireWebhooksManager(IWebhooksRepository database, IOptions<WebhooksHttpClientOptions> options) : base(database, options) { }
+        public HangfireWebhooksManager(IWebhooksRepository database, HttpClient httpClient) : base(database, httpClient) { }
 
         #endregion
 

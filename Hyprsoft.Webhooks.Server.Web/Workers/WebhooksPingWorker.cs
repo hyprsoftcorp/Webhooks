@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Hyprsoft.Webhooks.Server.Web
 {
-    public class WebhooksPingWorker : BackgroundService
+    internal sealed class WebhooksPingWorker : BackgroundService
     {
         #region Fields
 

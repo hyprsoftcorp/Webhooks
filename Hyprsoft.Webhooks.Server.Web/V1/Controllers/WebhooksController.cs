@@ -10,7 +10,7 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
     /// Webhooks Server API.
     /// </summary>
     [ApiVersion("1.0")]
-    public class WebhooksController : WebhooksControllerBase
+    public sealed class WebhooksController : WebhooksControllerBase
     {
         #region Fields
 

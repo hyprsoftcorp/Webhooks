@@ -4,7 +4,7 @@ using System.Globalization;
 namespace Hyprsoft.Webhooks.Core
 {
     [AttributeUsage(AttributeTargets.Assembly)]
-    public class BuildDateAttribute : Attribute
+    public sealed class BuildDateAttribute : Attribute
     {
         public BuildDateAttribute(string value)
         {

@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 namespace Hyprsoft.Webhooks.Client.Web.V1.Controllers
 {
     [ApiVersion("1.0")]
-    public class WebhooksController : WebhooksControllerBase
+    public sealed class WebhooksController : WebhooksControllerBase
     {
         #region Fields
 

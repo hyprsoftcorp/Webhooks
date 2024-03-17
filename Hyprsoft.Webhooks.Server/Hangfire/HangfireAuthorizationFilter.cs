@@ -3,7 +3,7 @@ using Hangfire.Dashboard;
 
 namespace Hyprsoft.Webhooks.Server
 {
-    internal class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
+    internal sealed class HangfireAuthorizationFilter : IDashboardAuthorizationFilter
     {
         public bool Authorize([NotNull] DashboardContext context) => true;
     }

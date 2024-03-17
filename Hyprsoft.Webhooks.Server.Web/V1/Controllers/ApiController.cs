@@ -11,7 +11,7 @@ namespace Hyprsoft.Webhooks.Server.Web.V1.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("[controller]/v{version:apiVersion}/[action]")]
-    public class ApiController : ControllerBase
+    public sealed class ApiController : ControllerBase
     {
         #region Fields
 

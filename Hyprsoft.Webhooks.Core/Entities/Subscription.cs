@@ -2,7 +2,7 @@
 
 namespace Hyprsoft.Webhooks.Core
 {
-    public class Subscription
+    public sealed class Subscription
     {
         [Key, Required]
         public int SubscriptionId { get; set; }
