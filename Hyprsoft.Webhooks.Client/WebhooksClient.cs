@@ -43,7 +43,7 @@ namespace Hyprsoft.Webhooks.Client
             var request = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
-                RequestUri = new Uri($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/unsubscribe"),
+                RequestUri = new Uri($"webhooks/v{WebhooksGlobalConfiguration.LatestWebhooksApiVersion}/unsubscribe", UriKind.RelativeOrAbsolute),
                 Content = new WebhookContent(requestPayload)
             };
             var response = await _httpClient.SendAsync(request).ConfigureAwait(false);
