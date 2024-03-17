@@ -11,7 +11,7 @@ using Hyprsoft.Webhooks.Client;
 // Webhooks REST client
 var client = new WebhooksClient(options => options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/"));
 
-// Subscribe (a REST controller is needed to host the webhook callback endpoints)
+// Subscribe (a REST controller is needed to host the webhook callback endpoint)
 var webhookUri = new Uri("https://office.hyprsoft.com/webhooks/v1/ping");
 await client.SubscribeAsync<PingWebhookEvent>(webhookUri);
 
@@ -50,13 +50,13 @@ namespace Hyprsoft.Webhooks.Client.Web
             builder.Services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
             builder.Services.AddWebhooksClient(options =>
             {
-                options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com");
+                options.ServerBaseUri = new Uri("https://webhooks.hyprsoft.com/");
                 options.ApiKey = apiKey;
             });
 
             var app = builder.Build();
 
-            // Authentication is only required if your subscribing to any webhooks.
+            // Authentication is only required if you're subscribing to any webhooks.
             app.UseWebhooksAuthentication();
             app.MapControllers();
 
