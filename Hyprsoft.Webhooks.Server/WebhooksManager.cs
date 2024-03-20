@@ -1,6 +1,7 @@
 ﻿using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Core;
 using Hyprsoft.Webhooks.Events;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Serialize.Linq.Nodes;
 using System.Linq.Expressions;
@@ -143,33 +144,25 @@ namespace Hyprsoft.Webhooks.Server
             }
         }
 
-        public Task<WebhooksHealthSummary> GetHealthSummaryAsync(TimeSpan period)
+        public async Task<WebhooksHealthSummary> GetHealthSummaryAsync(TimeSpan period)
         {
             var startDateUtc = DateTime.UtcNow - period;
-            var summary = new WebhooksHealthSummary
+            var audits = await _webhooksRepository.Audits
+                .Where(x => x.CreatedUtc >= startDateUtc)
+                .GroupBy(x => new { x.EventName, x.WebhookUri, x.AuditType, x.Error })
+                .Select(x => new WebhooksHealthSummary.AuditSummary(x.Key.EventName, x.Key.WebhookUri, x.Key.AuditType, x.Key.Error, x.Count()))
+                .ToListAsync();
+            var sortedAudits = audits
+                .OrderBy(x => x.EventName)
+                .ThenBy(x => x.WebhookUri)
+                .ThenBy(x => x.AuditType)
+                .Take(100);
+
+            return new WebhooksHealthSummary
             {
                 PublishIntervalMinutes = (int)period.TotalMinutes,
-                SuccessfulWebhooks = [.. _webhooksRepository.Audits
-                            .Where(x => x.AuditType == AuditType.Dispatch && x.CreatedUtc >= startDateUtc && String.IsNullOrWhiteSpace(x.Error))
-                            .GroupBy(x => x.EventName)
-                            .Select(x => new WebhooksHealthSummary.SuccessfulWebhook
-                            {
-                                EventName = x.Key,
-                                Count = x.Count()
-                            }).OrderBy(x => x.EventName)],
-                FailedWebhooks = [.. _webhooksRepository.Audits
-                            .Where(x => x.AuditType == AuditType.Dispatch && x.CreatedUtc >= startDateUtc && !String.IsNullOrWhiteSpace(x.Error))
-                            .GroupBy(x => new { x.EventName, x.WebhookUri, x.Error })
-                            .Select(x => new WebhooksHealthSummary.FailedWebook
-                            {
-                                EventName = x.Key.EventName,
-                                WebhookUri = x.Key.WebhookUri,
-                                Error = x.Key.Error!,
-                                Count = x.Count()
-                            }).OrderBy(x => x.EventName)]
+                Audits = [.. audits]
             };
-
-            return Task.FromResult(summary);
         }
 
         protected virtual Task OnPublishAsync<TEvent>(Subscription subscription, TEvent @event) where TEvent : WebhookEvent => DispatchAsync(subscription.WebhookUri, @event);

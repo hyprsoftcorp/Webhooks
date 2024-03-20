@@ -10,9 +10,7 @@ import { interval, Subscription } from 'rxjs';
 })
 export class HealthComponent implements OnInit, OnDestroy {
 
-  public summary: HealthSummary = { serverStartDateUtc: new Date(), uptime: 'Unknown', successfulWebhooks: [], failedWebhooks: [], publishIntervalMinutes: 60 };
-  public successfulWebhooksCount = 0;
-  public failedWebhooksCount = 0;
+  public summary: HealthSummary = { serverStartDateUtc: new Date(), uptime: 'Unknown', audits: [], publishIntervalMinutes: 60 };
   public pageRefreshSeconds = 60;
   private timer = new Subscription();
 
@@ -27,11 +25,18 @@ export class HealthComponent implements OnInit, OnDestroy {
     this.timer.unsubscribe();
   }
 
+  public badgeClassFromAuditType(auditType: string): string {
+    switch (auditType.toLowerCase()) {
+      case "publish": return "badge bg-success";
+      case "subscribe": return "badge bg-primary";
+      case "unsubscribe": return "badge bg-secondary";
+    }
+    return "badge bg-info";
+  }
+
   private getHealthSummary() {
     this.webhooksService.getHeathSummary().subscribe(data => {
       this.summary = data;
-      this.successfulWebhooksCount = data.successfulWebhooks.reduce((x, y) => x + y.count, 0);
-      this.failedWebhooksCount = data.failedWebhooks.reduce((x, y) => x + y.count, 0);
     });
   }
 }

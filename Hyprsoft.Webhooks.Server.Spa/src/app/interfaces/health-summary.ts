@@ -1,10 +1,8 @@
-import { SuccessfulWebhook } from "./successful-webhook";
-import { FailedWebhook } from "./failed-webhook";
+import { AuditSummary } from "./audit-summary";
 
-export interface HealthSummary {
+export type HealthSummary = {
   serverStartDateUtc: Date;
   publishIntervalMinutes: number;
   uptime: string;
-  successfulWebhooks: SuccessfulWebhook[];
-  failedWebhooks: FailedWebhook[];
+  audits: AuditSummary[];
 }
