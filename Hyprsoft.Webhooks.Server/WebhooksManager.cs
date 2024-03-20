@@ -150,14 +150,7 @@ namespace Hyprsoft.Webhooks.Server
             var audits = await _webhooksRepository.Audits
                 .Where(x => x.CreatedUtc >= startDateUtc)
                 .GroupBy(x => new { x.EventName, x.WebhookUri, x.AuditType, x.Error })
-                .Select(x => new WebhooksHealthSummary.AuditSummary
-                {
-                    EventName = x.Key.EventName,
-                    WebhookUri = x.Key.WebhookUri,
-                    AuditType = x.Key.AuditType,
-                    Error = x.Key.Error,
-                    Count = x.Count()
-                })
+                .Select(x => new WebhooksHealthSummary.AuditSummary(x.Key.EventName, x.Key.WebhookUri, x.Key.AuditType, x.Key.Error, x.Count()))
                 .ToListAsync();
             var sortedAudits = audits
                 .OrderBy(x => x.EventName)

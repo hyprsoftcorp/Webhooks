@@ -37,7 +37,6 @@ export class HealthComponent implements OnInit, OnDestroy {
   private getHealthSummary() {
     this.webhooksService.getHeathSummary().subscribe(data => {
       this.summary = data;
-      console.debug(typeof data.audits[0].auditType);
     });
   }
 }
