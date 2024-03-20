@@ -1,4 +1,4 @@
-export interface Subscription {
+export type Subscription = {
   subscriptionId: number;
   eventName: string;
   createdUtc: Date;
