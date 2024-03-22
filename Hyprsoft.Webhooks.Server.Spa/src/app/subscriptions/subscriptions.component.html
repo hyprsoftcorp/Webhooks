@@ -25,7 +25,7 @@
           <i *ngIf="item.filter" class="bi bi-check-circle-fill text-success" title="{{item.filter}}"></i>
           <i *ngIf="!item.filter" class="bi bi-circle" title="Not Filtered"></i>
         </td>
-        <td>{{item.webhookUri}}</td>
+        <td><a href="{{item.webhookUri}}">{{item.webhookUri}}</a></td>
       </tr>
     </tbody>
   </table>

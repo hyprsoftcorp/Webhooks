@@ -19,7 +19,7 @@
             <td class="text-nowrap">
               <a class="collapsed" data-bs-toggle="collapse" href="{{'#webhook-' + i}}" aria-expanded="false" [attr.aria-controls]="'webhook-' + i">{{item.eventName}}</a>
             </td>
-            <td>{{item.webhookUri}}</td>
+            <td><a href="{{item.webhookUri}}">{{item.webhookUri}}</a></td>
             <td><h5><span [class]="badgeClassFromAuditType(item.auditType)">{{item.auditType}}</span></h5></td>
             <td><h5><span class="badge bg-danger">{{item.count | number}}</span></h5></td>
           </tr>
@@ -36,7 +36,7 @@
         {
           <tr>
             <td class="text-nowrap">{{item.eventName}}</td>
-            <td>{{item.webhookUri}}</td>
+            <td><a href="{{item.webhookUri}}">{{item.webhookUri}}</a></td>
             <td><h5><span [class]="badgeClassFromAuditType(item.auditType)">{{item.auditType}}</span></h5></td>
             <td><h5><span class="badge bg-success">{{item.count | number}}</span></h5></td>
           </tr>

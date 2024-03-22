@@ -9,7 +9,7 @@
     <div #navbarDropdown class="collapse navbar-collapse justify-content-end" id="navbarNav">
       <ul class="navbar-nav">
         <li class="nav-item"><a class="nav-link" href="/hangfire">Dashboard</a></li>
-        <li class="nav-item"><a class="nav-link" routerLink="/health">Health</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/health" [queryParams]="{period: '01:00:00'}">Health</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="/subscriptions">Subscriptions</a></li>
         <li class="nav-item"><a class="nav-link" routerLink="/docs">Documentation</a></li>
       </ul>

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HealthSummary } from '../interfaces/health-summary';
 import { WebhooksService } from '../services/webhooks.service';
 import { interval, Subscription } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-health',
@@ -14,7 +15,7 @@ export class HealthComponent implements OnInit, OnDestroy {
   public pageRefreshSeconds = 60;
   private timer = new Subscription();
 
-  constructor(private webhooksService: WebhooksService) { }
+  constructor(private webhooksService: WebhooksService, private route: ActivatedRoute) { }
 
   ngOnInit() {
     this.getHealthSummary();
@@ -35,7 +36,7 @@ export class HealthComponent implements OnInit, OnDestroy {
   }
 
   private getHealthSummary() {
-    this.webhooksService.getHeathSummary().subscribe(data => {
+    this.webhooksService.getHeathSummary(this.route.snapshot.queryParamMap.get('period') ?? "01:00:00").subscribe(data => {
       this.summary = data;
     });
   }

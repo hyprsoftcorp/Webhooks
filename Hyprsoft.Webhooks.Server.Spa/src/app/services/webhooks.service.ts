@@ -21,7 +21,7 @@ export class WebhooksService {
     return this.httpClient.get<Subscription[]>(`${environment.baseApiUrl}/api/v1/subscriptions`);
   }
 
-  getHeathSummary(): Observable<HealthSummary> {
-    return this.httpClient.get<HealthSummary>(`${environment.baseApiUrl}/api/v1/health?period=${encodeURIComponent('01:00:00')}`);
+  getHeathSummary(period: string): Observable<HealthSummary> {
+    return this.httpClient.get<HealthSummary>(`${environment.baseApiUrl}/api/v1/health?period=${encodeURIComponent(period)}`);
   }
 }
