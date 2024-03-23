@@ -63,10 +63,11 @@ namespace Hyprsoft.Webhooks.Client
             return services;
         }
 
-        public static IApplicationBuilder UseWebhooksAuthentication(this IApplicationBuilder app)
+        public static WebApplication UseWebhooksAuthentication(this WebApplication app)
         {
             app.UseAuthentication();
             app.UseAuthorization();
+            app.MapControllers();
 
             return app;
         }

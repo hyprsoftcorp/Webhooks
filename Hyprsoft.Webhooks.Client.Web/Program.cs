@@ -35,7 +35,6 @@ namespace Hyprsoft.Webhooks.Client.Web
             app.UseSwagger();
             app.UseSwaggerUI();
             app.UseWebhooksAuthentication();
-            app.MapControllers();
 
             app.Run();
         }

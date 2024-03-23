@@ -42,10 +42,7 @@ namespace Hyprsoft.Webhooks.Client.Web
         {
             var builder = WebApplication.CreateBuilder(args);
             var apiKey = "my-secret-api-key";
-
-            builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
-            builder.Services.AddHostedService<WebhooksWorker>();
-
+       
             // Authentication is only required if your subscribing to any webhooks.
             builder.Services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
             builder.Services.AddWebhooksClient(options =>
@@ -54,11 +51,12 @@ namespace Hyprsoft.Webhooks.Client.Web
                 options.ApiKey = apiKey;
             });
 
+            builder.Services.AddHostedService<WebhooksWorker>();
+
             var app = builder.Build();
 
             // Authentication is only required if you're subscribing to any webhooks.
             app.UseWebhooksAuthentication();
-            app.MapControllers();
 
             app.Run();
         }

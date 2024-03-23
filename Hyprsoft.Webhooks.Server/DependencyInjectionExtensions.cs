@@ -112,7 +112,7 @@ namespace Hyprsoft.Webhooks.Server
             return services;
         }
 
-        public static IApplicationBuilder UseWebhooksServer(this IApplicationBuilder app, IServiceProvider serviceProvider)
+        public static WebApplication UseWebhooksServer(this WebApplication app, IServiceProvider serviceProvider)
         {
             GlobalConfiguration.Configuration.UseActivator(new HangfireActivator(serviceProvider));
             // TODO: We need to allow a custom dashboard path and Hangfire authorization.
