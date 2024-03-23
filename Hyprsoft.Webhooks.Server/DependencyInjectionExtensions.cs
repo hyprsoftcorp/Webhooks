@@ -5,6 +5,7 @@ using Hyprsoft.Webhooks.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -16,17 +17,17 @@ namespace Hyprsoft.Webhooks.Server
     {
         private const string CorsPolicyName = "WebhooksCorsPolicy";
 
-        public static IServiceCollection AddWebhooksServer(this IServiceCollection services) => AddWebhooksServer(services, new WebhooksManagerOptions());
+        public static IServiceCollection AddWebhooksServer(this IServiceCollection services, IConfigurationManager configuration) => AddWebhooksServer(services, configuration, new WebhooksManagerOptions());
 
-        public static IServiceCollection AddWebhooksServer(this IServiceCollection services, Action<WebhooksManagerOptions> configure)
+        public static IServiceCollection AddWebhooksServer(this IServiceCollection services, IConfigurationManager configuration, Action<WebhooksManagerOptions> configure)
         {
             var options = new WebhooksManagerOptions();
             configure.Invoke(options);
 
-            return AddWebhooksServer(services, options);
+            return AddWebhooksServer(services, configuration, options);
         }
 
-        public static IServiceCollection AddWebhooksServer(this IServiceCollection services, WebhooksManagerOptions options)
+        public static IServiceCollection AddWebhooksServer(this IServiceCollection services, IConfigurationManager configuration, WebhooksManagerOptions options)
         {
             if (options is null)
                 throw new InvalidOperationException("The Hangfire webhooks manager options are missing.  Please check your configuration.");
@@ -59,7 +60,7 @@ namespace Hyprsoft.Webhooks.Server
             services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
             services.AddCors(configure => configure.AddPolicy(CorsPolicyName, policy =>
             {
-                policy.WithOrigins("http://localhost:4200")
+                policy.WithOrigins(configuration.GetSection("corsOrigins").Get<string[]>() ?? [])
                     .AllowAnyHeader()
                     .AllowAnyMethod()
                     .AllowCredentials();

@@ -28,7 +28,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
             builder.Services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
             builder.Services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
-            builder.Services.AddWebhooksServer(options =>
+            builder.Services.AddWebhooksServer(builder.Configuration, options =>
             {
                 options.DatabaseConnectionString = builder.Configuration.GetConnectionString(WebhooksGlobalConfiguration.WebhooksDbName);
                 options.HttpClientOptions.ApiKey = apiKey;
