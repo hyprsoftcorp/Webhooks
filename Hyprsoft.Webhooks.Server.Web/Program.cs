@@ -20,12 +20,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             if (args.Length > 1 && args[0].Contains("service"))
                 builder.Services.AddWindowsService();
 
-            builder.Services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hyprsoft Webhooks API", Version = "v1" });
-                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
-            });
-            builder.Services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
+            builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
             builder.Services.AddApiVersioning(options => options.AssumeDefaultVersionWhenUnspecified = true);
             builder.Services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
             builder.Services.AddWebhooksServer(builder.Configuration, options =>
@@ -36,6 +31,12 @@ namespace Hyprsoft.Webhooks.Server.Web
             });
 
             builder.Services.AddApplicationInsightsTelemetry();
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hyprsoft Webhooks API", Version = "v1" });
+                c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+            });
+
             if (!builder.Environment.IsEnvironment("UnitTest"))
             {
                 builder.Services.Configure<WebhooksPingWorkerOptions>(builder.Configuration);

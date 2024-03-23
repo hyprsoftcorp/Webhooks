@@ -1,4 +1,5 @@
 ﻿using AspNetCore.Authentication.ApiKey;
+using Hyprsoft.Webhooks.Core;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -32,6 +33,7 @@ namespace Hyprsoft.Webhooks.Client
                     addOptions.ApiUserUserName = options.ApiUserUserName;
                 });
 
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.TypeNameHandling = WebhooksGlobalConfiguration.JsonSerializerSettings.TypeNameHandling);
             services.AddAuthentication(ApiKeyDefaults.AuthenticationScheme)
                 .AddApiKeyInHeader(apiOptions =>
                 {
