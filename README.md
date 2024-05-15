@@ -24,7 +24,7 @@ await client.UnsubscribeAsync<PingWebhookEvent>(webhookUri);
 
 ## Installation
 ###  Azure App Service
-Simply deploy the Hyprsoft.Webhooks.Server.Web project to any Azure App service (only tested on Windows hosts).
+Simply deploy the Hyprsoft.Webhooks.Server.Web project to any Azure App service (tested on both Windows and Linux hosts).
 #### App Service Configuration Changes
 1. By default the webhooks server uses an in-memory data store.  Add an Azure SQL database connection string to use a persistent datastore.
 2. Change your api key!  Add an app service configuration setting "ApiKey = [MyFancyNewApiKey]".
