@@ -1,25 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Authors>Hyprsoft Corporation</Authors>
     <Company>Hyprsoft Corporation</Company>
     <Product>Webhooks Core</Product>
     <Description>Webhooks Core</Description>
-    <Copyright>Copyright © 2024 by Hyprsoft Corporation.  All rights reserved.</Copyright>
+    <Copyright>Copyright © 2025 by Hyprsoft Corporation.  All rights reserved.</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MinVer" Version="5.0.0">
+    <PackageReference Include="MinVer" Version="6.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="Serialize.Linq" Versin="3.0.152" Version="3.0.152" />
+    <PackageReference Include="Serialize.Linq" Versin="3.0.152" Version="4.0.167" />
   </ItemGroup>
   
 </Project>
