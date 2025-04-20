@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 
 namespace Hyprsoft.Webhooks.Core
 {
-    public sealed record BuildInfo(string Version, DateTime BuildDateTimeUtc, string Framework)
+    public sealed record BuildInfo(string Version, DateTime BuildDateTimeUtc, string DotnetFrameworkVersion)
     {
         public static BuildInfo FromAssembly(Assembly assembly)
         {

@@ -1,18 +1,15 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
 import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HealthComponent } from './health/health.component';
-import { SubscriptionsComponent } from './subscriptions/subscriptions.component';
-import { HomeComponent } from './home/home.component';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 @NgModule({
-  declarations: [AppComponent, HealthComponent, SubscriptionsComponent, HomeComponent],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule],
+  imports: [ BrowserModule, AppRoutingModule ],
   providers: [
+    provideHttpClient(withInterceptorsFromDi()),
     {
       provide: HIGHLIGHT_OPTIONS,
       useValue: {
