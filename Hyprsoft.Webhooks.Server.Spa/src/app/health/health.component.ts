@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HealthSummary } from '../interfaces/health-summary';
 import { WebhooksService } from '../services/webhooks.service';
@@ -7,7 +8,9 @@ import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-health',
   templateUrl: './health.component.html',
-  styleUrls: ['./health.component.css']
+  styleUrls: ['./health.component.css'],
+  imports: [ CommonModule ],
+  standalone: true
 })
 export class HealthComponent implements OnInit, OnDestroy {
 

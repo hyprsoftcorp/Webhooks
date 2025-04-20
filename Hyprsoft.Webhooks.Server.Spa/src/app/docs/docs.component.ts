@@ -1,20 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, VERSION } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { BuildInfo } from '../interfaces/build-info';
 import { WebhooksService } from '../services/webhooks.service';
-import { HighlightModule } from 'ngx-highlightjs';
+import { Highlight } from 'ngx-highlightjs';
+import { HighlightLineNumbers } from 'ngx-highlightjs/line-numbers';
 import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-docs',
   templateUrl: './docs.component.html',
   styleUrls: ['./docs.component.css'],
-  imports: [HighlightModule, DatePipe, RouterLink],
+  imports: [Highlight, HighlightLineNumbers, DatePipe, RouterLink],
   standalone: true
 })
 export class DocsComponent implements OnInit {
 
-  public buildInfo: BuildInfo = { buildDateTimeUtc: new Date(), version: '0.0.0', framework: '.NET Core' };
+  public buildInfo: BuildInfo = { buildDateTimeUtc: new Date(), version: '0.0.0', dotnetFrameworkVersion: '.NET Core', angularVersion: VERSION.full };
 
   public code = `using Hyprsoft.Webhooks.Client;
 

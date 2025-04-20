@@ -1,5 +1,6 @@
 export type BuildInfo = {
   version: string;
   buildDateTimeUtc: Date;
-  framework: string;
+  dotnetFrameworkVersion: string;
+  angularVersion: string;
 }

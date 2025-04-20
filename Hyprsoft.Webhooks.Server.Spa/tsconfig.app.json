@@ -3,7 +3,19 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
-    "types": []
+    "types": [],
+    "strict": true, // Enables all strict type-checking options
+    "noImplicitAny": true, // Disallows variables with an implicit `any` type
+    "strictNullChecks": true, // Ensures null and undefined are handled explicitly
+    "strictBindCallApply": true, // Ensures correct usage of `bind`, `call`, and `apply`
+    "strictFunctionTypes": true, // Ensures function type compatibility
+    "strictPropertyInitialization": true, // Ensures class properties are initialized
+    "noImplicitThis": true, // Ensures `this` is typed correctly
+    "alwaysStrict": true, // Parses files in strict mode
+    "noUnusedLocals": true, // Warns about unused local variables
+    "noUnusedParameters": true, // Warns about unused function parameters
+    "noImplicitReturns": true, // Ensures all code paths in a function return a value
+    "noFallthroughCasesInSwitch": true // Ensures no fallthrough in switch statements
   },
   "files": [
     "src/main.ts"
