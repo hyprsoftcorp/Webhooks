@@ -1,4 +1,4 @@
-# Webhooks - Updated to .NET 8 and Angular 17!
+# Webhooks - Updated to .NET 9 and Angular 19!
 A standalone generic publish/subscribe notification system using HTTP webhooks and Hangfire as a fault tolerant event dispatcher.
 
 ## Architecture Overview
