@@ -16,6 +16,7 @@ namespace Hyprsoft.Webhooks.Server.Web
 
             var builder = WebApplication.CreateBuilder(args);
             var apiKey = builder.Configuration.GetValue(nameof(WebhooksAuthenticationOptions.ApiKey), WebhooksGlobalConfiguration.DefaultApiKey)!;
+            var dbConnectionString = builder.Configuration.GetConnectionString(WebhooksGlobalConfiguration.WebhooksDbName)!;
 
             if (args.Length > 1 && args[0].Contains("service"))
                 builder.Services.AddWindowsService();
@@ -25,7 +26,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             builder.Services.AddWebhooksAuthentication(options => options.ApiKey = apiKey);
             builder.Services.AddWebhooksServer(builder.Configuration, options =>
             {
-                options.DatabaseConnectionString = builder.Configuration.GetConnectionString(WebhooksGlobalConfiguration.WebhooksDbName);
+                options.DatabaseConnectionString = dbConnectionString;
                 options.HttpClientOptions.ApiKey = apiKey;
                 options.CustomEventAssemblyNames = builder.Configuration.GetSection(nameof(WebhooksManagerOptions.CustomEventAssemblyNames)).GetChildren().Select(x => x.Value!);
             });
@@ -36,6 +37,8 @@ namespace Hyprsoft.Webhooks.Server.Web
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hyprsoft Webhooks API", Version = "v1" });
                 c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
             });
+            builder.Services.AddHealthChecks()
+                .AddSqlServer(dbConnectionString);
 
             if (!builder.Environment.IsEnvironment("UnitTest"))
             {
@@ -57,6 +60,7 @@ namespace Hyprsoft.Webhooks.Server.Web
             app.UseWebhooksServer(app.Services);
             app.MapControllers();
             app.MapFallbackToFile("/index.html");
+            app.UseHealthChecks("/api/health");
 
             app.Run();
         }
