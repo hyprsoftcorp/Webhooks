@@ -1,7 +1,7 @@
 using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Core;
 using Microsoft.ApplicationInsights.Extensibility.Implementation;
-using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi;
 using System.Reflection;
 
 namespace Hyprsoft.Webhooks.Server.Web
