@@ -1,13 +1,15 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
+import { RouterModule } from '@angular/router';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 
 @NgModule({
-  imports: [ BrowserModule, AppRoutingModule ],
+  declarations: [AppComponent],
+  imports: [ BrowserModule, AppRoutingModule, RouterModule ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),
     {

@@ -13,21 +13,33 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let item of subscriptions">
-        <td>{{item.subscriptionId}}</td>
-        <td>{{item.eventName}}</td>
-        <td class="text-nowrap">{{item.createdUtc | date:'medium'}}</td>
-        <td class="text-center">
-          <i *ngIf="item.isActive" class="bi bi-check-circle-fill text-success" title="Active"></i>
-          <i *ngIf="!item.isActive" class="bi bi-circle" title="Inactive"></i>
-        </td>
-        <td class="text-center">
-          <i *ngIf="item.filter" class="bi bi-check-circle-fill text-success" title="{{item.filter}}"></i>
-          <i *ngIf="!item.filter" class="bi bi-circle" title="Not Filtered"></i>
-        </td>
-        <td><a href="{{item.webhookUri}}">{{item.webhookUri}}</a></td>
-      </tr>
+      @for (item of subscriptions; track item) {
+        <tr>
+          <td>{{item.subscriptionId}}</td>
+          <td>{{item.eventName}}</td>
+          <td class="text-nowrap">{{item.createdUtc | date:'medium'}}</td>
+          <td class="text-center">
+            @if (item.isActive) {
+              <i class="bi bi-check-circle-fill text-success" title="Active"></i>
+            }
+            @if (!item.isActive) {
+              <i class="bi bi-circle" title="Inactive"></i>
+            }
+          </td>
+          <td class="text-center">
+            @if (item.filter) {
+              <i class="bi bi-check-circle-fill text-success" title="{{item.filter}}"></i>
+            }
+            @if (!item.filter) {
+              <i class="bi bi-circle" title="Not Filtered"></i>
+            }
+          </td>
+          <td><a href="{{item.webhookUri}}">{{item.webhookUri}}</a></td>
+        </tr>
+      }
     </tbody>
   </table>
 </div>
-<div *ngIf="subscriptions.length <= 0" class="alert alert-info">No subscriptions available.  Check the <a routerLink="/docs" title="Documentation">docs</a> on how to create a subscription.</div>
+@if (subscriptions.length <= 0) {
+  <div class="alert alert-info">No subscriptions available.  Check the <a routerLink="/docs" title="Documentation">docs</a> on how to create a subscription.</div>
+}
