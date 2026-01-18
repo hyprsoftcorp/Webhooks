@@ -12,9 +12,9 @@
       </tr>
     </thead>
     <tbody>
-      <ng-container *ngFor="let item of summary.audits; let i = index">
+      @for (item of summary.audits; track item; let i = $index) {
         @if (item.error)
-        {
+          {
           <tr>
             <td class="text-nowrap">
               <a class="collapsed" data-bs-toggle="collapse" href="{{'#webhook-' + i}}" aria-expanded="false" [attr.aria-controls]="'webhook-' + i">{{item.eventName}}</a>
@@ -34,16 +34,18 @@
         }
         @else
         {
-          <tr>
-            <td class="text-nowrap">{{item.eventName}}</td>
-            <td><a href="{{item.webhookUri}}">{{item.webhookUri}}</a></td>
-            <td><h5><span [class]="badgeClassFromAuditType(item.auditType)">{{item.auditType}}</span></h5></td>
-            <td><h5><span class="badge bg-success">{{item.count | number}}</span></h5></td>
-          </tr>
-        }
-      </ng-container>
-    </tbody>
-  </table>
+        <tr>
+          <td class="text-nowrap">{{item.eventName}}</td>
+          <td><a href="{{item.webhookUri}}">{{item.webhookUri}}</a></td>
+          <td><h5><span [class]="badgeClassFromAuditType(item.auditType)">{{item.auditType}}</span></h5></td>
+          <td><h5><span class="badge bg-success">{{item.count | number}}</span></h5></td>
+        </tr>
+      }
+    }
+  </tbody>
+</table>
 </div>
-<div *ngIf="summary.audits.length <= 0" class="alert alert-info my-2">No webhooks were detected.</div>
+@if (summary.audits.length <= 0) {
+  <div class="alert alert-info my-2">No webhooks were detected.</div>
+}
 <p class="small text-muted">Page auto refreshed every {{pageRefreshSeconds}} seconds.</p>

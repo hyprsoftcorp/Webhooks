@@ -1,11 +1,11 @@
 import { Component, ViewChild, ElementRef } from '@angular/core';
-import { Router, NavigationEnd, RouterOutlet, RouterModule } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 
 @Component({
   selector: 'app-root',
+  standalone: false,
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  imports: [ RouterModule, RouterOutlet ]
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   @ViewChild('navbarToggler') navbarToggler!: ElementRef;
