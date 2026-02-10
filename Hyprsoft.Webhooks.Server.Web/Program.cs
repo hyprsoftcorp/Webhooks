@@ -1,6 +1,6 @@
 using Hyprsoft.Webhooks.Client;
 using Hyprsoft.Webhooks.Core;
-using Microsoft.ApplicationInsights.Extensibility.Implementation;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.OpenApi;
 using System.Reflection;
 
@@ -31,7 +31,18 @@ namespace Hyprsoft.Webhooks.Server.Web
                 options.CustomEventAssemblyNames = builder.Configuration.GetSection(nameof(WebhooksManagerOptions.CustomEventAssemblyNames)).GetChildren().Select(x => x.Value!);
             });
 
-            builder.Services.AddApplicationInsightsTelemetry();
+            // Only add Application Insights if connection string is configured
+            var appInsightsConnectionString = builder.Configuration["ApplicationInsights:ConnectionString"] 
+                ?? builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+            if (!string.IsNullOrEmpty(appInsightsConnectionString))
+            {
+                builder.Services.AddApplicationInsightsTelemetry();
+
+                // Disable telemetry in Development and UnitTest environments
+                if (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("UnitTest"))
+                    builder.Services.Configure<TelemetryConfiguration>(config => config.DisableTelemetry = true);
+            }
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Hyprsoft Webhooks API", Version = "v1" });
@@ -47,9 +58,6 @@ namespace Hyprsoft.Webhooks.Server.Web
             }
 
             var app = builder.Build();
-
-            if (builder.Environment.IsDevelopment() || builder.Environment.IsEnvironment("UnitTest"))
-                TelemetryDebugWriter.IsTracingDisabled = true;
 
             if (!builder.Environment.IsDevelopment())
                 app.UseHsts();
