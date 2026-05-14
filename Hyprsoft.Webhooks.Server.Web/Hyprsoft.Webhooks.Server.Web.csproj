@@ -18,7 +18,7 @@
 
   <PropertyGroup>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <DocumentationFile>C:\Source\Hyprsoft.Webhooks.Solution\Hyprsoft.Webhooks.Server.Web\Hyprsoft.Webhooks.Server.Web.xml</DocumentationFile>
+    <DocumentationFile>D:\Source\Hyprsoft.Webhooks.Solution\Hyprsoft.Webhooks.Server.Web\Hyprsoft.Webhooks.Server.Web.xml</DocumentationFile>
     <NoWarn>1701;1702;CS1591</NoWarn>
   </PropertyGroup>
 
