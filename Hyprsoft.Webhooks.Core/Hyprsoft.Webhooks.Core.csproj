@@ -14,12 +14,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MinVer" Version="8.0.0">
+    <PackageReference Include="MinVer">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-    <PackageReference Include="Serialize.Linq" Versin="3.0.152" Version="4.4.1" />
+    <PackageReference Include="Newtonsoft.Json" />
+    <PackageReference Include="Serialize.Linq" />
   </ItemGroup>
   
 </Project>
